@@ -25,8 +25,7 @@
         "noImplicitOverride": true,
         "noImplicitReturns": true,
         "noUncheckedIndexedAccess": true,
-        "exactOptionalPropertyTypes": true,
-        "types": ["@emotion/react/types/css-prop"]
+        "exactOptionalPropertyTypes": true
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
     "exclude": ["node_modules"]

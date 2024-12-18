@@ -1,0 +1,79 @@
+/* フォントサイズ関連のユーティリティクラス */
+:root {
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 24px;
+    --font-size-3xl: 30px;
+    --font-size-4xl: 36px;
+    --font-size-5xl: 48px;
+    --font-size-6xl: 64px;
+}
+
+/* Font size */
+.text-xs {
+    font-size: var(--font-size-xs);
+}
+.text-sm {
+    font-size: var(--font-size-sm);
+}
+.text-base {
+    font-size: var(--font-size-base);
+}
+.text-lg {
+    font-size: var(--font-size-lg);
+}
+.text-xl {
+    font-size: var(--font-size-xl);
+}
+.text-2xl {
+    font-size: var(--font-size-2xl);
+}
+.text-3xl {
+    font-size: var(--font-size-3xl);
+}
+.text-4xl {
+    font-size: var(--font-size-4xl);
+}
+.text-5xl {
+    font-size: var(--font-size-5xl);
+}
+.text-6xl {
+    font-size: var(--font-size-6xl);
+}
+
+/* Line height */
+.leading-none {
+    line-height: 1;
+}
+.leading-tight {
+    line-height: 1.25;
+}
+.leading-normal {
+    line-height: 1.5;
+}
+.leading-loose {
+    line-height: 2;
+}
+
+/* Font weight */
+.font-thin {
+    font-weight: 100;
+}
+.font-light {
+    font-weight: 300;
+}
+.font-normal {
+    font-weight: 400;
+}
+.font-medium {
+    font-weight: 500;
+}
+.font-bold {
+    font-weight: 700;
+}
+.font-black {
+    font-weight: 900;
+}
