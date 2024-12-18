@@ -16,8 +16,6 @@
     },
     "dependencies": {
         "@ant-design/icons": "^5.5.2",
-        "@emotion/css": "^11.13.5",
-        "@emotion/react": "^11.14.0",
         "antd": "^4.24.16",
         "next": "15.0.4",
         "react": "^19.0.0",
