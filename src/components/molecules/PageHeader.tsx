@@ -8,7 +8,7 @@ export function PageHeader() {
     const pageHeader = css({
         padding: "16px",
         color: "white",
-        background: "#7829cc",
+        background: "primary",
         fontSize: "24px",
         fontWeight: "bold"
     });
