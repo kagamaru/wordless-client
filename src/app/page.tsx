@@ -1,3 +1,9 @@
+import { PageHeader } from "@/components/molecules/PageHeader";
+
 export default function Home() {
-    return <div>test</div>;
+    return (
+        <>
+            <PageHeader></PageHeader>
+        </>
+    );
 }
