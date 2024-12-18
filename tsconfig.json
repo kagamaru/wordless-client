@@ -19,7 +19,8 @@
             }
         ],
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["./src/*"],
+            "ss/*": ["./styled-system/*"]
         },
         "noImplicitOverride": true,
         "noImplicitReturns": true,
