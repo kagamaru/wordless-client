@@ -152,6 +152,9 @@
 .m-10 {
     margin: var(--spacing-10);
 }
+.m-auto {
+    margin: auto;
+}
 
 /* Padding */
 .pt-0 {
@@ -293,4 +296,7 @@
 }
 .p-10 {
     padding: var(--spacing-10);
+}
+.p-auto {
+    padding: auto;
 }

@@ -1,6 +1,6 @@
 import "@/layouts/globals.css";
+import "@/layouts/font.css";
 import "@/layouts/spacing.css";
-import "antd/dist/antd.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
