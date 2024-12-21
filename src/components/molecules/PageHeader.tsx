@@ -8,18 +8,21 @@ export function PageHeader() {
     const pageHeader = css({
         padding: "16px",
         color: "white",
-        background: "primary",
-        fontSize: "24px",
+        background: "primary"
+    });
+
+    const textClass = css({
+        fontSize: "24px !important",
         fontWeight: "bold"
     });
 
     return (
         <>
             <Row className={pageHeader}>
-                <Col span={2}>
+                <Col className={textClass} span={2}>
                     <MenuOutlined />
                 </Col>
-                <Col span={22}>
+                <Col className={textClass} span={22}>
                     <span className="ml-4">Wordless</span>
                 </Col>
             </Row>

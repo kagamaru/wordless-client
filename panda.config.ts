@@ -28,7 +28,9 @@ export default defineConfig({
             tokens: {
                 colors: {
                     primary: { value: "#7829cc" },
-                    grey: { value: "#00000073" }
+                    grey: { value: "#00000073" },
+                    lightGrey: { value: "#c0c0c0" },
+                    darkGrey: { value: "#757575" }
                 }
             }
         }
