@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, Button, Col, Divider, Row } from "antd";
+import * as emoji from "node-emoji";
 import { css } from "ss/css";
 
 export function WordlessPost() {
@@ -77,33 +78,33 @@ export function WordlessPost() {
                         </Row>
                         <Divider className={divider} />
                         <Row className={emojiRow}>
-                            <div>😀</div>
-                            <div>😀</div>
-                            <div>😀</div>
-                            <div>🐉</div>
+                            <div>{emoji.get(":heart:")}</div>
+                            <div>{emoji.get(":bear:")}</div>
+                            <div>{emoji.get(":dragon:")}</div>
+                            <div>{emoji.get(":gun:")}</div>
                         </Row>
-                        <Row>
+                        <Row className={"mb-3"}>
                             <Button shape="round" className={button}>
                                 +
                             </Button>
                             <Button shape="round" className={emojiButton}>
-                                <span>😀</span>
+                                <span>{emoji.get(":smile:")}</span>
                                 <span>1</span>
                             </Button>
                             <Button shape="round" className={emojiButton}>
-                                <span>🐍</span>
+                                <span>{emoji.get(":fish:")}</span>
                                 <span>23</span>
                             </Button>
                             <Button shape="round" className={emojiButton}>
-                                <span>🐍</span>
+                                <span>{emoji.get(":computer:")}</span>
                                 <span>23</span>
                             </Button>
                             <Button shape="round" className={emojiButton}>
-                                <span>🐍</span>
+                                <span>{emoji.get(":dog:")}</span>
                                 <span>23</span>
                             </Button>
                             <Button shape="round" className={emojiButton}>
-                                <span>🐍</span>
+                                <span>{emoji.get(":bird:")}</span>
                                 <span>23</span>
                             </Button>
                         </Row>
