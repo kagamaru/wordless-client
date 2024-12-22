@@ -1,7 +1,7 @@
 "use client";
 
-import { Avatar, Button, Col, Divider, Row } from "antd";
-import * as emoji from "node-emoji";
+import { DisplayEmoteEmoji, EmoteAvatar, EmoteEmojiButton, PlusButton, WordlessDivider } from "@/components/atoms";
+import { Col, ConfigProvider, Row } from "antd";
 import { css } from "ss/css";
 
 export function WordlessPost() {
@@ -9,11 +9,6 @@ export function WordlessPost() {
         paddingLeft: { base: "16px", lg: "140px" },
         paddingRight: { base: "16px", lg: "140px" },
         marginTop: "20px"
-    });
-
-    const avatar = css({
-        height: { base: "32px", lg: "50px !important" },
-        width: { base: "32px", lg: "50px !important" }
     });
 
     const textBlock = css({
@@ -33,42 +28,12 @@ export function WordlessPost() {
         color: "grey"
     });
 
-    const emojiRow = css({
-        marginLeft: { base: "8px", lg: "0px" },
-        fontSize: "48px !important"
-    });
-
-    const divider = css({
-        margin: "0px !important",
-        borderTop: "1px solid !important",
-        borderColor: "lightGrey !important"
-    });
-
-    const sharedButtonClass = {
-        height: "24px !important",
-        width: "20px",
-        marginTop: "4px"
-    };
-
-    const button = css({
-        ...sharedButtonClass
-    });
-
-    const emojiButton = css({
-        ...sharedButtonClass,
-        width: "60px",
-        marginLeft: "4px"
-    });
-
     return (
         <>
             <div className={wordlessPost}>
                 <Row>
                     <Col span={2} className="m-auto">
-                        <Avatar
-                            className={avatar}
-                            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                        ></Avatar>
+                        <EmoteAvatar></EmoteAvatar>
                     </Col>
                     <Col span={22}>
                         <Row align="bottom" className={textBlock}>
@@ -76,41 +41,27 @@ export function WordlessPost() {
                             <div className={smallText}>@annna_yanami</div>
                             <div className={smallText}>2024-12-12 18:09</div>
                         </Row>
-                        <Divider className={divider} />
-                        <Row className={emojiRow}>
-                            <div>{emoji.get(":heart:")}</div>
-                            <div>{emoji.get(":bear:")}</div>
-                            <div>{emoji.get(":dragon:")}</div>
-                            <div>{emoji.get(":gun:")}</div>
-                        </Row>
+                        <WordlessDivider />
+                        <DisplayEmoteEmoji emojiIds={[":dog:", ":dragon:", ":cat:", ":snake:"]}></DisplayEmoteEmoji>
                         <Row className={"mb-3"}>
-                            <Button shape="round" className={button}>
-                                +
-                            </Button>
-                            <Button shape="round" className={emojiButton}>
-                                <span>{emoji.get(":smile:")}</span>
-                                <span>1</span>
-                            </Button>
-                            <Button shape="round" className={emojiButton}>
-                                <span>{emoji.get(":fish:")}</span>
-                                <span>23</span>
-                            </Button>
-                            <Button shape="round" className={emojiButton}>
-                                <span>{emoji.get(":computer:")}</span>
-                                <span>23</span>
-                            </Button>
-                            <Button shape="round" className={emojiButton}>
-                                <span>{emoji.get(":dog:")}</span>
-                                <span>23</span>
-                            </Button>
-                            <Button shape="round" className={emojiButton}>
-                                <span>{emoji.get(":bird:")}</span>
-                                <span>23</span>
-                            </Button>
+                            {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
+                            <ConfigProvider wave={{ disabled: true }}>
+                                <PlusButton onClick={() => {}}></PlusButton>
+                                <EmoteEmojiButton
+                                    emojiId=":smile:"
+                                    numberOfReactions={1}
+                                    onClick={() => {}}
+                                ></EmoteEmojiButton>
+                                <EmoteEmojiButton
+                                    emojiId=":fish:"
+                                    numberOfReactions={28}
+                                    onClick={() => {}}
+                                ></EmoteEmojiButton>
+                            </ConfigProvider>
                         </Row>
                     </Col>
                 </Row>
-                <Divider className={divider} />
+                <WordlessDivider />
             </div>
         </>
     );
