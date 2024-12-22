@@ -1,10 +1,10 @@
-import { PageHeader, WordlessPost } from "@/components/molecules";
+import { PageHeader, WordlessEmote } from "@/components/molecules";
 
 export default function Home() {
     return (
         <>
             <PageHeader></PageHeader>
-            <WordlessPost></WordlessPost>
+            <WordlessEmote></WordlessEmote>
         </>
     );
 }

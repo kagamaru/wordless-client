@@ -4,8 +4,8 @@ import { DisplayEmoteEmoji, EmoteAvatar, EmoteEmojiButton, PlusButton, WordlessD
 import { Col, ConfigProvider, Row } from "antd";
 import { css } from "ss/css";
 
-export function WordlessPost() {
-    const wordlessPost = css({
+export function WordlessEmote() {
+    const wordlessEmote = css({
         paddingLeft: { base: "16px", lg: "140px" },
         paddingRight: { base: "16px", lg: "140px" },
         marginTop: "20px"
@@ -30,7 +30,7 @@ export function WordlessPost() {
 
     return (
         <>
-            <div className={wordlessPost}>
+            <div className={wordlessEmote}>
                 <Row>
                     <Col span={2} className="m-auto">
                         <EmoteAvatar></EmoteAvatar>
