@@ -1,4 +1,4 @@
 import { PageHeader } from "@/components/molecules/PageHeader";
-import { WordlessPost } from "@/components/molecules/WordlessPost";
+import { WordlessEmote } from "@/components/molecules/WordlessEmote";
 
-export { PageHeader, WordlessPost };
+export { PageHeader, WordlessEmote };
