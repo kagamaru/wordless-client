@@ -1,7 +1,11 @@
 import { Avatar } from "antd";
 import { css } from "ss/css";
 
-export function EmoteAvatar() {
+type Props = {
+    url: string;
+}
+
+export function EmoteAvatar(props: Props) {
     const avatar = css({
         height: { base: "32px", lg: "50px !important" },
         width: { base: "32px", lg: "50px !important" }
@@ -9,7 +13,7 @@ export function EmoteAvatar() {
 
     return (
         <>
-            <Avatar className={avatar} src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"></Avatar>
+            <Avatar className={avatar} src={props.url}></Avatar>
         </>
     );
 }
