@@ -1,10 +1,18 @@
 "use client";
 
-import { DisplayEmoteEmoji, EmoteAvatar, EmoteEmojiButton, PlusButton, WordlessDivider } from "@/components/atoms";
+import { EmoteReactionEmojiWithNumber } from "@/@types";
+import { Emote } from "@/@types/Emote";
+import { EmoteReaction } from "@/@types/EmoteReaction";
+import { DisplayEmoteEmoji, EmoteAvatar, EmoteReactionButton, PlusButton, WordlessDivider } from "@/components/atoms";
 import { Col, ConfigProvider, Row } from "antd";
 import { css } from "ss/css";
 
-export function WordlessEmote() {
+type Props = {
+    emote: Emote;
+    emoteReaction: EmoteReaction;
+};
+
+export function WordlessEmote(props: Props) {
     const wordlessEmote = css({
         paddingLeft: { base: "16px", lg: "140px" },
         paddingRight: { base: "16px", lg: "140px" },
@@ -28,35 +36,37 @@ export function WordlessEmote() {
         color: "grey"
     });
 
+    const { emote } = props;
+
+    const emoteEmojiButtons = () =>
+        props.emoteReaction.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
+            <EmoteReactionButton
+                key={emoteReactionEmoji.emojiId}
+                emoteReactionEmojiWithNumber={emoteReactionEmoji}
+                onClick={() => {}}
+            ></EmoteReactionButton>
+        ));
+
     return (
         <>
             <div className={wordlessEmote}>
                 <Row>
                     <Col span={2} className="m-auto">
-                        <EmoteAvatar></EmoteAvatar>
+                        <EmoteAvatar url={emote.userAvatarUrl}></EmoteAvatar>
                     </Col>
                     <Col span={22}>
                         <Row align="bottom" className={textBlock}>
-                            <div className={authorText}>Yanami Anna</div>
-                            <div className={smallText}>@annna_yanami</div>
-                            <div className={smallText}>2024-12-12 18:09</div>
+                            <div className={authorText}>{emote.userName}</div>
+                            <div className={smallText}>{emote.userId}</div>
+                            <div className={smallText}>{emote.emoteDatetime}</div>
                         </Row>
                         <WordlessDivider />
-                        <DisplayEmoteEmoji emojiIds={[":dog:", ":dragon:", ":cat:", ":snake:"]}></DisplayEmoteEmoji>
+                        <DisplayEmoteEmoji emojis={emote.emoteEmojis}></DisplayEmoteEmoji>
                         <Row className={"mb-3"}>
                             {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
                             <ConfigProvider wave={{ disabled: true }}>
                                 <PlusButton onClick={() => {}}></PlusButton>
-                                <EmoteEmojiButton
-                                    emojiId=":smile:"
-                                    numberOfReactions={1}
-                                    onClick={() => {}}
-                                ></EmoteEmojiButton>
-                                <EmoteEmojiButton
-                                    emojiId=":fish:"
-                                    numberOfReactions={28}
-                                    onClick={() => {}}
-                                ></EmoteEmojiButton>
+                                {emoteEmojiButtons()}
                             </ConfigProvider>
                         </Row>
                     </Col>
