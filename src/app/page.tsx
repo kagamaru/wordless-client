@@ -6,8 +6,8 @@ export default function Home() {
     const wordlessEmotes: EmoteGetAllResponse = [
         {
             emoteId: "a",
-            userName: "Hoge",
-            userId: "@hoge_hoge",
+            userName: "あ".repeat(40),
+            userId: "@hoge_hogehoge_hogehoge_hogehoge_hogehog",
             emoteDatetime: "2024-12-24 09:00:54",
             emoteReactionId: "aa",
             emoteEmojis: [
@@ -51,6 +51,22 @@ export default function Home() {
                 },
                 {
                     emojiId: ":smile:",
+                    numberOfReactions: 1
+                },
+                {
+                    emojiId: ":bear:",
+                    numberOfReactions: 23
+                },
+                {
+                    emojiId: ":ant:",
+                    numberOfReactions: 1
+                },
+                {
+                    emojiId: ":fire:",
+                    numberOfReactions: 23
+                },
+                {
+                    emojiId: ":guitar:",
                     numberOfReactions: 1
                 }
             ]
