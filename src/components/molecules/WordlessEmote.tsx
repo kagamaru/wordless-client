@@ -5,6 +5,7 @@ import { Emote } from "@/@types/Emote";
 import { EmoteReaction } from "@/@types/EmoteReaction";
 import { DisplayEmoteEmoji, EmoteAvatar, EmoteReactionButton, PlusButton, WordlessDivider } from "@/components/atoms";
 import { Col, ConfigProvider, Row } from "antd";
+import { useEffect, useState } from "react";
 import { css } from "ss/css";
 
 type Props = {
@@ -13,6 +14,8 @@ type Props = {
 };
 
 export function WordlessEmote(props: Props) {
+    const [isMobile, setIsMobile] = useState(false);
+
     const wordlessEmote = css({
         paddingLeft: { base: "16px", lg: "140px" },
         paddingRight: { base: "16px", lg: "140px" },
@@ -23,17 +26,29 @@ export function WordlessEmote(props: Props) {
         marginBottom: "2px"
     });
 
-    const authorText = css({
-        fontSize: { base: "24px", lg: "28px" },
+    const userNameText = css({
+        fontSize: { base: "20px", lg: "24px" },
         color: "black !important",
-        marginLeft: { base: "8px", lg: "0px" }
+        marginLeft: { base: "8px", lg: "0px" },
+        overflow: { base: "hidden", lg: undefined },
+        textOverflow: "ellipsis",
+        whiteSpace: { base: "nowrap", lg: undefined },
+        maxWidth: { base: undefined, lg: "770px" },
+        marginRight: { base: "0px", lg: "8px" }
     });
 
-    const smallText = css({
-        marginBottom: { base: "4px", lg: "7px" },
-        marginLeft: { base: "8px", lg: "20px" },
+    const userIdText = css({
+        marginLeft: { base: "8px", lg: "0px" },
         fontSize: "12px",
-        color: "grey"
+        color: "grey",
+        marginBottom: { base: "2px", lg: "0px" }
+    });
+
+    const emoteDatetimeText = css({
+        fontSize: "8px",
+        color: "grey",
+        marginLeft: { base: "8px", lg: "0px" },
+        marginBottom: { base: "2px", lg: "4px" }
     });
 
     const { emote } = props;
@@ -47,6 +62,38 @@ export function WordlessEmote(props: Props) {
             ></EmoteReactionButton>
         ));
 
+    const emoteInfo = () => {
+        if (isMobile) {
+            return (
+                <div className={textBlock}>
+                    <div className={userNameText}>{emote.userName}</div>
+                    <div className={userIdText}>{emote.userId}</div>
+                    <div className={emoteDatetimeText}>{emote.emoteDatetime}</div>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <Row align="bottom" className={textBlock}>
+                        <div className={userNameText}>{emote.userName}</div>
+                        <div className={userIdText}>{emote.userId}</div>
+                    </Row>
+                    <div className={emoteDatetimeText}>{emote.emoteDatetime}</div>
+                </div>
+            );
+        }
+    };
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 1024);
+        };
+
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
         <>
             <div className={wordlessEmote}>
@@ -55,19 +102,19 @@ export function WordlessEmote(props: Props) {
                         <EmoteAvatar url={emote.userAvatarUrl}></EmoteAvatar>
                     </Col>
                     <Col span={22}>
-                        <Row align="bottom" className={textBlock}>
-                            <div className={authorText}>{emote.userName}</div>
-                            <div className={smallText}>{emote.userId}</div>
-                            <div className={smallText}>{emote.emoteDatetime}</div>
-                        </Row>
+                        {emoteInfo()}
                         <WordlessDivider />
                         <DisplayEmoteEmoji emojis={emote.emoteEmojis}></DisplayEmoteEmoji>
                         <Row className={"mb-3"}>
-                            {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
-                            <ConfigProvider wave={{ disabled: true }}>
-                                <PlusButton onClick={() => {}}></PlusButton>
-                                {emoteEmojiButtons()}
-                            </ConfigProvider>
+                            <Col span={isMobile ? 3 : 1}>
+                                {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
+                                <ConfigProvider wave={{ disabled: true }}>
+                                    <PlusButton onClick={() => {}}></PlusButton>
+                                </ConfigProvider>
+                            </Col>
+                            <Col span={isMobile ? 21 : 23}>
+                                <ConfigProvider wave={{ disabled: true }}>{emoteEmojiButtons()}</ConfigProvider>
+                            </Col>
                         </Row>
                     </Col>
                 </Row>
