@@ -12,6 +12,11 @@ export const emojiMap: Array<Emoji> = [
         emojiJapaneseId: "笑った顔"
     },
     {
+        emojiType: 1,
+        emojiId: ":bear:",
+        emojiJapaneseId: "クマ"
+    },
+    {
         emojiType: 2,
         emojiId: ":party_parrot:",
         emojiJapaneseId: "パーティーパロット",
