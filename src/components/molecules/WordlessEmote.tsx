@@ -1,8 +1,6 @@
 "use client";
 
-import { EmoteReactionEmojiWithNumber } from "@/@types";
-import { Emote } from "@/@types/Emote";
-import { EmoteReaction } from "@/@types/EmoteReaction";
+import { Emote, EmoteReactionEmojiWithNumber } from "@/@types";
 import { DisplayEmoteEmoji, EmoteAvatar, EmoteReactionButton, PlusButton, WordlessDivider } from "@/components/atoms";
 import { Col, ConfigProvider, Row } from "antd";
 import { useEffect, useState } from "react";
@@ -10,7 +8,7 @@ import { css } from "ss/css";
 
 type Props = {
     emote: Emote;
-    emoteReaction: EmoteReaction;
+    emoteReaction: Array<EmoteReactionEmojiWithNumber>;
 };
 
 export function WordlessEmote(props: Props) {
@@ -54,7 +52,7 @@ export function WordlessEmote(props: Props) {
     const { emote } = props;
 
     const emoteEmojiButtons = () =>
-        props.emoteReaction.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
+        props.emoteReaction.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
             <EmoteReactionButton
                 key={emoteReactionEmoji.emojiId}
                 emoteReactionEmojiWithNumber={emoteReactionEmoji}
