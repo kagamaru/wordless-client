@@ -1,91 +1,63 @@
-import { EmoteGetAllResponse, EmoteReactionGetResponse } from "@/@types";
+"use client";
+
+import { WebSocketConnectResponse } from "@/@types";
 import { PageHeader } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 export default function Home() {
-    const wordlessEmotes: EmoteGetAllResponse = [
-        {
-            emoteId: "a",
-            userName: "あ".repeat(40),
-            userId: "@hoge_hogehoge_hogehoge_hogehoge_hogehog",
-            emoteDatetime: "2024-12-24 09:00:54",
-            emoteReactionId: "aa",
-            emoteEmojis: [
-                {
-                    emojiId: ":snake:"
-                },
-                {
-                    emojiId: ":party_parrot:"
-                },
-                {
-                    emojiId: ":panda:"
-                },
-                {
-                    emojiId: ":lion:"
-                }
-            ],
-            userAvatarUrl: "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-        },
-        {
-            emoteId: "b",
-            userName: "Fuga Fuga",
-            userId: "@fuga_fuga",
-            emoteDatetime: "2023-01-24 12:00:54",
-            emoteReactionId: "bb",
-            emoteEmojis: [
-                {
-                    emojiId: ":snake:"
-                }
-            ],
-            userAvatarUrl: "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-        }
-    ];
+    const webSocketFetchResponse: WebSocketConnectResponse = {
+        emotes: [
+            {
+                sequenceNumber: 1,
+                emoteId: "163d9125-b8f8-4110-ac81-c8342bae93f5",
+                userName: "Hoge_hofe",
+                userId: "@hoge_hoge",
+                emoteDatetime: "",
+                emoteReactionId: "163d9125-b8f8-4110-ac81-c8342bae93xx",
+                emoteEmojis: [
+                    {
+                        emojiId: ":snake:"
+                    }
+                ],
+                userAvatarUrl: "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
+                emoteReactionEmojis: [
+                    {
+                        emojiId: ":snake:",
+                        numberOfReactions: 23
+                    },
+                    {
+                        emojiId: ":smile:",
+                        numberOfReactions: 1
+                    },
+                    {
+                        emojiId: ":bear:",
+                        numberOfReactions: 23
+                    },
+                    {
+                        emojiId: ":bird:",
+                        numberOfReactions: 23
+                    },
+                    {
+                        emojiId: ":lion:",
+                        numberOfReactions: 23
+                    },
+                    {
+                        emojiId: ":dolphin:",
+                        numberOfReactions: 23
+                    }
+                ]
+            }
+        ],
+        connectionId: "2a00bc5d-7898-418b-96bc-25a8761ebba9"
+    };
 
-    const emoteReactions: EmoteReactionGetResponse = [
-        {
-            emoteReactionId: "aa",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":snake:",
-                    numberOfReactions: 23
-                },
-                {
-                    emojiId: ":smile:",
-                    numberOfReactions: 1
-                },
-                {
-                    emojiId: ":bear:",
-                    numberOfReactions: 23
-                },
-                {
-                    emojiId: ":ant:",
-                    numberOfReactions: 1
-                },
-                {
-                    emojiId: ":fire:",
-                    numberOfReactions: 23
-                },
-                {
-                    emojiId: ":guitar:",
-                    numberOfReactions: 1
-                }
-            ]
-        },
-        {
-            emoteReactionId: "bb",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":party_parrot:",
-                    numberOfReactions: 99
-                }
-            ]
-        }
-    ];
+    useWebSocket();
 
     return (
         <>
             <PageHeader></PageHeader>
-            <WordlessEmotes emotes={wordlessEmotes} emoteReactions={emoteReactions}></WordlessEmotes>
+            <WordlessEmotes emotes={webSocketFetchResponse.emotes}></WordlessEmotes>
         </>
     );
 }
