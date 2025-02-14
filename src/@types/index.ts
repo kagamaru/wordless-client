@@ -1,6 +1,4 @@
 import { Emote, WebSocketConnectResponse } from "@/@types/apiType/websockets/WebSocketConnectResponse";
-import { EmoteGetAllResponse } from "@/@types/apiType/EmoteGetAllResponse";
-import { EmoteReactionGetResponse } from "@/@types/apiType/EmoteReactionGetResponse";
 
 import { Emoji } from "@/@types/Emoji";
 import { EmojiIdObject } from "@/@types/EmojiIdObject";
@@ -12,8 +10,6 @@ import { EmoteReactionEmojiWithNumber } from "@/@types/EmoteReactionEmojiWithNum
 export type {
     Emote,
     WebSocketConnectResponse,
-    EmoteGetAllResponse,
-    EmoteReactionGetResponse,
     Emoji,
     EmojiIdObject,
     EmojiString,

@@ -1,9 +1,12 @@
+"use client";
+
 import { WebSocketConnectResponse } from "@/@types";
 import { PageHeader } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 export default function Home() {
-    const webSocketConnectResponse: WebSocketConnectResponse = {
+    const webSocketFetchResponse: WebSocketConnectResponse = {
         emotes: [
             {
                 sequenceNumber: 1,
@@ -11,7 +14,7 @@ export default function Home() {
                 userName: "Hoge_hofe",
                 userId: "@hoge_hoge",
                 emoteDatetime: "",
-                emoteReactionId: "",
+                emoteReactionId: "163d9125-b8f8-4110-ac81-c8342bae93xx",
                 emoteEmojis: [
                     {
                         emojiId: ":snake:"
@@ -30,6 +33,18 @@ export default function Home() {
                     {
                         emojiId: ":bear:",
                         numberOfReactions: 23
+                    },
+                    {
+                        emojiId: ":bird:",
+                        numberOfReactions: 23
+                    },
+                    {
+                        emojiId: ":lion:",
+                        numberOfReactions: 23
+                    },
+                    {
+                        emojiId: ":dolphin:",
+                        numberOfReactions: 23
                     }
                 ]
             }
@@ -37,10 +52,12 @@ export default function Home() {
         connectionId: "2a00bc5d-7898-418b-96bc-25a8761ebba9"
     };
 
+    useWebSocket();
+
     return (
         <>
             <PageHeader></PageHeader>
-            <WordlessEmotes emotes={webSocketConnectResponse.emotes}></WordlessEmotes>
+            <WordlessEmotes emotes={webSocketFetchResponse.emotes}></WordlessEmotes>
         </>
     );
 }

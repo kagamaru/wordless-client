@@ -1,4 +1,4 @@
-import { Emote, EmoteGetAllResponse, EmoteReactionGetResponse } from "@/@types";
+import { Emote } from "@/@types";
 import { WordlessEmote } from "@/components/molecules";
 
 type Props = {
@@ -8,11 +8,8 @@ type Props = {
 export function WordlessEmotes(props: Props) {
     const emotesElement = props.emotes.map((emote) => {
         return (
-            <>
-                <WordlessEmote emote={emote} emoteReaction={emote.emoteReactionEmojis}></WordlessEmote>
-            </>
+            <WordlessEmote key={emote.emoteId} emote={emote} emoteReaction={emote.emoteReactionEmojis}></WordlessEmote>
         );
     });
-
     return emotesElement;
 }

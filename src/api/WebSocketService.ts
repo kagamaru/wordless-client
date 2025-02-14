@@ -1,11 +1,17 @@
 const WebSocketService = (): WebSocket => {
-    const webSocket = new WebSocket(process.env.WEBSOCKET_URL ?? "");
+    const webSocket = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? "");
 
-    webSocket.onopen = () => {};
+    webSocket.onopen = (): void => {
+        console.log("WebSocket connected");
+    };
 
-    webSocket.onclose = () => {};
+    webSocket.onclose = () => {
+        console.log("WebSocket disconnected");
+    };
 
-    webSocket.onerror = () => {};
+    webSocket.onerror = (error) => {
+        console.log(error);
+    };
 
     return webSocket;
 };
