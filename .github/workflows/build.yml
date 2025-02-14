@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [ "main", "develop" ]
 
+env:
+  NEXT_PUBLIC_WEBSOCKET_URL: ${{secrets.NEXT_PUBLIC_WEBSOCKET_URL}}
+
 jobs:
   build:
     runs-on: ubuntu-latest
