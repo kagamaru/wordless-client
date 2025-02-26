@@ -4,8 +4,8 @@ export class FetchEmotesResponse {
     public emotes: Array<Emote> = [];
 
     constructor(arrayArgs: Array<Emote>) {
-        arrayArgs.map((element) => {
-            this.emotes.push(new Emote(element));
+        arrayArgs.forEach((emote) => {
+            this.emotes.push(new Emote(emote));
         });
     }
 }
