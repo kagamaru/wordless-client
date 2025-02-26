@@ -1,8 +1,10 @@
 "use client";
 
-import { Emote, EmoteReactionEmojiWithNumber } from "@/@types";
+import { EmoteReactionEmojiWithNumber } from "@/@types";
+import { Emote } from "@/class";
 import { DisplayEmoteEmoji, EmoteAvatar, EmoteReactionButton, PlusButton, WordlessDivider } from "@/components/atoms";
 import { Col, ConfigProvider, Row } from "antd";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { css } from "ss/css";
 
@@ -10,6 +12,8 @@ type Props = {
     emote: Emote;
     emoteReaction: Array<EmoteReactionEmojiWithNumber>;
 };
+
+dayjs.locale("ja");
 
 export function WordlessEmote(props: Props) {
     const [isMobile, setIsMobile] = useState(false);
@@ -61,12 +65,15 @@ export function WordlessEmote(props: Props) {
         ));
 
     const emoteInfo = () => {
+        const emoteDatetimeFormatStyle = "YYYY-MM-DD HH:mm:ss";
         if (isMobile) {
             return (
                 <div className={textBlock}>
                     <div className={userNameText}>{emote.userName}</div>
                     <div className={userIdText}>{emote.userId}</div>
-                    <div className={emoteDatetimeText}>{emote.emoteDatetime}</div>
+                    <div className={emoteDatetimeText}>
+                        {dayjs(emote.emoteDatetime).format(emoteDatetimeFormatStyle)}
+                    </div>
                 </div>
             );
         } else {
@@ -76,7 +83,9 @@ export function WordlessEmote(props: Props) {
                         <div className={userNameText}>{emote.userName}</div>
                         <div className={userIdText}>{emote.userId}</div>
                     </Row>
-                    <div className={emoteDatetimeText}>{emote.emoteDatetime}</div>
+                    <div className={emoteDatetimeText}>
+                        {dayjs(emote.emoteDatetime).format(emoteDatetimeFormatStyle)}
+                    </div>
                 </div>
             );
         }

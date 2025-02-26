@@ -1,4 +1,4 @@
-import { Emote } from "@/@types";
+import { Emote } from "@/class";
 import { WordlessEmote } from "@/components/molecules";
 
 type Props = {

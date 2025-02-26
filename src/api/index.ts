@@ -1,3 +1,4 @@
+import { EmoteService } from "./EmoteService";
 import { WebSocketService } from "./WebSocketService";
 
-export { WebSocketService };
+export { EmoteService, WebSocketService };

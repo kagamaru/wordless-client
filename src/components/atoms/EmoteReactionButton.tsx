@@ -19,6 +19,11 @@ export function EmoteReactionButton(props: Props) {
         marginLeft: "4px"
     });
 
+    const numberOfReactionsCSS = css({
+        fontSize: "12px",
+        fontWeight: "bold"
+    });
+
     const emoteReactionButton = () => {
         const returnedEmoji = emojiHelper(props.emoteReactionEmojiWithNumber.emojiId);
 
@@ -29,11 +34,19 @@ export function EmoteReactionButton(props: Props) {
         }
     };
 
+    const numberOfReactionsText = (numReactions: number) => {
+        if (numReactions > 99) {
+            return <span className={numberOfReactionsCSS}>99+</span>;
+        } else {
+            return <span>{numReactions}</span>;
+        }
+    };
+
     return (
         <>
             <Button shape="round" className={emojiButton} onClick={() => props.onClick()}>
                 {emoteReactionButton()}
-                <span>{props.emoteReactionEmojiWithNumber.numberOfReactions}</span>
+                {numberOfReactionsText(props.emoteReactionEmojiWithNumber.numberOfReactions)}
             </Button>
         </>
     );

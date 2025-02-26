@@ -1,4 +1,4 @@
-const WebSocketService = (): WebSocket => {
+export const WebSocketService = (): WebSocket => {
     const webSocket = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? "");
 
     webSocket.onopen = (): void => {
@@ -15,5 +15,3 @@ const WebSocketService = (): WebSocket => {
 
     return webSocket;
 };
-
-export { WebSocketService };
