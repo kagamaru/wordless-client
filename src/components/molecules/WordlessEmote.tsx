@@ -3,9 +3,9 @@
 import { EmoteReactionEmojiWithNumber } from "@/@types";
 import { Emote } from "@/class";
 import { DisplayEmoteEmoji, EmoteAvatar, EmoteReactionButton, PlusButton, WordlessDivider } from "@/components/atoms";
+import { useIsMobile } from "@/hooks";
 import { Col, ConfigProvider, Row } from "antd";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
 import { css } from "ss/css";
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
 dayjs.locale("ja");
 
 export function WordlessEmote(props: Props) {
-    const [isMobile, setIsMobile] = useState(false);
+    const isMobile = useIsMobile();
 
     const wordlessEmote = css({
         paddingLeft: { base: "16px", lg: "140px" },
@@ -90,16 +90,6 @@ export function WordlessEmote(props: Props) {
             );
         }
     };
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 1024);
-        };
-
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
 
     return (
         <>
