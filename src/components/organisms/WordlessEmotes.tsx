@@ -6,7 +6,7 @@ type Props = {
 };
 
 export function WordlessEmotes(props: Props) {
-    const emotesElement = props.emotes.map((emote) => {
+    const emotesElement = props.emotes?.map((emote) => {
         return (
             <WordlessEmote key={emote.emoteId} emote={emote} emoteReaction={emote.emoteReactionEmojis}></WordlessEmote>
         );
