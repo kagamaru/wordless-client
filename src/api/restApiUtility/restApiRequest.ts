@@ -7,7 +7,7 @@ export async function restApiRequest<T>(url: string, options?: RestApiRequestOpt
     }
 }
 
-async function fetchWithTimeout(url: string, options?: RestApiRequestOption, timeout = 5000): Promise<Response | void> {
+async function fetchWithTimeout(url: string, options?: RestApiRequestOption, timeout = 5000): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
