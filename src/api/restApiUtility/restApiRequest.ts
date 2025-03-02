@@ -13,19 +13,12 @@ async function fetchWithTimeout(url: string, options?: RestApiRequestOption, tim
 
     try {
         const response = await fetch(url, { signal: controller.signal, ...options });
-        clearTimeout(timeoutId);
         if (!response.ok) {
-            throw new Error(`error! Status: ${response.status}`);
+            throw new Error(JSON.stringify(await response.json()));
         }
+        clearTimeout(timeoutId);
         return await response.json();
     } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") {
-            console.error("Request timed out");
-        } else if (error instanceof Error) {
-            console.error("Fetch error:", error.message);
-        } else {
-            console.error("Unknown error occurred");
-        }
         throw error;
     }
 }
