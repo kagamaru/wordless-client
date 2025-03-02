@@ -4,6 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "next dev --turbopack",
+        "dev:mock": "NEXT_PUBLIC_API_MOCKING=enabled next dev",
         "build": "next build",
         "start": "next start",
         "lint": "run-p --continue-on-error --print-label lint:*",
@@ -34,11 +35,17 @@
         "eslint": "^8",
         "eslint-config-next": "15.0.4",
         "eslint-plugin-simple-import-sort": "^12.1.1",
+        "msw": "^2.7.3",
         "npm-run-all2": "^7.0.1",
         "pnpm": "^9.15.0",
         "prettier": "^3.4.2",
         "secretlint": "^9.0.0",
         "typescript": "^5",
         "typescript-eslint": "^8.17.0"
+    },
+    "msw": {
+        "workerDirectory": [
+            "public"
+        ]
     }
 }
