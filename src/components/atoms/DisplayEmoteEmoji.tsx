@@ -35,7 +35,6 @@ export function DisplayEmoteEmoji(props: Props) {
             return (
                 <Image
                     key={index}
-                    aria-label={emoji.emojiId}
                     src={returnedEmoji.url ?? ""}
                     alt={returnedEmoji.emojiJapaneseId}
                     width={62}
