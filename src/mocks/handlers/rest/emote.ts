@@ -221,12 +221,7 @@ export const emoteHandlers = [
                         }
                     ],
                     userAvatarUrl: s3Url + "/userProfile/orange.png",
-                    emoteReactionEmojis: [
-                        {
-                            emojiId: ":smile:",
-                            numberOfReactions: 1
-                        }
-                    ]
+                    emoteReactionEmojis: []
                 }
             ]
         });
