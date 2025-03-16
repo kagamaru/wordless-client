@@ -10,7 +10,6 @@ import { css } from "ss/css";
 
 type Props = {
     emote: Emote;
-    emoteReaction: Array<EmoteReactionEmojiWithNumber>;
 };
 
 dayjs.locale("ja");
@@ -56,10 +55,11 @@ export function WordlessEmote(props: Props) {
     const { emote } = props;
 
     const emoteEmojiButtons = () =>
-        props.emoteReaction.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
+        props.emote?.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
             <EmoteReactionButton
                 key={emoteReactionEmoji.emojiId}
                 emoteReactionEmojiWithNumber={emoteReactionEmoji}
+                emoteReactionId={props.emote.emoteReactionId}
                 onClick={() => {}}
             ></EmoteReactionButton>
         ));
@@ -96,7 +96,7 @@ export function WordlessEmote(props: Props) {
             <div className={wordlessEmote}>
                 <Row>
                     <Col span={2} className="m-auto">
-                        <EmoteAvatar url={emote.userAvatarUrl}></EmoteAvatar>
+                        <EmoteAvatar url={emote.userAvatarUrl} userName={emote.userName}></EmoteAvatar>
                     </Col>
                     <Col span={22}>
                         {emoteInfo()}

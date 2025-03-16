@@ -2,8 +2,9 @@ import { Avatar } from "antd";
 import { css } from "ss/css";
 
 type Props = {
+    userName: string;
     url: string;
-}
+};
 
 export function EmoteAvatar(props: Props) {
     const avatar = css({
@@ -13,7 +14,7 @@ export function EmoteAvatar(props: Props) {
 
     return (
         <>
-            <Avatar className={avatar} src={props.url}></Avatar>
+            <Avatar className={avatar} src={props.url} alt={props.userName + "ProfileImage"}></Avatar>
         </>
     );
 }

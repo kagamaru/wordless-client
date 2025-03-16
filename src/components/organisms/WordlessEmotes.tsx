@@ -8,8 +8,10 @@ type Props = {
 export function WordlessEmotes(props: Props) {
     const emotesElement = props.emotes?.map((emote) => {
         return (
-            <WordlessEmote key={emote.emoteId} emote={emote} emoteReaction={emote.emoteReactionEmojis}></WordlessEmote>
+            <div role="listitem" key={emote.emoteId} aria-label={emote.emoteId}>
+                <WordlessEmote emote={emote}></WordlessEmote>
+            </div>
         );
     });
-    return emotesElement;
+    return <div role="list">{emotesElement}</div>;
 }
