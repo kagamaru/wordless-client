@@ -220,12 +220,7 @@ export const emoteHandlers = [
                         }
                     ],
                     userAvatarUrl: "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-                    emoteReactionEmojis: [
-                        {
-                            emojiId: ":smile:",
-                            numberOfReactions: 1
-                        }
-                    ]
+                    emoteReactionEmojis: []
                 }
             ]
         });
