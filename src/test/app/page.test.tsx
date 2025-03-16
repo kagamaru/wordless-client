@@ -123,7 +123,9 @@ describe("初期表示時", () => {
         test("WebSocket API サーバとの接続を確立する", async () => {
             render(<Home />);
 
-            expect(mockWebSocketOpen).toHaveBeenCalledTimes(1);
+            await waitFor(() => {
+                expect(mockWebSocketOpen).toHaveBeenCalledTimes(1);
+            });
         });
 
         test("投稿者の名前を表示する", async () => {

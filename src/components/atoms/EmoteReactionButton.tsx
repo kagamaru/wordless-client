@@ -49,7 +49,7 @@ export function EmoteReactionButton(props: Props) {
                 aria-label={props.emoteReactionId + props.emoteReactionEmojiWithNumber.emojiId}
                 shape="round"
                 className={emojiButton}
-                onClick={() => props.onClick()}
+                onClick={props.onClick}
             >
                 {emoteReactionButton()}
                 {numberOfReactionsText(props.emoteReactionEmojiWithNumber.numberOfReactions)}
