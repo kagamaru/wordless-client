@@ -28,4 +28,4 @@ jobs:
         cache: 'pnpm'
     - run: pnpm install
     - run: pnpm run build
-    # TODO: 単体テスト実装後、pnpm run test する
+    - run: pnpm run test
