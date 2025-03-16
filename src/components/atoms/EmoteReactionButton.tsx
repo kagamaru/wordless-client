@@ -8,6 +8,7 @@ import { css } from "ss/css";
 
 type Props = {
     emoteReactionEmojiWithNumber: EmoteReactionEmojiWithNumber;
+    emoteReactionId: string;
     onClick: () => void;
 };
 
@@ -44,7 +45,12 @@ export function EmoteReactionButton(props: Props) {
 
     return (
         <>
-            <Button shape="round" className={emojiButton} onClick={() => props.onClick()}>
+            <Button
+                aria-label={props.emoteReactionId + props.emoteReactionEmojiWithNumber.emojiId}
+                shape="round"
+                className={emojiButton}
+                onClick={() => props.onClick()}
+            >
                 {emoteReactionButton()}
                 {numberOfReactionsText(props.emoteReactionEmojiWithNumber.numberOfReactions)}
             </Button>
