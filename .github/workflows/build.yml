@@ -26,6 +26,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
+    - name: Set timezone to JST
+      run: sudo timedatectl set-timezone Asia/Tokyo
     - run: pnpm install
     - run: pnpm run build
-    # TODO: 単体テスト実装後、pnpm run test する
+    - run: pnpm run test

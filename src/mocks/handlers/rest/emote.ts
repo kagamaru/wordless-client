@@ -3,7 +3,19 @@ import { http, HttpResponse } from "msw";
 const restApiUrl = process.env.NEXT_PUBLIC_REST_API_URL ?? "";
 
 export const emoteHandlers = [
-    http.get(restApiUrl + "emotes/", () => {
+    http.get(restApiUrl + "emotes/", ({ request }) => {
+        const urlSearchParams = new URL(request.url).searchParams;
+        if (!urlSearchParams.get("userId") || !urlSearchParams.get("numberOfCompletedAcquisitionsCompleted")) {
+            return HttpResponse.json(
+                {
+                    error: "EMT-01"
+                },
+                {
+                    status: 400
+                }
+            );
+        }
+
         return HttpResponse.json({
             emotes: [
                 {
@@ -220,12 +232,7 @@ export const emoteHandlers = [
                         }
                     ],
                     userAvatarUrl: "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-                    emoteReactionEmojis: [
-                        {
-                            emojiId: ":smile:",
-                            numberOfReactions: 1
-                        }
-                    ]
+                    emoteReactionEmojis: []
                 }
             ]
         });

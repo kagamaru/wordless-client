@@ -26,7 +26,11 @@ export function DisplayEmoteEmoji(props: Props) {
         const returnedEmoji = emojiHelper(emoji.emojiId);
 
         if (returnedEmoji.emojiType === EmojiType.Preset) {
-            return <div key={index}>{emojiManipulator.get(returnedEmoji.emojiId)}</div>;
+            return (
+                <div key={index} aria-label={emoji.emojiId}>
+                    {emojiManipulator.get(returnedEmoji.emojiId)}
+                </div>
+            );
         } else {
             return (
                 <Image

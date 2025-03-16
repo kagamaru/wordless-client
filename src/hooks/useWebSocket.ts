@@ -1,5 +1,5 @@
 import { WebSocketService } from "@/api";
-import { useError } from "@/hooks";
+import { useError, useMock } from "@/hooks";
 import { useState } from "react";
 
 export const useWebSocket = () => {
@@ -11,23 +11,26 @@ export const useWebSocket = () => {
         errorMessage: ""
     });
     const [hasWebSocketError, setHasWebSocketError] = useState(false);
+    const isMockReady = useMock();
     const { getErrorMessage } = useError();
 
-    const webSocketService = WebSocketService();
+    const webSocketService = isMockReady ? WebSocketService() : undefined;
 
     const webSocketOpen = () => {
         // NOTE: WebSocketAPIとの接続。解決が難しいのでeslintの制約を無視する
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        webSocketService.onopen;
+        webSocketService?.onopen;
     };
 
-    webSocketService.onerror = () => {
-        setHasWebSocketError(true);
-        setWebSocketError({
-            errorCode: "WSK-99",
-            errorMessage: getErrorMessage("WSK-99")
-        });
-    };
+    if (webSocketService) {
+        webSocketService.onerror = () => {
+            setHasWebSocketError(true);
+            setWebSocketError({
+                errorCode: "WSK-99",
+                errorMessage: getErrorMessage("WSK-99")
+            });
+        };
+    }
 
     return {
         hasWebSocketError,
