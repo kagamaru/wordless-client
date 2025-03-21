@@ -9,7 +9,11 @@ export default defineConfig({
         env: {
             NEXT_PUBLIC_WEBSOCKET_URL: "wss://localhost.com/dev/",
             NEXT_PUBLIC_REST_API_URL: "https://localhost.com/dev/",
-            NEXT_PUBLIC_API_MOCKING: "disabled"
+            NEXT_PUBLIC_API_MOCKING: "disabled",
+            NEXT_PUBLIC_AWS_REGION: "us-west-2",
+            NEXT_PUBLIC_COGNITO_CLIENT_ID: "",
+            NEXT_PUBLIC_AUTHORITY: "",
+            NEXT_PUBLIC_REDIRECT_URI: "http://localhost:3000"
         }
     }
 });

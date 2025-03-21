@@ -20,6 +20,7 @@
     "dependencies": {
         "@ant-design/icons": "^5.5.2",
         "@aws-sdk/client-cognito-identity-provider": "^3.768.0",
+        "@testing-library/user-event": "^14.6.1",
         "antd": "^5.22.5",
         "dayjs": "^1.11.13",
         "jwt-decode": "^4.0.0",
