@@ -14,6 +14,9 @@ importers:
       '@aws-sdk/client-cognito-identity-provider':
         specifier: ^3.768.0
         version: 3.768.0
+      '@testing-library/user-event':
+        specifier: ^14.6.1
+        version: 14.6.1(@testing-library/dom@10.4.0)
       antd:
         specifier: ^5.22.5
         version: 5.22.5(date-fns@2.30.0)(moment@2.30.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1421,6 +1424,12 @@ packages:
         optional: true
       '@types/react-dom':
         optional: true
+
+  '@testing-library/user-event@14.6.1':
+    resolution: {integrity: sha512-vq7fv0rnt+QTXgPxr5Hjc210p6YKq2kmdziLgnsZGgLJ9e6VAShx1pACLuRjd/AS/sr7phAR58OIIpf0LlmQNw==}
+    engines: {node: '>=12', npm: '>=6'}
+    peerDependencies:
+      '@testing-library/dom': '>=7.21.4'
 
   '@textlint/ast-node-types@14.4.0':
     resolution: {integrity: sha512-tEZbu6dMU8lysTpFrrW9WzN/hWnfGoanOX1WmdKZ7LgqUVDdsd9Q8RNLlQLOgl7ev1C7O3T4ruzl4rdYI5he1g==}
@@ -5797,6 +5806,10 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.0.1
       '@types/react-dom': 19.0.1
+
+  '@testing-library/user-event@14.6.1(@testing-library/dom@10.4.0)':
+    dependencies:
+      '@testing-library/dom': 10.4.0
 
   '@textlint/ast-node-types@14.4.0': {}
 
