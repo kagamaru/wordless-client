@@ -2,7 +2,7 @@
 
 import { EmoteService } from "@/api";
 import { FetchEmotesResponse } from "@/class";
-import { DisplayErrorMessage } from "@/components/atoms/DisplayErrorMessage";
+import { DisplayErrorMessage } from "@/components/atoms";
 import { PageHeader } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
 import { useError, useMock } from "@/hooks";
