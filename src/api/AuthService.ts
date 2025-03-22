@@ -15,7 +15,7 @@ export class AuthService {
         try {
             const command = new InitiateAuthCommand({
                 AuthFlow: "USER_PASSWORD_AUTH",
-                ClientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID as string,
+                ClientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ?? "",
                 AuthParameters: {
                     USERNAME: email,
                     PASSWORD: password

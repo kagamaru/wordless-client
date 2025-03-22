@@ -11,22 +11,12 @@ import { css } from "ss/css";
 export default function LoginSignup() {
     const [form] = Form.useForm();
     const [activeTab, setActiveTab] = useState("login");
-    const [emailAddress, setEmailAddress] = useState("");
-    const [password, setPassword] = useState("");
     const isMobile = useIsMobile();
     const router = useRouter();
 
     const authService = new AuthService();
 
-    const handleValuesChange = (changedValues: { emailAddress: string; password: string }) => {
-        if (changedValues.emailAddress) {
-            setEmailAddress(changedValues.emailAddress);
-        } else if (changedValues.password) {
-            setPassword(changedValues.password);
-        }
-    };
-
-    const onLoginClick = async (email: string, password: string) => {
+    const onLoginClick = async () => {
         try {
             await form.validateFields({
                 recursive: true
@@ -35,7 +25,7 @@ export default function LoginSignup() {
             return;
         }
 
-        await authService.signin(email, password);
+        await authService.signin(form.getFieldValue("emailAddress"), form.getFieldValue("password"));
         router.push("/");
     };
 
@@ -51,7 +41,7 @@ export default function LoginSignup() {
 
     const loginTab = (
         <>
-            <Form form={form} onValuesChange={handleValuesChange} onFinish={() => onLoginClick(emailAddress, password)}>
+            <Form form={form} onFinish={onLoginClick}>
                 <EmailAddressInput />
                 <PasswordInput />
                 <LoginButton />
@@ -62,7 +52,7 @@ export default function LoginSignup() {
 
     const signupTab = (
         <>
-            <Form form={form} onValuesChange={handleValuesChange}>
+            <Form form={form}>
                 <EmailAddressInput />
                 <PasswordInput />
                 <SignupButton />

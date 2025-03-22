@@ -10,7 +10,7 @@ export function EmailAddressInput() {
                 { type: "email", message: "有効なEメールを入力してください" }
             ]}
         >
-            <Input title="Eメール" />
+            <Input title="Eメール" aria-label="Eメール" />
         </Form.Item>
     );
 }
