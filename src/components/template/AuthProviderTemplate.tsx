@@ -8,15 +8,23 @@ export default function AuthProviderTemplate({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const authority = process.env.NEXT_PUBLIC_AUTHORITY ?? undefined;
+    const cognitoClientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ?? undefined;
+    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_URI ?? undefined;
+
+    if (!authority || !cognitoClientId || !redirectUri) {
+        throw new Error("必要な環境変数が設定されていません");
+    }
+
     const cognitoAuthConfig = useMemo(
         () => ({
-            authority: process.env.NEXT_PUBLIC_AUTHORITY,
-            client_id: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID,
-            redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI,
+            authority: authority,
+            client_id: cognitoClientId,
+            redirect_uri: redirectUri,
             response_type: "code",
             scope: "email openid phone"
         }),
-        []
+        [authority, cognitoClientId, redirectUri]
     );
 
     return <AuthProvider {...cognitoAuthConfig}>{children}</AuthProvider>;
