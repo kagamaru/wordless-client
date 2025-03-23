@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "../../vitest.setup";
 import { NewDeviceMetadataType } from "@aws-sdk/client-cognito-identity-provider";
+import { ProviderTemplate } from "@/components/template";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -44,9 +45,17 @@ afterEach(() => {
     cleanup();
 });
 
+const rendering = (): void => {
+    render(
+        <ProviderTemplate>
+            <LoginSignup />
+        </ProviderTemplate>
+    );
+};
+
 describe("初期表示時", () => {
     beforeEach(() => {
-        render(<LoginSignup />);
+        rendering();
     });
 
     test("ログインタブが選択されている", () => {
@@ -72,7 +81,7 @@ describe("初期表示時", () => {
 
 describe("ユーザー登録タブ押下時", () => {
     beforeEach(async () => {
-        render(<LoginSignup />);
+        rendering();
         await user.click(screen.getByRole("tab", { name: "ユーザー登録", selected: false }));
     });
 
@@ -105,15 +114,14 @@ describe("ユーザー登録タブ押下時", () => {
 
 describe("ログインボタン押下時", () => {
     beforeEach(() => {
-        render(<LoginSignup />);
+        rendering();
     });
 
     describe("Eメールとパスワードが両方正しいものである時、", () => {
         beforeEach(async () => {
-            await Promise.all([
-                await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com"),
-                await user.type(screen.getByLabelText("パスワード"), "example01")
-            ]);
+            await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(screen.getByLabelText("パスワード"), "example01");
+
             await user.click(screen.getByRole("button", { name: "ログイン" }));
         });
 
@@ -161,6 +169,7 @@ describe("ログインボタン押下時", () => {
         beforeEach(async () => {
             await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@");
             await user.type(screen.getByLabelText("パスワード"), "example01");
+
             await user.click(screen.getByRole("button", { name: "ログイン" }));
         });
 
@@ -191,6 +200,7 @@ describe("ログインボタン押下時", () => {
     describe("パスワードが入力されていない時、", () => {
         beforeEach(async () => {
             await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+
             await user.click(screen.getByRole("button", { name: "ログイン" }));
         });
 
@@ -220,10 +230,9 @@ describe("ログインボタン押下時", () => {
 
     describe("パスワードが6文字以下の時、", () => {
         beforeEach(async () => {
-            await Promise.all([
-                await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com"),
-                await user.type(screen.getByLabelText("パスワード"), "ex01")
-            ]);
+            await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(screen.getByLabelText("パスワード"), "ex01");
+
             await user.click(screen.getByRole("button", { name: "ログイン" }));
         });
 
@@ -253,10 +262,9 @@ describe("ログインボタン押下時", () => {
 
     describe("パスワードに数字が含まれていない時", () => {
         beforeEach(async () => {
-            await Promise.all([
-                await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com"),
-                await user.type(screen.getByLabelText("パスワード"), "wordless")
-            ]);
+            await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(screen.getByLabelText("パスワード"), "wordless");
+
             await user.click(screen.getByRole("button", { name: "ログイン" }));
         });
 
@@ -285,4 +293,4 @@ describe("ログインボタン押下時", () => {
     });
 });
 
-test.todo("ユーザー登録ボタン押下時");
+// test.todo("ユーザー登録ボタン押下時");

@@ -8,4 +8,8 @@ export const vitestSetup = (): void => {
                 removeListener: function () {}
             };
         };
+
+    window.addEventListener("submit", (e) => {
+        e.preventDefault();
+    });
 };
