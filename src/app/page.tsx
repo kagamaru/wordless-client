@@ -23,8 +23,10 @@ export default function Home() {
     });
 
     useEffect(() => {
-        handleErrors(error);
-    }, [isError]);
+        if (isError && error) {
+            handleErrors(error);
+        }
+    }, [isError, error]);
 
     useEffect(() => {
         (async () => {
