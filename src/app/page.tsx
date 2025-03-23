@@ -1,26 +1,38 @@
 "use client";
 
 import { EmoteService } from "@/api";
-import { FetchEmotesResponse } from "@/class";
 import { DisplayErrorMessage } from "@/components/atoms";
 import { PageHeader } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
 import { useError, useMock } from "@/hooks";
 import { useWebSocket } from "@/hooks/useWebSocket";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export default function Home() {
-    const [fetchEmotesResponse, setFetchEmotesResponse] = useState(new FetchEmotesResponse([]));
+    const { handledError, handleErrors } = useError();
     const isMockReady = useMock();
-    const { hasError, error, handleErrors } = useError();
     const { hasWebSocketError, webSocketError, webSocketOpen } = useWebSocket();
+
+    const { data, isError, error } = useQuery({
+        queryKey: ["emotes"],
+        queryFn: async () => {
+            return await new EmoteService().fetchEmotes("@fuga_fuga");
+        },
+        retry: 0
+    });
+
+    useEffect(() => {
+        if (isError && error) {
+            handleErrors(error);
+        }
+    }, [isError, error]);
 
     useEffect(() => {
         (async () => {
             try {
                 if (isMockReady) {
                     webSocketOpen();
-                    setFetchEmotesResponse(await new EmoteService().fetchEmotes("@fuga_fuga"));
                 }
             } catch (e) {
                 handleErrors(e);
@@ -32,8 +44,8 @@ export default function Home() {
         <>
             <PageHeader></PageHeader>
             {hasWebSocketError && <DisplayErrorMessage error={webSocketError}></DisplayErrorMessage>}
-            {hasError && <DisplayErrorMessage error={error}></DisplayErrorMessage>}
-            <WordlessEmotes emotes={fetchEmotesResponse.emotes}></WordlessEmotes>
+            {isError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
+            {data && <WordlessEmotes emotes={data.emotes}></WordlessEmotes>}
         </>
     );
 }

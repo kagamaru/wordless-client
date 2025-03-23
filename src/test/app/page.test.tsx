@@ -2,6 +2,7 @@ import Home from "@/app/page";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "./vitest.setup";
+import { ProviderTemplate } from "@/components/template";
 
 vitestSetup();
 
@@ -110,10 +111,18 @@ afterEach(() => {
     cleanup();
 });
 
+const rendering = (): void => {
+    render(
+        <ProviderTemplate>
+            <Home />
+        </ProviderTemplate>
+    );
+};
+
 describe("初期表示時", () => {
     describe("正常系", () => {
         test("エモートをサーバから受け取った数表示する", async () => {
-            render(<Home />);
+            rendering();
 
             await waitFor(() => {
                 expect(screen.getAllByRole("listitem").length).toBe(3);
@@ -121,7 +130,7 @@ describe("初期表示時", () => {
         });
 
         test("WebSocket API サーバとの接続を確立する", async () => {
-            render(<Home />);
+            rendering();
 
             await waitFor(() => {
                 expect(mockWebSocketOpen).toHaveBeenCalledTimes(1);
@@ -129,7 +138,7 @@ describe("初期表示時", () => {
         });
 
         test("投稿者の名前を表示する", async () => {
-            render(<Home />);
+            rendering();
 
             await waitFor(() => {
                 expect(screen.getByText("A")).toBeTruthy();
@@ -139,7 +148,7 @@ describe("初期表示時", () => {
         });
 
         test("投稿者のアカウント名を表示する", async () => {
-            render(<Home />);
+            rendering();
 
             await waitFor(() => {
                 expect(screen.getByText("@a")).toBeTruthy();
@@ -149,7 +158,7 @@ describe("初期表示時", () => {
         });
 
         test("投稿日時を表示する", async () => {
-            render(<Home />);
+            rendering();
 
             await waitFor(() => {
                 expect(screen.getByText("2025-01-01 18:00:00")).toBeTruthy();
@@ -159,7 +168,7 @@ describe("初期表示時", () => {
         });
 
         test("絵文字を表示する", async () => {
-            render(<Home />);
+            rendering();
 
             await waitFor(() => {
                 expect(screen.getAllByLabelText(":snake:").length).toBe(4);
@@ -169,7 +178,7 @@ describe("初期表示時", () => {
         });
 
         test("投稿者のプロフィール画像を表示する", async () => {
-            render(<Home />);
+            rendering();
 
             await waitFor(() => {
                 expect(screen.getByAltText("AProfileImage")).toBeTruthy();
@@ -180,7 +189,7 @@ describe("初期表示時", () => {
 
         describe("リアクションボタンを表示する時", () => {
             test("リアクションの件数が99件以下の時、そのまま件数を表示する", async () => {
-                render(<Home />);
+                rendering();
 
                 await waitFor(() => {
                     expect(
@@ -190,7 +199,7 @@ describe("初期表示時", () => {
             });
 
             test("リアクションの件数が99件異常の時、99+を表示する", async () => {
-                render(<Home />);
+                rendering();
 
                 await waitFor(() => {
                     expect(
@@ -200,7 +209,7 @@ describe("初期表示時", () => {
             });
 
             test("リアクションがないとき、何も表示しない", async () => {
-                render(<Home />);
+                rendering();
 
                 await waitFor(() => {
                     // NOTE: プラスボタンがあるため個数は1になる
@@ -221,7 +230,7 @@ describe("初期表示時", () => {
                 }
             });
 
-            render(<Home />);
+            rendering();
 
             await waitFor(() => {
                 expect(within(screen.getByRole("alert")).getByText("Error : WSK-99")).toBeTruthy();
@@ -243,7 +252,7 @@ describe("初期表示時", () => {
                 )
             );
 
-            render(<Home />);
+            rendering();
 
             await waitFor(() => {
                 const alertComponent = screen.getByRole("alert");

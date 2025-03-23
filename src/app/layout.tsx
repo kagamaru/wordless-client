@@ -2,8 +2,7 @@ import "@/layouts/globals.css";
 import "@/layouts/font.css";
 import "@/layouts/spacing.css";
 import type { Metadata } from "next";
-import AuthProviderTemplate from "@/components/template/AuthProviderTemplate";
-import { ConfigProvider } from "antd";
+import { ProviderTemplate } from "@/components/template";
 
 export const metadata: Metadata = {
     title: "Wordless",
@@ -19,17 +18,7 @@ export default function RootLayout({
         <html lang="ja">
             <body>
                 <main>
-                    <AuthProviderTemplate>
-                        <ConfigProvider
-                            theme={{
-                                token: {
-                                    colorPrimary: "#7829cc"
-                                }
-                            }}
-                        >
-                            {children}
-                        </ConfigProvider>
-                    </AuthProviderTemplate>
+                    <ProviderTemplate>{children}</ProviderTemplate>
                 </main>
             </body>
         </html>

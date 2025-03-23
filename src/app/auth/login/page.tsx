@@ -3,6 +3,7 @@
 import { AuthService } from "@/api";
 import { EmailAddressInput, LoginButton, PasswordInput, ResetPasswordLink, SignupButton } from "@/components/atoms";
 import { useIsMobile } from "@/hooks";
+import { useMutation } from "@tanstack/react-query";
 import { Card, Form, Tabs } from "antd";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -13,8 +14,11 @@ export default function LoginSignup() {
     const [activeTab, setActiveTab] = useState("login");
     const isMobile = useIsMobile();
     const router = useRouter();
-
     const authService = new AuthService();
+    const loginMutation = useMutation({
+        mutationFn: authService.signin,
+        retry: 0
+    });
 
     const onLoginClick = async () => {
         try {
@@ -25,7 +29,7 @@ export default function LoginSignup() {
             return;
         }
 
-        await authService.signin(form.getFieldValue("emailAddress"), form.getFieldValue("password"));
+        loginMutation.mutate({ email: form.getFieldValue("emailAddress"), password: form.getFieldValue("password") });
         router.push("/");
     };
 
