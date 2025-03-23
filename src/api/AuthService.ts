@@ -11,7 +11,7 @@ const client = new CognitoIdentityProviderClient({
 });
 
 export class AuthService {
-    public signin = async (signinInfo: {
+    public signin = async (credentials: {
         email: string;
         password: string;
     }): Promise<AuthenticationResultType | undefined> => {
@@ -20,8 +20,8 @@ export class AuthService {
                 AuthFlow: "USER_PASSWORD_AUTH",
                 ClientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ?? "",
                 AuthParameters: {
-                    USERNAME: signinInfo.email,
-                    PASSWORD: signinInfo.password
+                    USERNAME: credentials.email,
+                    PASSWORD: credentials.password
                 }
             });
 
