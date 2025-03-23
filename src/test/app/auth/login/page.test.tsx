@@ -1,5 +1,5 @@
 import LoginSignup from "@/app/auth/login/page";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "../../vitest.setup";
@@ -146,7 +146,7 @@ describe("ログインボタン押下時", () => {
 
         test("「Eメールを入力してください」を表示する", async () => {
             await waitFor(() => {
-                expect(screen.getByRole("alert").innerHTML).toMatch("Eメールを入力してください");
+                expect(within(screen.getByRole("alert")).getByText("Eメールを入力してください")).toBeTruthy();
             });
         });
 
@@ -175,7 +175,7 @@ describe("ログインボタン押下時", () => {
 
         test("「有効なEメールを入力してください」を表示する", async () => {
             await waitFor(() => {
-                expect(screen.getByRole("alert").innerHTML).toMatch("有効なEメールを入力してください");
+                expect(within(screen.getByRole("alert")).getByText("有効なEメールを入力してください")).toBeTruthy();
             });
         });
 
@@ -206,7 +206,7 @@ describe("ログインボタン押下時", () => {
 
         test("「パスワードを入力してください」を表示する", async () => {
             await waitFor(() => {
-                expect(screen.getByRole("alert").innerHTML).toMatch("パスワードを入力してください");
+                expect(within(screen.getByRole("alert")).getByText("パスワードを入力してください")).toBeTruthy();
             });
         });
 
@@ -238,7 +238,9 @@ describe("ログインボタン押下時", () => {
 
         test("「パスワードは7文字以上で入力してください」を表示する", async () => {
             await waitFor(() => {
-                expect(screen.getByRole("alert").innerHTML).toMatch("パスワードは7文字以上で入力してください");
+                expect(
+                    within(screen.getByRole("alert")).getByText("パスワードは7文字以上で入力してください")
+                ).toBeTruthy();
             });
         });
 
@@ -270,7 +272,9 @@ describe("ログインボタン押下時", () => {
 
         test("「パスワードには数字を含める必要があります」を表示する", async () => {
             await waitFor(() => {
-                expect(screen.getByRole("alert").innerHTML).toMatch("パスワードには数字を含める必要があります");
+                expect(
+                    within(screen.getByRole("alert")).getByText("パスワードには数字を含める必要があります")
+                ).toBeTruthy();
             });
         });
 
@@ -290,6 +294,21 @@ describe("ログインボタン押下時", () => {
                 expect(screen.queryByRole("alert")).toBeNull();
             });
         });
+    });
+
+    test("ログインAPIでエラーが返却された時、エラーメッセージを表示する", async () => {
+        mockSignin.mockRejectedValue({
+            name: "NotAuthorizedException",
+            message: "Incorrect username or password."
+        });
+        await user.type(screen.getByRole("textbox", { name: "Eメール" }), "incorrect@gmail.com");
+        await user.type(screen.getByLabelText("パスワード"), "incorrect01");
+
+        await user.click(screen.getByRole("button", { name: "ログイン" }));
+
+        const alertComponent = screen.getByRole("alert");
+        expect(within(alertComponent).getByText("Error : AUN-01")).toBeTruthy();
+        expect(within(alertComponent).getByText("認証できませんでした。IDとパスワードをご確認ください。")).toBeTruthy();
     });
 });
 
