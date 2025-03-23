@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export const useError = () => {
     const [hasError, setHasError] = useState(false);
-    const [error, setError] = useState<{
+    const [handledError, setHandledError] = useState<{
         errorCode: ErrorCode | undefined;
         errorMessage: string;
     }>({
@@ -24,7 +24,7 @@ export const useError = () => {
         }
 
         setHasError(true);
-        setError({ errorCode, errorMessage: getErrorMessage(errorCode) });
+        setHandledError({ errorCode, errorMessage: getErrorMessage(errorCode) });
     };
 
     const getErrorMessage = (errorCode: ErrorCode): string => {
@@ -37,7 +37,7 @@ export const useError = () => {
 
     return {
         hasError,
-        error,
+        handledError,
         handleErrors,
         getErrorMessage
     };
