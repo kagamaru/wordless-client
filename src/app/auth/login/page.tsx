@@ -1,8 +1,15 @@
 "use client";
 
 import { AuthService } from "@/api";
-import { EmailAddressInput, LoginButton, PasswordInput, ResetPasswordLink, SignupButton } from "@/components/atoms";
-import { useIsMobile } from "@/hooks";
+import {
+    DisplayErrorMessage,
+    EmailAddressInput,
+    LoginButton,
+    PasswordInput,
+    ResetPasswordLink,
+    SignupButton
+} from "@/components/atoms";
+import { useError, useIsMobile } from "@/hooks";
 import { useMutation } from "@tanstack/react-query";
 import { Card, Form, Tabs } from "antd";
 import { useRouter } from "next/navigation";
@@ -12,6 +19,7 @@ import { css } from "ss/css";
 export default function LoginSignup() {
     const [form] = Form.useForm();
     const [activeTab, setActiveTab] = useState("login");
+    const { handledError, handleErrors } = useError();
     const isMobile = useIsMobile();
     const router = useRouter();
     const authService = new AuthService();
@@ -29,8 +37,15 @@ export default function LoginSignup() {
             return;
         }
 
-        loginMutation.mutate({ email: form.getFieldValue("emailAddress"), password: form.getFieldValue("password") });
-        router.push("/");
+        try {
+            await loginMutation.mutateAsync({
+                email: form.getFieldValue("emailAddress"),
+                password: form.getFieldValue("password")
+            });
+            router.push("/");
+        } catch {
+            handleErrors(new Error(JSON.stringify({ error: "AUN-01" })));
+        }
     };
 
     // TODO: 後続で実装する
@@ -43,8 +58,15 @@ export default function LoginSignup() {
     //     // await authService.signup(email, password);
     // };
 
+    const alertDescriptionBlock = css({
+        textAlign: "left"
+    });
+
     const loginTab = (
         <>
+            <div className={alertDescriptionBlock}>
+                {loginMutation.isError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
+            </div>
             <Form form={form} onFinish={onLoginClick}>
                 <EmailAddressInput />
                 <PasswordInput />
