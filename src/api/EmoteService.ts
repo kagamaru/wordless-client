@@ -11,7 +11,16 @@ export class EmoteService {
                 userId,
                 numberOfCompletedAcquisitionsCompleted: defaultAcquisitions
             });
-            const response = await restApiRequest<FetchEmotesResponse>(restApiUrl + `emotes/?${params}`);
+            const response = await restApiRequest<FetchEmotesResponse>(
+                restApiUrl + `emotes/?${params}`,
+                "GET",
+                undefined,
+                {
+                    headers: {
+                        credentials: "include"
+                    }
+                }
+            );
             return response;
         } catch (error) {
             throw error;
