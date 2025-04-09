@@ -1,4 +1,4 @@
-import { WebSocketService } from "@/api";
+import { WebSocketService } from "@/app/api";
 import { useError, useMock } from "@/hooks";
 import { useState } from "react";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthService } from "@/api";
+import { AuthService } from "@/app/api";
 import {
     DisplayErrorMessage,
     EmailAddressInput,

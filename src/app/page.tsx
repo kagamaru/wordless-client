@@ -1,6 +1,6 @@
 "use client";
 
-import { EmoteService } from "@/api";
+import { EmoteService } from "@/app/api";
 import { DisplayErrorMessage } from "@/components/atoms";
 import { PageHeader } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
