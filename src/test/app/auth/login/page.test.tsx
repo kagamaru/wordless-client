@@ -23,7 +23,7 @@ const mockSignin = vi.fn(() => {
     };
 });
 
-vi.mock("@/api/AuthService", () => ({
+vi.mock("@/app/api/AuthService", () => ({
     AuthService: class {
         signin = mockSignin;
     }

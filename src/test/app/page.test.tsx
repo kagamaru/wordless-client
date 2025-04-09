@@ -82,7 +82,7 @@ const mockFetchEmotes = vi.fn(() => {
         ]
     });
 });
-vi.mock("@/api/EmoteService", () => ({
+vi.mock("@/app/api/EmoteService", () => ({
     EmoteService: class {
         fetchEmotes = mockFetchEmotes;
     }
