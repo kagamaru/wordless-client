@@ -17,6 +17,8 @@ export const useError = () => {
 
         if (error instanceof DOMException && error.name === "AbortError") {
             errorCode = "ABT-01";
+        } else if (error instanceof Error && error.message === "Failed to fetch") {
+            return;
         } else if (error instanceof Error) {
             errorCode = JSON.parse(error.message)?.error ?? "ERR-01";
         } else {
