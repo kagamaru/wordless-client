@@ -105,11 +105,22 @@ vi.mock("@/hooks/useWebSocket", () => ({
 beforeEach(() => {
     vi.clearAllMocks();
     vi.resetAllMocks();
+    vi.spyOn(globalThis.localStorage, "getItem").mockImplementation((key: string) => {
+        if (key === "IdToken") return "mocked_id_token";
+        return null;
+    });
 });
 
 afterEach(() => {
     cleanup();
 });
+
+const mockedUseRouter = vi.fn();
+vi.mock("next/navigation", () => ({
+    useRouter: () => ({
+        push: mockedUseRouter
+    })
+}));
 
 const rendering = (): void => {
     render(
