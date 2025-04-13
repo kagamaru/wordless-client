@@ -38,10 +38,15 @@ export default function LoginSignup() {
         }
 
         try {
-            await loginMutation.mutateAsync({
+            const loginResult = await loginMutation.mutateAsync({
                 email: form.getFieldValue("emailAddress"),
                 password: form.getFieldValue("password")
             });
+
+            if (loginResult) {
+                localStorage.setItem("IdToken", loginResult.IdToken ?? "");
+            }
+
             router.push("/");
         } catch {
             handleErrors(new Error(JSON.stringify({ error: "AUN-01" })));

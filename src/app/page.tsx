@@ -17,7 +17,7 @@ export default function Home() {
     const { data, isError, error } = useQuery({
         queryKey: ["emotes"],
         queryFn: async () => {
-            return await new EmoteService().fetchEmotes("@fuga_fuga");
+            return await new EmoteService().fetchEmotes("@fuga_fuga", localStorage.getItem("IdToken") ?? "");
         },
         retry: 0
     });
