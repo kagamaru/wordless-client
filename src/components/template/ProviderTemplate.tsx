@@ -30,7 +30,7 @@ export function ProviderTemplate({
         };
 
         fetchToken();
-    }, []);
+    }, [router]);
 
     return (
         <>
