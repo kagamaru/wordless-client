@@ -25,7 +25,7 @@ export async function fetchWithTimeout<T>(url: string, options?: RestApiRequestO
 
 export async function postWithTimeout<T>(
     url: string,
-    data: object,
+    data: Record<string, unknown>,
     options?: RestApiRequestOption,
     timeout = 5000
 ): Promise<T> {
@@ -56,5 +56,4 @@ export async function postWithTimeout<T>(
 
 type RestApiRequestOption = {
     headers?: Record<string, string>;
-    credentials?: "include";
 };
