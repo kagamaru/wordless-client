@@ -22,14 +22,17 @@ export function ProviderTemplate({
     const router = useRouter();
 
     useEffect(() => {
-        const fetchToken = async () => {
-            const token = localStorage.getItem("AccessToken");
+        const fetchToken = (): string | void => {
+            const token = localStorage.getItem("IdToken");
             if (!token) {
                 router.push("/auth/login");
+                return;
             }
+            return token;
         };
 
-        fetchToken();
+        const token = fetchToken();
+        setToken(token ?? "");
     }, [router]);
 
     return (
