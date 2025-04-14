@@ -25,7 +25,7 @@ export async function fetchWithTimeout<T>(url: string, options?: RestApiRequestO
 
 export async function postWithTimeout<T>(
     url: string,
-    data: Object,
+    data: object,
     options?: RestApiRequestOption,
     timeout = 5000
 ): Promise<T> {
