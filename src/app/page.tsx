@@ -26,7 +26,7 @@ export default function Home() {
         if (isError && error) {
             handleErrors(error);
         }
-    }, [isError, error, handleErrors]);
+    }, [isError, error]);
 
     useEffect(() => {
         (async () => {
@@ -38,7 +38,7 @@ export default function Home() {
                 handleErrors(e);
             }
         })();
-    }, [isMockReady, webSocketOpen, handleErrors]);
+    }, [isMockReady]);
 
     return (
         <>
