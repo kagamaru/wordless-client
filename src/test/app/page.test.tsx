@@ -102,25 +102,27 @@ vi.mock("@/hooks/useWebSocket", () => ({
     useWebSocket: () => mockUseWebSocket()
 }));
 
-beforeEach(() => {
-    vi.clearAllMocks();
-    vi.resetAllMocks();
-    vi.spyOn(globalThis.localStorage, "getItem").mockImplementation((key: string) => {
-        if (key === "IdToken") return "mocked_id_token";
-        return null;
-    });
-});
-
-afterEach(() => {
-    cleanup();
-});
-
 const mockedUseRouter = vi.fn();
 vi.mock("next/navigation", () => ({
     useRouter: () => ({
         push: mockedUseRouter
     })
 }));
+
+const mockedLocalStorageGetItem = vi.spyOn(globalThis.localStorage, "getItem");
+mockedLocalStorageGetItem.mockImplementation((key: string) => {
+    if (key === "IdToken") return "mocked_id_token";
+    return null;
+});
+
+beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetAllMocks();
+});
+
+afterEach(() => {
+    cleanup();
+});
 
 const rendering = (): void => {
     render(
