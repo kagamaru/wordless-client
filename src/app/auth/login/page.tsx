@@ -45,6 +45,8 @@ export default function LoginSignup() {
 
             if (loginResult) {
                 localStorage.setItem("IdToken", loginResult.IdToken ?? "");
+            } else {
+                throw new Error();
             }
 
             router.push("/");
