@@ -1,39 +1,43 @@
 "use client";
 
 import { ConfigProvider } from "antd";
-import { useMemo, useRef } from "react";
-import { AuthProvider } from "react-oidc-context";
+import { createContext, Dispatch, SetStateAction, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+
+interface AuthContextType {
+    token: string;
+    setToken: Dispatch<SetStateAction<string>>;
+}
+
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function ProviderTemplate({
     children
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const authority = process.env.NEXT_PUBLIC_AUTHORITY ?? undefined;
-    const cognitoClientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ?? undefined;
-    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_URI ?? undefined;
     const queryClient = new QueryClient();
-    const providerTemplateRef = useRef<React.ReactElement | undefined>(undefined);
+    const [token, setToken] = useState("");
+    const router = useRouter();
 
-    if (!authority || !cognitoClientId || !redirectUri) {
-        throw new Error("必要な環境変数が設定されていません");
-    }
+    useEffect(() => {
+        const fetchToken = (): string | void => {
+            const token = localStorage.getItem("IdToken");
+            if (!token) {
+                router.push("/auth/login");
+                return;
+            }
+            return token;
+        };
 
-    const cognitoAuthConfig = useMemo(
-        () => ({
-            authority: authority,
-            client_id: cognitoClientId,
-            redirect_uri: redirectUri,
-            response_type: "code",
-            scope: "email openid phone"
-        }),
-        [authority, cognitoClientId, redirectUri]
-    );
+        const token = fetchToken();
+        setToken(token ?? "");
+    }, [router]);
 
-    if (!providerTemplateRef.current) {
-        providerTemplateRef.current = (
-            <AuthProvider {...cognitoAuthConfig}>
+    return (
+        <>
+            <AuthContext.Provider value={{ token, setToken }}>
                 <QueryClientProvider client={queryClient}>
                     <ConfigProvider
                         theme={{
@@ -45,10 +49,7 @@ export function ProviderTemplate({
                         {children}
                     </ConfigProvider>
                 </QueryClientProvider>
-                ;
-            </AuthProvider>
-        );
-    }
-
-    return providerTemplateRef.current;
+            </AuthContext.Provider>
+        </>
+    );
 }

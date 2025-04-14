@@ -82,7 +82,7 @@ const mockFetchEmotes = vi.fn(() => {
         ]
     });
 });
-vi.mock("@/api/EmoteService", () => ({
+vi.mock("@/app/api/EmoteService", () => ({
     EmoteService: class {
         fetchEmotes = mockFetchEmotes;
     }
@@ -101,6 +101,19 @@ const mockUseWebSocket = vi.fn(() => {
 vi.mock("@/hooks/useWebSocket", () => ({
     useWebSocket: () => mockUseWebSocket()
 }));
+
+const mockedUseRouter = vi.fn();
+vi.mock("next/navigation", () => ({
+    useRouter: () => ({
+        push: mockedUseRouter
+    })
+}));
+
+const mockedLocalStorageGetItem = vi.spyOn(globalThis.localStorage, "getItem");
+mockedLocalStorageGetItem.mockImplementation((key: string) => {
+    if (key === "IdToken") return "mocked_id_token";
+    return null;
+});
 
 beforeEach(() => {
     vi.clearAllMocks();

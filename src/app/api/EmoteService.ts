@@ -1,17 +1,22 @@
 import { FetchEmotesResponse } from "@/class";
-import { restApiRequest } from "./restApiUtility/restApiRequest";
+import { fetchWithTimeout } from "./restApiUtility/restApiRequest";
 
 const restApiUrl = process.env.NEXT_PUBLIC_REST_API_URL ?? "";
 const defaultAcquisitions = "10";
 
 export class EmoteService {
-    public fetchEmotes = async (userId: string): Promise<FetchEmotesResponse> => {
+    public fetchEmotes = async (userId: string, token: string): Promise<FetchEmotesResponse> => {
         try {
             const params = new URLSearchParams({
                 userId,
                 numberOfCompletedAcquisitionsCompleted: defaultAcquisitions
             });
-            const response = await restApiRequest<FetchEmotesResponse>(restApiUrl + `emotes/?${params}`);
+            const response = await fetchWithTimeout<FetchEmotesResponse>(restApiUrl + `emotes/?${params}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
             return response;
         } catch (error) {
             throw error;
