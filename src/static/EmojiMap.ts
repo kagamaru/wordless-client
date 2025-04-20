@@ -1,25 +1,20 @@
 import { Emoji } from "@/@types/Emoji";
+import { travelPlacesEmojis } from "./emojis/TravelPlacesEmojis";
+import { animalsNatureEmojis } from "./emojis/AnimalsNatureEmojis";
+import { foodDrinkEmojis } from "./emojis/FoodDrinkEmojis";
+import { peopleBodyEmojis } from "./emojis/PeopleBodyEmojis";
+import { smileysEmotionEmojis } from "./emojis/SmileysEmotionEmojis";
+import { objectsEmojis } from "./emojis/ObjectsEmojis";
+import { activitiesEmojis } from "./emojis/ActivitiesEmojis";
+import { flagsEmojis } from "./emojis/FlagsEmojis";
 
 export const emojiMap: Array<Emoji> = [
-    {
-        emojiType: 1,
-        emojiId: ":snake:",
-        emojiJapaneseId: "蛇"
-    },
-    {
-        emojiType: 1,
-        emojiId: ":smile:",
-        emojiJapaneseId: "笑った顔"
-    },
-    {
-        emojiType: 1,
-        emojiId: ":bear:",
-        emojiJapaneseId: "クマ"
-    },
-    {
-        emojiType: 2,
-        emojiId: ":party_parrot:",
-        emojiJapaneseId: "パーティーパロット",
-        url: "https://partyparrotasaservice.vercel.app/api/partyparrot"
-    }
+    ...smileysEmotionEmojis,
+    ...peopleBodyEmojis,
+    ...animalsNatureEmojis,
+    ...foodDrinkEmojis,
+    ...travelPlacesEmojis,
+    ...objectsEmojis,
+    ...activitiesEmojis,
+    ...flagsEmojis
 ];
