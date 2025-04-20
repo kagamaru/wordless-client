@@ -29,16 +29,12 @@ export default function Home() {
     }, [isError, error]);
 
     useEffect(() => {
-        (async () => {
-            try {
-                if (isMockReady) {
-                    webSocketOpen();
-                }
-            } catch (e) {
-                handleErrors(e);
-            }
-        })();
-    }, [isMockReady]);
+        try {
+            webSocketOpen();
+        } catch (e) {
+            handleErrors(e);
+        }
+    }, [webSocketOpen]);
 
     return (
         <>
