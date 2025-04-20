@@ -44,9 +44,11 @@ export const emoteHandlers = [
                     emoteReactionEmojis: [
                         {
                             emojiId: ":party_parrot:",
-                            numberOfReactions: 100
+                            numberOfReactions: 100,
+                            reactedUserIds: ["@fuga_fuga"]
                         }
-                    ]
+                    ],
+                    totalNumberOfReactions: 100
                 },
                 {
                     sequenceNumber: 9,
@@ -73,9 +75,16 @@ export const emoteHandlers = [
                     emoteReactionEmojis: [
                         {
                             emojiId: ":snake:",
-                            numberOfReactions: 200
+                            numberOfReactions: 200,
+                            reactedUserIds: ["@hoge_hoge"]
+                        },
+                        {
+                            emojiId: ":party_parrot:",
+                            numberOfReactions: 100,
+                            reactedUserIds: ["@fuga_fuga"]
                         }
-                    ]
+                    ],
+                    totalNumberOfReactions: 300
                 },
                 {
                     sequenceNumber: 8,
@@ -93,9 +102,11 @@ export const emoteHandlers = [
                     emoteReactionEmojis: [
                         {
                             emojiId: ":smile:",
-                            numberOfReactions: 8
+                            numberOfReactions: 8,
+                            reactedUserIds: ["@apple"]
                         }
-                    ]
+                    ],
+                    totalNumberOfReactions: 8
                 },
                 {
                     sequenceNumber: 7,
@@ -113,9 +124,11 @@ export const emoteHandlers = [
                     emoteReactionEmojis: [
                         {
                             emojiId: ":smile:",
-                            numberOfReactions: 7
+                            numberOfReactions: 7,
+                            reactedUserIds: ["@apple"]
                         }
-                    ]
+                    ],
+                    totalNumberOfReactions: 7
                 },
                 {
                     sequenceNumber: 6,
@@ -133,9 +146,11 @@ export const emoteHandlers = [
                     emoteReactionEmojis: [
                         {
                             emojiId: ":smile:",
-                            numberOfReactions: 6
+                            numberOfReactions: 6,
+                            reactedUserIds: ["@apple"]
                         }
-                    ]
+                    ],
+                    totalNumberOfReactions: 6
                 },
                 {
                     sequenceNumber: 5,
@@ -153,9 +168,11 @@ export const emoteHandlers = [
                     emoteReactionEmojis: [
                         {
                             emojiId: ":smile:",
-                            numberOfReactions: 5
+                            numberOfReactions: 5,
+                            reactedUserIds: ["@banana"]
                         }
-                    ]
+                    ],
+                    totalNumberOfReactions: 5
                 },
                 {
                     sequenceNumber: 4,
@@ -173,9 +190,11 @@ export const emoteHandlers = [
                     emoteReactionEmojis: [
                         {
                             emojiId: ":smile:",
-                            numberOfReactions: 4
+                            numberOfReactions: 4,
+                            reactedUserIds: ["@banana"]
                         }
-                    ]
+                    ],
+                    totalNumberOfReactions: 4
                 },
                 {
                     sequenceNumber: 3,
@@ -193,9 +212,11 @@ export const emoteHandlers = [
                     emoteReactionEmojis: [
                         {
                             emojiId: ":smile:",
-                            numberOfReactions: 3
+                            numberOfReactions: 3,
+                            reactedUserIds: ["@banana"]
                         }
-                    ]
+                    ],
+                    totalNumberOfReactions: 3
                 },
                 {
                     sequenceNumber: 2,
@@ -213,9 +234,11 @@ export const emoteHandlers = [
                     emoteReactionEmojis: [
                         {
                             emojiId: ":smile:",
-                            numberOfReactions: 2
+                            numberOfReactions: 2,
+                            reactedUserIds: ["@banana"]
                         }
-                    ]
+                    ],
+                    totalNumberOfReactions: 2
                 },
                 {
                     sequenceNumber: 1,
@@ -233,7 +256,8 @@ export const emoteHandlers = [
                         }
                     ],
                     userAvatarUrl: s3Url + "/userProfile/orange.png",
-                    emoteReactionEmojis: []
+                    emoteReactionEmojis: [],
+                    totalNumberOfReactions: 0
                 }
             ]
         });

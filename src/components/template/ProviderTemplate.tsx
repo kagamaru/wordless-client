@@ -4,6 +4,7 @@ import { ConfigProvider } from "antd";
 import { createContext, Dispatch, SetStateAction, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useMock } from "@/hooks";
 
 interface AuthContextType {
     token: string;
@@ -20,6 +21,7 @@ export function ProviderTemplate({
     const queryClient = new QueryClient();
     const [token, setToken] = useState("");
     const router = useRouter();
+    const isMockReady = useMock();
 
     useEffect(() => {
         const fetchToken = (): string | void => {
@@ -36,20 +38,22 @@ export function ProviderTemplate({
     }, [router]);
 
     return (
-        <>
-            <AuthContext.Provider value={{ token, setToken }}>
-                <QueryClientProvider client={queryClient}>
-                    <ConfigProvider
-                        theme={{
-                            token: {
-                                colorPrimary: "#7829cc"
-                            }
-                        }}
-                    >
-                        {children}
-                    </ConfigProvider>
-                </QueryClientProvider>
-            </AuthContext.Provider>
-        </>
+        isMockReady && (
+            <>
+                <AuthContext.Provider value={{ token, setToken }}>
+                    <QueryClientProvider client={queryClient}>
+                        <ConfigProvider
+                            theme={{
+                                token: {
+                                    colorPrimary: "#7829cc"
+                                }
+                            }}
+                        >
+                            {children}
+                        </ConfigProvider>
+                    </QueryClientProvider>
+                </AuthContext.Provider>
+            </>
+        )
     );
 }
