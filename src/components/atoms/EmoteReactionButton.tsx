@@ -1,4 +1,4 @@
-import { EmojiType } from "@/@types/Emoji";
+import { EmojiCategory } from "@/@types/Emoji";
 import { EmoteReactionEmojiWithNumber } from "@/@types";
 import { emojiHelper } from "@/helpers";
 import { Button } from "antd";
@@ -28,7 +28,7 @@ export function EmoteReactionButton(props: Props) {
     const emoteReactionButton = () => {
         const returnedEmoji = emojiHelper(props.emoteReactionEmojiWithNumber.emojiId);
 
-        if (returnedEmoji.emojiType === EmojiType.Preset) {
+        if (returnedEmoji.emojiCategory === EmojiCategory.Preset) {
             return <span>{emoji.get(props.emoteReactionEmojiWithNumber.emojiId)}</span>;
         } else {
             return <Image src={returnedEmoji.url ?? ""} alt="" width={24} height={24} />;

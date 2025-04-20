@@ -1,5 +1,5 @@
 import { EmojiIdObject, EmoteEmojis } from "@/@types";
-import { EmojiType } from "@/@types/Emoji";
+import { EmojiCategory } from "@/@types/Emoji";
 import { Row } from "antd";
 import Image from "next/image";
 import * as emojiManipulator from "node-emoji";
@@ -25,7 +25,7 @@ export function DisplayEmoteEmoji(props: Props) {
     const displayEmojis = props.emojis.map((emoji: EmojiIdObject, index: number) => {
         const returnedEmoji = emojiHelper(emoji.emojiId);
 
-        if (returnedEmoji.emojiType === EmojiType.Preset) {
+        if (returnedEmoji.emojiCategory === EmojiCategory.Preset) {
             return (
                 <div key={index} aria-label={emoji.emojiId}>
                     {emojiManipulator.get(returnedEmoji.emojiId)}

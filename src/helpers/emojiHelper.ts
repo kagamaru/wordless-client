@@ -1,4 +1,4 @@
-import { Emoji, EmojiType } from "@/@types/Emoji";
+import { Emoji, EmojiCategory, EmojiType } from "@/@types/Emoji";
 import { EmojiString } from "@/@types/EmojiString";
 import { emojiMap } from "@/static/EmojiMap";
 
@@ -7,9 +7,10 @@ import { emojiMap } from "@/static/EmojiMap";
 export function emojiHelper(emojiId: EmojiString): Emoji {
     return (
         emojiMap.find((emoji) => emoji.emojiId === emojiId) ?? {
-            emojiType: EmojiType.Preset,
+            emojiCategory: EmojiCategory.Preset,
+            emojiType: EmojiType.AnimalsNature,
             emojiId: ":bug:",
-            emojiJapaneseId: "虫"
+            emojiJapaneseId: "虫、動物、昆虫"
         }
     );
 }
