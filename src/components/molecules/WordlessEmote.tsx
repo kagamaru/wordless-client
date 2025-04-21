@@ -2,7 +2,14 @@
 
 import { EmoteReactionEmojiWithNumber } from "@/@types";
 import { Emote } from "@/class";
-import { DisplayEmoteEmoji, EmoteAvatar, EmoteReactionButton, PlusButton, WordlessDivider } from "@/components/atoms";
+import {
+    DisplayEmoteEmoji,
+    EmoteAvatar,
+    EmoteReactionButton,
+    PlusButton,
+    TotalNumberOfReactionsButton,
+    WordlessDivider
+} from "@/components/atoms";
 import { useIsMobile } from "@/hooks";
 import { Col, ConfigProvider, Row } from "antd";
 import dayjs from "dayjs";
@@ -102,6 +109,9 @@ export function WordlessEmote(props: Props) {
                         {emoteInfo()}
                         <WordlessDivider />
                         <DisplayEmoteEmoji emojis={emote.emoteEmojis}></DisplayEmoteEmoji>
+                        {emote.totalNumberOfReactions && (
+                            <TotalNumberOfReactionsButton totalNumberOfReactions={emote.totalNumberOfReactions} />
+                        )}
                         <Row className={"mb-3"}>
                             <Col span={isMobile ? 3 : 1}>
                                 {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
