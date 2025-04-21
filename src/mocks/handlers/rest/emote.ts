@@ -34,7 +34,7 @@ export const emoteHandlers = [
                             emojiId: ":bear:"
                         },
                         {
-                            emojiId: ":sad:"
+                            emojiId: ":monkey:"
                         },
                         {
                             emojiId: null
@@ -62,13 +62,13 @@ export const emoteHandlers = [
                             emojiId: ":snake:"
                         },
                         {
-                            emojiId: ":smile:"
+                            emojiId: ":dog:"
                         },
                         {
-                            emojiId: ":smile:"
+                            emojiId: ":dog:"
                         },
                         {
-                            emojiId: ":party_parrot:"
+                            emojiId: ":dog:"
                         }
                     ],
                     userAvatarUrl: s3Url + "/userProfile/hoge_hoge.png",
