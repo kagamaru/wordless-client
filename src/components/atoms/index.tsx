@@ -8,6 +8,7 @@ import { PasswordInput } from "@/components/atoms/PasswordInput";
 import { PlusButton } from "@/components/atoms/PlusButton";
 import { ResetPasswordLink } from "@/components/atoms/ResetPasswordLink";
 import { SignupButton } from "@/components/atoms/SignupButton";
+import { TotalNumberOfReactionsButton } from "@/components/atoms/TotalNumberOfReactionsButton";
 import { WordlessDivider } from "@/components/atoms/WordlessDivider";
 
 export {
@@ -21,5 +22,6 @@ export {
     PlusButton,
     ResetPasswordLink,
     SignupButton,
+    TotalNumberOfReactionsButton,
     WordlessDivider
 };

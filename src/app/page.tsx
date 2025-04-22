@@ -4,14 +4,13 @@ import { EmoteService } from "@/app/api";
 import { DisplayErrorMessage } from "@/components/atoms";
 import { PageHeader } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
-import { useError, useMock } from "@/hooks";
+import { useError } from "@/hooks";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export default function Home() {
     const { handledError, handleErrors } = useError();
-    const isMockReady = useMock();
     const { hasWebSocketError, webSocketError, webSocketOpen } = useWebSocket();
 
     const { data, isError, error } = useQuery({
@@ -29,16 +28,12 @@ export default function Home() {
     }, [isError, error]);
 
     useEffect(() => {
-        (async () => {
-            try {
-                if (isMockReady) {
-                    webSocketOpen();
-                }
-            } catch (e) {
-                handleErrors(e);
-            }
-        })();
-    }, [isMockReady]);
+        try {
+            webSocketOpen();
+        } catch (e) {
+            handleErrors(e);
+        }
+    }, [webSocketOpen]);
 
     return (
         <>

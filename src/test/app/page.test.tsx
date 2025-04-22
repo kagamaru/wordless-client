@@ -34,9 +34,11 @@ const mockFetchEmotes = vi.fn(() => {
                 emoteReactionEmojis: [
                     {
                         emojiId: ":party_parrot:",
-                        numberOfReactions: 10
+                        numberOfReactions: 10,
+                        reactedUserIds: ["@hoge_hoge"]
                     }
-                ]
+                ],
+                totalNumberOfReactions: 10
             },
             {
                 sequenceNumber: 9,
@@ -60,9 +62,11 @@ const mockFetchEmotes = vi.fn(() => {
                 emoteReactionEmojis: [
                     {
                         emojiId: ":snake:",
-                        numberOfReactions: 200
+                        numberOfReactions: 200,
+                        reactedUserIds: ["@fuga_fuga"]
                     }
-                ]
+                ],
+                totalNumberOfReactions: 200
             },
             {
                 sequenceNumber: 8,
@@ -200,6 +204,26 @@ describe("初期表示時", () => {
             });
         });
 
+        describe("リアクションの総件数を表示する時", () => {
+            test("リアクションの総件数が0件の時、何も表示しない", async () => {
+                rendering();
+
+                // NOTE: ＋ボタンが1つだけ表示される
+                await waitFor(() => {
+                    expect(within(screen.getByRole("listitem", { name: "c" })).getAllByRole("button").length).toBe(1);
+                });
+            });
+
+            test("リアクションの総件数が1件以上の時、リアクション総件数ボタンを表示する", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(screen.getByRole("button", { name: "10 Reactions" })).toBeTruthy();
+                    expect(screen.getByRole("button", { name: "200 Reactions" })).toBeTruthy();
+                });
+            });
+        });
+
         describe("リアクションボタンを表示する時", () => {
             test("リアクションの件数が99件以下の時、そのまま件数を表示する", async () => {
                 rendering();
@@ -211,7 +235,7 @@ describe("初期表示時", () => {
                 });
             });
 
-            test("リアクションの件数が99件異常の時、99+を表示する", async () => {
+            test("リアクションの件数が99件以上の時、99+を表示する", async () => {
                 rendering();
 
                 await waitFor(() => {

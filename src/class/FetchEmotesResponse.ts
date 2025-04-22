@@ -20,6 +20,7 @@ export class Emote {
     public readonly emoteEmojis: EmoteEmojis;
     public readonly userAvatarUrl: string;
     public readonly emoteReactionEmojis: Array<EmoteReactionEmojiWithNumber>;
+    public readonly totalNumberOfReactions: number;
 
     constructor(args: {
         sequenceNumber: number;
@@ -31,6 +32,7 @@ export class Emote {
         emoteEmojis: EmoteEmojis;
         userAvatarUrl: string;
         emoteReactionEmojis: Array<EmoteReactionEmojiWithNumber>;
+        totalNumberOfReactions: number;
     }) {
         this.sequenceNumber = args.sequenceNumber;
         this.emoteId = args.emoteId;
@@ -41,5 +43,6 @@ export class Emote {
         this.emoteEmojis = args.emoteEmojis;
         this.userAvatarUrl = args.userAvatarUrl;
         this.emoteReactionEmojis = args.emoteReactionEmojis;
+        this.totalNumberOfReactions = args.totalNumberOfReactions;
     }
 }
