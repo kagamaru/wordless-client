@@ -1,6 +1,7 @@
 import { DisplayEmoteEmoji } from "@/components/atoms/DisplayEmoteEmoji";
 import { DisplayErrorMessage } from "@/components/atoms/DisplayErrorMessage";
 import { EmailAddressInput } from "@/components/atoms/EmailAddressInput";
+import { Emoji } from "@/components/atoms/Emoji";
 import { EmoteAvatar } from "@/components/atoms/EmoteAvatar";
 import { EmoteReactionButton } from "@/components/atoms/EmoteReactionButton";
 import { LoginButton } from "@/components/atoms/LoginButton";
@@ -15,6 +16,7 @@ export {
     DisplayEmoteEmoji,
     DisplayErrorMessage,
     EmailAddressInput,
+    Emoji,
     EmoteAvatar,
     EmoteReactionButton,
     LoginButton,
