@@ -2,16 +2,43 @@ import React from "react";
 import { Drawer, Avatar, Button, Row, ConfigProvider, Typography } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { css } from "ss/css";
-import { User } from "@/@types";
+import { EmojiString, EmoteReactionEmojiWithNumber, User } from "@/@types";
+import { useQuery } from "@tanstack/react-query";
+import { UserService } from "@/app/api";
+import { Emoji } from "../atoms";
 
 type Props = {
     isOpen: boolean;
-    users: User[];
+    emoteReactionEmojis: EmoteReactionEmojiWithNumber[];
     setIsOpen: (isOpen: boolean) => void;
 };
 
-export function ReactionUsersDrawer({ isOpen, users, setIsOpen }: Props) {
+type EmojiUsersMap = Map<EmojiString, User[]>;
+
+export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpen }: Props) {
     const closeDrawer = () => setIsOpen(false);
+
+    // TODO: エラーハンドリングを追加する
+    const { data: emojiUsersMap } = useQuery({
+        queryKey: ["users", emoteReactionEmojis],
+        queryFn: async (): Promise<EmojiUsersMap | undefined> => {
+            if (emoteReactionEmojis.length === 0) return undefined;
+
+            const userService = new UserService();
+            const token = localStorage.getItem("IdToken") ?? "";
+
+            const result: EmojiUsersMap = new Map();
+
+            for (const emoji of emoteReactionEmojis) {
+                const userPromises = emoji.reactedUserIds.map((userId) => userService.findUser(userId, token));
+                result.set(emoji.emojiId, await Promise.all(userPromises));
+            }
+
+            return result;
+        },
+        retry: 0,
+        enabled: emoteReactionEmojis.length > 0
+    });
 
     const drawerTitle = css({
         fontSize: 16,
@@ -37,12 +64,20 @@ export function ReactionUsersDrawer({ isOpen, users, setIsOpen }: Props) {
 
     const userNameText = css({
         fontSize: 14,
-        fontWeight: 600
+        fontWeight: 600,
+        textOverflow: "ellipsis",
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        maxWidth: "150px"
     });
 
     const userIdText = css({
         fontSize: 12,
-        color: "gray"
+        color: "gray",
+        textOverflow: "ellipsis",
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        maxWidth: "150px"
     });
 
     return (
@@ -58,15 +93,22 @@ export function ReactionUsersDrawer({ isOpen, users, setIsOpen }: Props) {
                     </div>
                 </Row>
                 <div style={{ padding: 16 }}>
-                    {users.length > 0 ? (
-                        users.map((user) => (
-                            <a key={user.userId} href={`/users/${user.userId}`} className={userItem}>
-                                <Avatar src={user.userAvatarUrl} size={48} />
-                                <div className={userInfoText}>
-                                    <div className={userNameText}>{user.userName}</div>
-                                    <div className={userIdText}>{user.userId}</div>
+                    {emojiUsersMap && emojiUsersMap.size > 0 ? (
+                        Array.from(emojiUsersMap).map(([emojiId, users]) => (
+                            <div key={emojiId}>
+                                <Emoji emojiId={emojiId} size={24} />
+                                <div style={{ padding: 8 }}>
+                                    {users.map((user) => (
+                                        <a key={user.userId} href={`/users/${user.userId}`} className={userItem}>
+                                            <Avatar src={user.userAvatarUrl} size={48} />
+                                            <div className={userInfoText}>
+                                                <div className={userNameText}>{user.userName}</div>
+                                                <div className={userIdText}>{user.userId}</div>
+                                            </div>
+                                        </a>
+                                    ))}
                                 </div>
-                            </a>
+                            </div>
                         ))
                     ) : (
                         <Typography.Text>リアクションしたユーザーはいません。</Typography.Text>

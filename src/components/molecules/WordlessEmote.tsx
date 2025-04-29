@@ -105,24 +105,6 @@ export function WordlessEmote(props: Props) {
         setIsOpen(true);
     };
 
-    const users: User[] = [
-        {
-            userId: "@user1",
-            userName: "User One",
-            userAvatarUrl: "https://randomuser.me/api/portraits/men/1.jpg"
-        },
-        {
-            userId: "@user2",
-            userName: "User Two",
-            userAvatarUrl: "https://randomuser.me/api/portraits/women/2.jpg"
-        },
-        {
-            userId: "@user3",
-            userName: "User Three",
-            userAvatarUrl: "https://randomuser.me/api/portraits/men/3.jpg"
-        }
-    ];
-
     return (
         <>
             <div className={wordlessEmote}>
@@ -157,7 +139,11 @@ export function WordlessEmote(props: Props) {
                     </Col>
                 </Row>
                 <WordlessDivider />
-                <ReactionUsersDrawer isOpen={isOpen} users={users} setIsOpen={setIsOpen} />
+                <ReactionUsersDrawer
+                    isOpen={isOpen}
+                    emoteReactionEmojis={emote.emoteReactionEmojis}
+                    setIsOpen={setIsOpen}
+                />
             </div>
         </>
     );
