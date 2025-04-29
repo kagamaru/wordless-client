@@ -1,3 +1,4 @@
+import { CloseButton } from "@/components/atoms/CloseButton";
 import { DisplayEmoteEmoji } from "@/components/atoms/DisplayEmoteEmoji";
 import { DisplayErrorMessage } from "@/components/atoms/DisplayErrorMessage";
 import { EmailAddressInput } from "@/components/atoms/EmailAddressInput";
@@ -13,6 +14,7 @@ import { TotalNumberOfReactionsButton } from "@/components/atoms/TotalNumberOfRe
 import { WordlessDivider } from "@/components/atoms/WordlessDivider";
 
 export {
+    CloseButton,
     DisplayEmoteEmoji,
     DisplayErrorMessage,
     EmailAddressInput,
