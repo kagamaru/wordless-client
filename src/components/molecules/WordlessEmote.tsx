@@ -1,6 +1,6 @@
 "use client";
 
-import { EmoteReactionEmojiWithNumber } from "@/@types";
+import { EmoteReactionEmojiWithNumber, User } from "@/@types";
 import { Emote } from "@/class";
 import {
     DisplayEmoteEmoji,
@@ -14,6 +14,8 @@ import { useIsMobile } from "@/hooks";
 import { Col, ConfigProvider, Row } from "antd";
 import dayjs from "dayjs";
 import { css } from "ss/css";
+import { useState } from "react";
+import { ReactionUsersDrawer } from "./ReactionUsersDrawer";
 
 type Props = {
     emote: Emote;
@@ -23,6 +25,7 @@ dayjs.locale("ja");
 
 export function WordlessEmote(props: Props) {
     const isMobile = useIsMobile();
+    const [isOpen, setIsOpen] = useState(false);
 
     const wordlessEmote = css({
         paddingLeft: { base: "16px", lg: "140px" },
@@ -98,6 +101,28 @@ export function WordlessEmote(props: Props) {
         }
     };
 
+    const totalNumberOfReactionsButtonClick = () => {
+        setIsOpen(true);
+    };
+
+    const users: User[] = [
+        {
+            userId: "@user1",
+            userName: "User One",
+            userAvatarUrl: "https://randomuser.me/api/portraits/men/1.jpg"
+        },
+        {
+            userId: "@user2",
+            userName: "User Two",
+            userAvatarUrl: "https://randomuser.me/api/portraits/women/2.jpg"
+        },
+        {
+            userId: "@user3",
+            userName: "User Three",
+            userAvatarUrl: "https://randomuser.me/api/portraits/men/3.jpg"
+        }
+    ];
+
     return (
         <>
             <div className={wordlessEmote}>
@@ -109,9 +134,15 @@ export function WordlessEmote(props: Props) {
                         {emoteInfo()}
                         <WordlessDivider />
                         <DisplayEmoteEmoji emojis={emote.emoteEmojis}></DisplayEmoteEmoji>
-                        {emote.totalNumberOfReactions && (
-                            <TotalNumberOfReactionsButton totalNumberOfReactions={emote.totalNumberOfReactions} />
-                        )}
+                        {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
+                        <ConfigProvider wave={{ disabled: true }}>
+                            {emote.totalNumberOfReactions > 0 && (
+                                <TotalNumberOfReactionsButton
+                                    totalNumberOfReactions={emote.totalNumberOfReactions}
+                                    onClick={totalNumberOfReactionsButtonClick}
+                                />
+                            )}
+                        </ConfigProvider>
                         <Row className={"mb-3"}>
                             <Col span={isMobile ? 3 : 1}>
                                 {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
@@ -126,6 +157,7 @@ export function WordlessEmote(props: Props) {
                     </Col>
                 </Row>
                 <WordlessDivider />
+                <ReactionUsersDrawer isOpen={isOpen} users={users} setIsOpen={setIsOpen} />
             </div>
         </>
     );
