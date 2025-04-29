@@ -1,11 +1,11 @@
-import React from "react";
-import { Drawer, Avatar, Button, Row, ConfigProvider, Typography } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import React, { useEffect } from "react";
+import { Drawer, Avatar, Row, Typography } from "antd";
 import { css } from "ss/css";
 import { EmojiString, EmoteReactionEmojiWithNumber, User } from "@/@types";
 import { useQuery } from "@tanstack/react-query";
 import { UserService } from "@/app/api";
-import { Emoji } from "../atoms";
+import { CloseButton, DisplayErrorMessage, Emoji } from "@/components/atoms";
+import { useError } from "@/hooks";
 
 type Props = {
     isOpen: boolean;
@@ -16,10 +16,14 @@ type Props = {
 type EmojiUsersMap = Map<EmojiString, User[]>;
 
 export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpen }: Props) {
+    const { handledError, handleErrors } = useError();
     const closeDrawer = () => setIsOpen(false);
 
-    // TODO: エラーハンドリングを追加する
-    const { data: emojiUsersMap } = useQuery({
+    const {
+        data: emojiUsersMap,
+        isError,
+        error
+    } = useQuery({
         queryKey: ["users", emoteReactionEmojis],
         queryFn: async (): Promise<EmojiUsersMap | undefined> => {
             if (emoteReactionEmojis.length === 0) return undefined;
@@ -40,14 +44,15 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpen }: 
         enabled: emoteReactionEmojis.length > 0
     });
 
+    useEffect(() => {
+        if (isError && error) {
+            handleErrors(error);
+        }
+    }, [isError, error]);
+
     const drawerTitle = css({
         fontSize: 16,
         fontWeight: 600
-    });
-
-    const closeButton = css({
-        display: "flex",
-        justifyContent: "flex-end"
     });
 
     const userItem = css({
@@ -89,34 +94,42 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpen }: 
     return (
         <>
             <Drawer placement="right" closable={false} onClose={closeDrawer} open={isOpen} width={300}>
-                <Row justify="space-between" align="middle">
-                    <div className={drawerTitle}>リアクションしたユーザー</div>
-                    <div className={closeButton}>
-                        {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
-                        <ConfigProvider wave={{ disabled: true }}>
-                            <Button icon={<CloseOutlined />} onClick={closeDrawer} />
-                        </ConfigProvider>
-                    </div>
-                </Row>
-                <div style={{ padding: 16 }}>
-                    {emojiUsersMap && emojiUsersMap.size > 0 ? (
-                        Array.from(emojiUsersMap).map(([emojiId, users]) => (
-                            <div key={emojiId}>
-                                <Emoji emojiId={emojiId} size={24} />
-                                <div style={{ padding: 8 }}>
-                                    {users.map((user) => (
-                                        <a key={user.userId} href={`/users/${user.userId}`} className={userItem}>
-                                            <Avatar src={user.userAvatarUrl} size={48} />
-                                            <UserInfo userName={user.userName} userId={user.userId} />
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <Typography.Text>リアクションしたユーザーはいません。</Typography.Text>
-                    )}
-                </div>
+                {isError ? (
+                    <>
+                        <CloseButton onClick={closeDrawer} />
+                        <DisplayErrorMessage error={handledError} />
+                    </>
+                ) : (
+                    <>
+                        <Row justify="space-between" align="middle">
+                            <div className={drawerTitle}>リアクションしたユーザー</div>
+                            <CloseButton onClick={closeDrawer} />
+                        </Row>
+                        <div style={{ padding: 16 }}>
+                            {emojiUsersMap && emojiUsersMap.size > 0 ? (
+                                Array.from(emojiUsersMap).map(([emojiId, users]) => (
+                                    <div key={emojiId}>
+                                        <Emoji emojiId={emojiId} size={24} />
+                                        <div style={{ padding: 8 }}>
+                                            {users.map((user) => (
+                                                <a
+                                                    key={user.userId}
+                                                    href={`/users/${user.userId}`}
+                                                    className={userItem}
+                                                >
+                                                    <Avatar src={user.userAvatarUrl} size={48} />
+                                                    <UserInfo userName={user.userName} userId={user.userId} />
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <Typography.Text>リアクションしたユーザーはいません。</Typography.Text>
+                            )}
+                        </div>
+                    </>
+                )}
             </Drawer>
         </>
     );
