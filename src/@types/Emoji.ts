@@ -23,5 +23,7 @@ export enum EmojiType {
     "Activities" = 6,
     "Objects" = 7,
     "Symbols" = 8,
-    "Flags" = 9
+    "Flags" = 9,
+    "Custom" = 10,
+    "Memes" = 11
 }

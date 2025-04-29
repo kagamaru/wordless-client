@@ -62,23 +62,29 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpen }: 
         color: "black"
     });
 
-    const userNameText = css({
-        fontSize: 14,
-        fontWeight: 600,
+    const textWrapper = css({
         textOverflow: "ellipsis",
         overflow: "hidden",
         whiteSpace: "nowrap",
         maxWidth: "150px"
     });
 
+    const userNameText = css({
+        fontSize: 14,
+        fontWeight: 600
+    });
+
     const userIdText = css({
         fontSize: 12,
-        color: "gray",
-        textOverflow: "ellipsis",
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-        maxWidth: "150px"
+        color: "gray"
     });
+
+    const UserInfo = ({ userName, userId }: { userName: string; userId: string }) => (
+        <div className={userInfoText}>
+            <div className={`${textWrapper} ${userNameText}`}>{userName}</div>
+            <div className={`${textWrapper} ${userIdText}`}>{userId}</div>
+        </div>
+    );
 
     return (
         <>
@@ -101,10 +107,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpen }: 
                                     {users.map((user) => (
                                         <a key={user.userId} href={`/users/${user.userId}`} className={userItem}>
                                             <Avatar src={user.userAvatarUrl} size={48} />
-                                            <div className={userInfoText}>
-                                                <div className={userNameText}>{user.userName}</div>
-                                                <div className={userIdText}>{user.userId}</div>
-                                            </div>
+                                            <UserInfo userName={user.userName} userId={user.userId} />
                                         </a>
                                     ))}
                                 </div>

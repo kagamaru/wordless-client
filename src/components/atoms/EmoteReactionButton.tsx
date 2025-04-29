@@ -1,9 +1,5 @@
-import { EmojiCategory } from "@/@types/Emoji";
 import { EmoteReactionEmojiWithNumber } from "@/@types";
-import { emojiHelper } from "@/helpers";
 import { Button } from "antd";
-import Image from "next/image";
-import * as emoji from "node-emoji";
 import { css } from "ss/css";
 import { Emoji } from "./Emoji";
 

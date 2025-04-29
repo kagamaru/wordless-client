@@ -1,6 +1,6 @@
 "use client";
 
-import { EmoteReactionEmojiWithNumber, User } from "@/@types";
+import { EmoteReactionEmojiWithNumber } from "@/@types";
 import { Emote } from "@/class";
 import {
     DisplayEmoteEmoji,
