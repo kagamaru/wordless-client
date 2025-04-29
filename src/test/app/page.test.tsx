@@ -342,42 +342,69 @@ describe("初期表示時", () => {
 });
 
 describe("リアクション総数ボタンをクリックした時", () => {
-    beforeEach(async () => {
-        rendering();
+    describe("正常系", () => {
+        beforeEach(async () => {
+            rendering();
 
-        await user.click(await screen.findByRole("button", { name: "10 Reactions" }));
-    });
-
-    test("リアクションユーザー一覧のモーダルが表示される", async () => {
-        await waitFor(() => {
-            expect(screen.getByRole("dialog")).toBeTruthy();
+            await user.click(await screen.findByRole("button", { name: "10 Reactions" }));
         });
-    });
 
-    describe("リアクションユーザー一覧モーダル表示時", () => {
-        test("リアクションしたユーザーの名前が表示される", async () => {
+        test("リアクションユーザー一覧のモーダルが表示される", async () => {
             await waitFor(() => {
-                expect(within(screen.getByRole("link", { name: "User A @a" })).getByText("User A")).toBeTruthy();
-                expect(within(screen.getByRole("link", { name: "User B @b" })).getByText("User B")).toBeTruthy();
-                expect(within(screen.getByRole("link", { name: "User C @c" })).getByText("User C")).toBeTruthy();
+                expect(screen.getByRole("dialog")).toBeTruthy();
             });
         });
 
-        test("リアクションしたユーザーのユーザーIDが表示される", async () => {
-            await waitFor(() => {
-                expect(within(screen.getByRole("link", { name: "User A @a" })).getByText("@a")).toBeTruthy();
-                expect(within(screen.getByRole("link", { name: "User B @b" })).getByText("@b")).toBeTruthy();
-                expect(within(screen.getByRole("link", { name: "User C @c" })).getByText("@c")).toBeTruthy();
+        describe("リアクションユーザー一覧モーダル表示時", () => {
+            test("リアクションしたユーザーの名前が表示される", async () => {
+                await waitFor(() => {
+                    expect(within(screen.getByRole("link", { name: "User A @a" })).getByText("User A")).toBeTruthy();
+                    expect(within(screen.getByRole("link", { name: "User B @b" })).getByText("User B")).toBeTruthy();
+                    expect(within(screen.getByRole("link", { name: "User C @c" })).getByText("User C")).toBeTruthy();
+                });
+            });
+
+            test("リアクションしたユーザーのユーザーIDが表示される", async () => {
+                await waitFor(() => {
+                    expect(within(screen.getByRole("link", { name: "User A @a" })).getByText("@a")).toBeTruthy();
+                    expect(within(screen.getByRole("link", { name: "User B @b" })).getByText("@b")).toBeTruthy();
+                    expect(within(screen.getByRole("link", { name: "User C @c" })).getByText("@c")).toBeTruthy();
+                });
+            });
+
+            // TODO; リアクションしたユーザーのプロフィール画像クリック時、画面遷移するテストを作成する
+
+            test("×ボタンクリック時、モーダルが閉じられる", async () => {
+                await user.click(await screen.findByRole("button", { name: "close" }));
+
+                await waitFor(() => {
+                    expect(screen.queryByRole("dialog")).toBeFalsy();
+                });
             });
         });
+    });
 
-        // TODO; リアクションしたユーザーのプロフィール画像クリック時、画面遷移するテストを作成する
+    describe("異常系", () => {
+        test.for([
+            ["USE-01", "不正なリクエストです。もう一度やり直してください。"],
+            ["USE-02", "不正なリクエストです。もう一度やり直してください。"],
+            ["USE-03", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+        ])("サーバから%sエラーが返却された時、エラーメッセージ「%s」を表示する", async ([errorCode, errorMessage]) => {
+            mockFindUser.mockRejectedValue(
+                new Error(
+                    JSON.stringify({
+                        error: errorCode
+                    })
+                )
+            );
+            rendering();
 
-        test("×ボタンクリック時、モーダルが閉じられる", async () => {
-            await user.click(await screen.findByRole("button", { name: "close" }));
+            await user.click(await screen.findByRole("button", { name: "10 Reactions" }));
 
             await waitFor(() => {
-                expect(screen.queryByRole("dialog")).toBeFalsy();
+                const alertComponent = screen.getByRole("alert");
+                expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
             });
         });
     });
