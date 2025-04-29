@@ -1,10 +1,7 @@
-import { EmojiCategory } from "@/@types/Emoji";
 import { EmoteReactionEmojiWithNumber } from "@/@types";
-import { emojiHelper } from "@/helpers";
 import { Button } from "antd";
-import Image from "next/image";
-import * as emoji from "node-emoji";
 import { css } from "ss/css";
+import { Emoji } from "./Emoji";
 
 type Props = {
     emoteReactionEmojiWithNumber: EmoteReactionEmojiWithNumber;
@@ -25,16 +22,6 @@ export function EmoteReactionButton(props: Props) {
         fontWeight: "bold"
     });
 
-    const emoteReactionButton = () => {
-        const returnedEmoji = emojiHelper(props.emoteReactionEmojiWithNumber.emojiId);
-
-        if (returnedEmoji.emojiCategory === EmojiCategory.Preset) {
-            return <span>{emoji.get(props.emoteReactionEmojiWithNumber.emojiId)}</span>;
-        } else {
-            return <Image src={returnedEmoji.url ?? ""} alt="" width={24} height={24} />;
-        }
-    };
-
     const numberOfReactionsText = (numReactions: number) => {
         if (numReactions > 99) {
             return <span className={numberOfReactionsCSS}>99+</span>;
@@ -51,7 +38,7 @@ export function EmoteReactionButton(props: Props) {
                 className={emojiButton}
                 onClick={props.onClick}
             >
-                {emoteReactionButton()}
+                <Emoji emojiId={props.emoteReactionEmojiWithNumber.emojiId} size={24} />
                 {numberOfReactionsText(props.emoteReactionEmojiWithNumber.numberOfReactions)}
             </Button>
         </>
