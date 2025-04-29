@@ -1,3 +1,5 @@
+const { getComputedStyle } = window;
+
 export const vitestSetup = (): void => {
     window.matchMedia =
         window.matchMedia ||
@@ -12,4 +14,6 @@ export const vitestSetup = (): void => {
     window.addEventListener("submit", (e) => {
         e.preventDefault();
     });
+
+    window.getComputedStyle = (elt) => getComputedStyle(elt);
 };

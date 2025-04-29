@@ -1,10 +1,12 @@
 import Home from "@/app/page";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "./vitest.setup";
 import { ProviderTemplate } from "@/components/template";
 
 vitestSetup();
+const user = userEvent.setup();
 
 const mockFetchEmotes = vi.fn(() => {
     return Promise.resolve({
@@ -81,7 +83,8 @@ const mockFetchEmotes = vi.fn(() => {
                     }
                 ],
                 userAvatarUrl: "https://c.png",
-                emoteReactionEmojis: []
+                emoteReactionEmojis: [],
+                totalNumberOfReactions: 0
             }
         ]
     });
@@ -295,6 +298,54 @@ describe("初期表示時", () => {
                 const alertComponent = screen.getByRole("alert");
                 expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
                 expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+            });
+        });
+    });
+});
+
+describe("リアクション総数ボタンをクリックした時", () => {
+    beforeEach(async () => {
+        rendering();
+
+        await user.click(await screen.findByRole("button", { name: "10 Reactions" }));
+    });
+
+    test("リアクションユーザー一覧のモーダルが表示される", async () => {
+        await waitFor(() => {
+            expect(screen.getByRole("dialog")).toBeTruthy();
+        });
+    });
+
+    describe("リアクションユーザー一覧モーダル表示時", () => {
+        test("リアクションしたユーザーの名前が表示される", async () => {
+            await waitFor(() => {
+                expect(
+                    within(screen.getByRole("link", { name: "User One @user1" })).getByText("User One")
+                ).toBeTruthy();
+                expect(
+                    within(screen.getByRole("link", { name: "User Two @user2" })).getByText("User Two")
+                ).toBeTruthy();
+                expect(
+                    within(screen.getByRole("link", { name: "User Three @user3" })).getByText("User Three")
+                ).toBeTruthy();
+            });
+        });
+
+        test("リアクションしたユーザーのユーザーIDが表示される", async () => {
+            await waitFor(() => {
+                expect(within(screen.getByRole("link", { name: "User One @user1" })).getByText("@user1")).toBeTruthy();
+                expect(within(screen.getByRole("link", { name: "User Two @user2" })).getByText("@user2")).toBeTruthy();
+                expect(
+                    within(screen.getByRole("link", { name: "User Three @user3" })).getByText("@user3")
+                ).toBeTruthy();
+            });
+        });
+
+        test("×ボタンクリック時、モーダルが閉じられる", async () => {
+            await user.click(await screen.findByRole("button", { name: "close" }));
+
+            await waitFor(() => {
+                expect(screen.queryByRole("dialog")).toBeFalsy();
             });
         });
     });
