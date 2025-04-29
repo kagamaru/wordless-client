@@ -13,7 +13,7 @@ export function Emoji({ emojiId, size }: Props) {
     const returnedEmoji = emojiHelper(emojiId);
 
     if (returnedEmoji.emojiCategory === EmojiCategory.Preset) {
-        return <div>{emojiManipulator.get(returnedEmoji.emojiId)}</div>;
+        return <div aria-label={returnedEmoji.emojiId}>{emojiManipulator.get(returnedEmoji.emojiId)}</div>;
     } else {
         return <Image src={returnedEmoji.url ?? ""} alt={returnedEmoji.emojiJapaneseId} width={size} height={size} />;
     }
