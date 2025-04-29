@@ -20,16 +20,16 @@ const mockFetchEmotes = vi.fn(() => {
                 emoteReactionId: "reaction-a",
                 emoteEmojis: [
                     {
-                        emojiId: ":snake:"
+                        emojiId: ":panda:"
                     },
                     {
-                        emojiId: ":snake:"
+                        emojiId: ":panda:"
                     },
                     {
-                        emojiId: ":snake:"
+                        emojiId: ":panda:"
                     },
                     {
-                        emojiId: ":snake:"
+                        emojiId: ":panda:"
                     }
                 ],
                 userAvatarUrl: "https://a.png",
@@ -37,7 +37,12 @@ const mockFetchEmotes = vi.fn(() => {
                     {
                         emojiId: ":party_parrot:",
                         numberOfReactions: 10,
-                        reactedUserIds: ["@hoge_hoge"]
+                        reactedUserIds: ["@a", "@b"]
+                    },
+                    {
+                        emojiId: ":snake:",
+                        numberOfReactions: 2,
+                        reactedUserIds: ["@c"]
                     }
                 ],
                 totalNumberOfReactions: 10
@@ -51,13 +56,13 @@ const mockFetchEmotes = vi.fn(() => {
                 emoteReactionId: "reaction-b",
                 emoteEmojis: [
                     {
-                        emojiId: ":smile:"
+                        emojiId: ":smiling_face:"
                     },
                     {
-                        emojiId: ":smile:"
+                        emojiId: ":smiling_face:"
                     },
                     {
-                        emojiId: ":smile:"
+                        emojiId: ":smiling_face:"
                     }
                 ],
                 userAvatarUrl: "https://b.png",
@@ -65,7 +70,7 @@ const mockFetchEmotes = vi.fn(() => {
                     {
                         emojiId: ":snake:",
                         numberOfReactions: 200,
-                        reactedUserIds: ["@fuga_fuga"]
+                        reactedUserIds: ["@a"]
                     }
                 ],
                 totalNumberOfReactions: 200
@@ -89,9 +94,42 @@ const mockFetchEmotes = vi.fn(() => {
         ]
     });
 });
-vi.mock("@/app/api/EmoteService", () => ({
+
+const mockFindUser = vi.fn((userId: string) => {
+    switch (userId) {
+        case "@a":
+            return Promise.resolve({
+                userId: "@a",
+                userName: "User A",
+                userAvatarUrl: "https://user-a.png"
+            });
+        case "@b":
+            return Promise.resolve({
+                userId: "@b",
+                userName: "User B",
+                userAvatarUrl: "https://user-b.png"
+            });
+        case "@c":
+            return Promise.resolve({
+                userId: "@c",
+                userName: "User C",
+                userAvatarUrl: "https://user-c.png"
+            });
+        default:
+            return Promise.resolve({
+                userId: "@user1",
+                userName: "User One",
+                userAvatarUrl: "https://user1.png"
+            });
+    }
+});
+
+vi.mock("@/app/api", () => ({
     EmoteService: class {
         fetchEmotes = mockFetchEmotes;
+    },
+    UserService: class {
+        findUser = mockFindUser;
     }
 }));
 
@@ -191,8 +229,8 @@ describe("初期表示時", () => {
             rendering();
 
             await waitFor(() => {
-                expect(screen.getAllByLabelText(":snake:").length).toBe(4);
-                expect(screen.getAllByLabelText(":smile:").length).toBe(3);
+                expect(screen.getAllByLabelText(":panda:").length).toBe(4);
+                expect(screen.getAllByLabelText(":smiling_face:").length).toBe(3);
                 expect(screen.getAllByLabelText(":bear:").length).toBe(1);
             });
         });
@@ -319,27 +357,21 @@ describe("リアクション総数ボタンをクリックした時", () => {
     describe("リアクションユーザー一覧モーダル表示時", () => {
         test("リアクションしたユーザーの名前が表示される", async () => {
             await waitFor(() => {
-                expect(
-                    within(screen.getByRole("link", { name: "User One @user1" })).getByText("User One")
-                ).toBeTruthy();
-                expect(
-                    within(screen.getByRole("link", { name: "User Two @user2" })).getByText("User Two")
-                ).toBeTruthy();
-                expect(
-                    within(screen.getByRole("link", { name: "User Three @user3" })).getByText("User Three")
-                ).toBeTruthy();
+                expect(within(screen.getByRole("link", { name: "User A @a" })).getByText("User A")).toBeTruthy();
+                expect(within(screen.getByRole("link", { name: "User B @b" })).getByText("User B")).toBeTruthy();
+                expect(within(screen.getByRole("link", { name: "User C @c" })).getByText("User C")).toBeTruthy();
             });
         });
 
         test("リアクションしたユーザーのユーザーIDが表示される", async () => {
             await waitFor(() => {
-                expect(within(screen.getByRole("link", { name: "User One @user1" })).getByText("@user1")).toBeTruthy();
-                expect(within(screen.getByRole("link", { name: "User Two @user2" })).getByText("@user2")).toBeTruthy();
-                expect(
-                    within(screen.getByRole("link", { name: "User Three @user3" })).getByText("@user3")
-                ).toBeTruthy();
+                expect(within(screen.getByRole("link", { name: "User A @a" })).getByText("@a")).toBeTruthy();
+                expect(within(screen.getByRole("link", { name: "User B @b" })).getByText("@b")).toBeTruthy();
+                expect(within(screen.getByRole("link", { name: "User C @c" })).getByText("@c")).toBeTruthy();
             });
         });
+
+        // TODO; リアクションしたユーザーのプロフィール画像クリック時、画面遷移するテストを作成する
 
         test("×ボタンクリック時、モーダルが閉じられる", async () => {
             await user.click(await screen.findByRole("button", { name: "close" }));
