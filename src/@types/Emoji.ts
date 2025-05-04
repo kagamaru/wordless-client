@@ -1,6 +1,7 @@
 import { EmojiString } from "@/@types/EmojiString";
 
 export type Emoji = {
+    emojiChar?: string;
     emojiCategory: EmojiCategory;
     emojiType: EmojiType;
     emojiId: EmojiString;
