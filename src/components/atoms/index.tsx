@@ -1,4 +1,5 @@
 import { CloseButton } from "@/components/atoms/CloseButton";
+import { ImageEmojiButtonRow } from "@/components/atoms/ImageEmojiButtonRow";
 import { DisplayEmoteEmoji } from "@/components/atoms/DisplayEmoteEmoji";
 import { DisplayErrorMessage } from "@/components/atoms/DisplayErrorMessage";
 import { EmailAddressInput } from "@/components/atoms/EmailAddressInput";
@@ -17,6 +18,7 @@ import { WordlessDivider } from "@/components/atoms/WordlessDivider";
 
 export {
     CloseButton,
+    ImageEmojiButtonRow,
     DisplayEmoteEmoji,
     DisplayErrorMessage,
     EmailAddressInput,
