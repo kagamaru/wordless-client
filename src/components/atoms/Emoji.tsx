@@ -18,6 +18,14 @@ export function Emoji({ emojiId, size }: Props) {
             </div>
         );
     } else {
-        return <Image src={returnedEmoji.url ?? ""} alt={returnedEmoji.emojiJapaneseId} width={size} height={size} />;
+        return (
+            <Image
+                src={returnedEmoji.url ?? ""}
+                title={returnedEmoji.emojiJapaneseId}
+                alt={returnedEmoji.emojiJapaneseId}
+                width={size}
+                height={size}
+            />
+        );
     }
 }
