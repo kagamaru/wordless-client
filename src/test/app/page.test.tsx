@@ -1,8 +1,8 @@
-import Home from "@/app/page";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "./vitest.setup";
+import Home from "@/app/page";
 import { ProviderTemplate } from "@/components/template";
 
 vitestSetup();
@@ -405,6 +405,101 @@ describe("リアクション総数ボタンをクリックした時", () => {
                 const alertComponent = screen.getByRole("alert");
                 expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
                 expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+            });
+        });
+    });
+});
+
+describe("リアクション追加ボタンをクリックした時", () => {
+    describe("正常系", () => {
+        beforeEach(async () => {
+            rendering();
+
+            await user.click(
+                within(await screen.findByRole("listitem", { name: "c" })).getByRole("button", { name: "+" })
+            );
+        });
+
+        test("リアクション追加ボタンをクリックした時、リアクション追加モーダルが表示される", async () => {
+            await waitFor(() => {
+                expect(screen.getByRole("dialog")).toBeTruthy();
+            });
+        });
+
+        describe("リアクション追加モーダル表示時", () => {
+            test("「プリセット」の絵文字が表示される", async () => {
+                await waitFor(() => {
+                    expect(screen.getByRole("tab", { name: "プリセット", selected: true })).toBeTruthy();
+                });
+            });
+
+            test("「カスタム」タブ選択時、「カスタム」タブが選択される", async () => {
+                await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("tab", { name: "カスタム", selected: true })).toBeTruthy();
+                });
+            });
+
+            test("「ミーム」タブ選択時、「ミーム」タブが選択される", async () => {
+                await user.click(screen.getByRole("tab", { name: "ミーム", selected: false }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("tab", { name: "ミーム", selected: true })).toBeTruthy();
+                });
+            });
+
+            test("絵文字検索テキストボックス入力時に英語入力時、検索結果が表示される", async () => {
+                await user.type(screen.getByPlaceholderText("絵文字を検索..."), "dolphin");
+
+                await waitFor(() => {
+                    expect(screen.getByText("🐬")).toBeTruthy();
+                    // NOTE: 「dolphin」以外の絵文字が表示されていないことを検証
+                    expect(screen.queryByText("🦁")).toBeFalsy();
+                });
+            });
+
+            test("絵文字検索テキストボックス入力時に日本語入力時、検索結果が表示される", async () => {
+                await user.type(screen.getByPlaceholderText("絵文字を検索..."), "ライオン");
+
+                await waitFor(() => {
+                    expect(screen.getByText("🦁")).toBeTruthy();
+                    // NOTE: 「ライオン」以外の絵文字が表示されていないことを検証
+                    expect(screen.queryByText("🐬")).toBeFalsy();
+                });
+            });
+
+            describe("絵文字検索テキストボックスの×ボタン押下時", () => {
+                test("絵文字検索テキストボックスの内容がクリアされる", async () => {
+                    await user.type(screen.getByPlaceholderText("絵文字を検索..."), "snake");
+                    await user.click(screen.getByRole("button", { name: "close-circle" }));
+
+                    await waitFor(() => {
+                        expect(screen.getByPlaceholderText("絵文字を検索...").innerText).toBeFalsy();
+                    });
+                });
+
+                // test("検索結果がクリアされる", async () => {
+                //     await user.click(screen.getByRole("button", { name: "close" }));
+
+                //     await waitFor(() => {
+                //         expect(screen.getByRole("textbox", { name: "絵文字検索" })).toHaveValue("");
+                //     });
+                // });
+            });
+
+            describe("リアクション追加ボタンをクリックした時", () => {
+                test.todo("リアクションが追加される");
+
+                test.todo("リアクション追加ボタンをクリックした時、リアクション追加モーダーが閉じられる");
+            });
+
+            test("×ボタンクリック時、モーダルが閉じられる", async () => {
+                await user.click(await screen.findByRole("button", { name: "close" }));
+
+                await waitFor(() => {
+                    expect(screen.queryByRole("dialog")).toBeFalsy();
+                });
             });
         });
     });
