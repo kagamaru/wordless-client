@@ -16,6 +16,7 @@ import dayjs from "dayjs";
 import { css } from "ss/css";
 import { useState } from "react";
 import { ReactionUsersDrawer } from "./ReactionUsersDrawer";
+import EmojiDialog from "./EmojiDialog";
 
 type Props = {
     emote: Emote;
@@ -25,7 +26,8 @@ dayjs.locale("ja");
 
 export function WordlessEmote(props: Props) {
     const isMobile = useIsMobile();
-    const [isOpen, setIsOpen] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isEmojiDialogOpen, setIsEmojiDialogOpen] = useState(false);
 
     const wordlessEmote = css({
         paddingLeft: { base: "16px", lg: "140px" },
@@ -64,15 +66,18 @@ export function WordlessEmote(props: Props) {
 
     const { emote } = props;
 
-    const emoteEmojiButtons = () =>
-        props.emote?.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
-            <EmoteReactionButton
-                key={emoteReactionEmoji.emojiId}
-                emoteReactionEmojiWithNumber={emoteReactionEmoji}
-                emoteReactionId={props.emote.emoteReactionId}
-                onClick={() => {}}
-            ></EmoteReactionButton>
-        ));
+    const emoteEmojiButtons = () => (
+        <Row>
+            {props.emote?.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
+                <EmoteReactionButton
+                    key={emoteReactionEmoji.emojiId}
+                    emoteReactionEmojiWithNumber={emoteReactionEmoji}
+                    emoteReactionId={props.emote.emoteReactionId}
+                    onClick={() => {}}
+                ></EmoteReactionButton>
+            ))}
+        </Row>
+    );
 
     const emoteInfo = () => {
         const emoteDatetimeFormatStyle = "YYYY-MM-DD HH:mm:ss";
@@ -102,7 +107,7 @@ export function WordlessEmote(props: Props) {
     };
 
     const totalNumberOfReactionsButtonClick = () => {
-        setIsOpen(true);
+        setIsDrawerOpen(true);
     };
 
     return (
@@ -129,7 +134,7 @@ export function WordlessEmote(props: Props) {
                             <Col span={isMobile ? 3 : 1}>
                                 {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
                                 <ConfigProvider wave={{ disabled: true }}>
-                                    <PlusButton onClick={() => {}}></PlusButton>
+                                    <PlusButton onClick={() => setIsEmojiDialogOpen(true)}></PlusButton>
                                 </ConfigProvider>
                             </Col>
                             <Col span={isMobile ? 21 : 23}>
@@ -140,10 +145,11 @@ export function WordlessEmote(props: Props) {
                 </Row>
                 <WordlessDivider />
                 <ReactionUsersDrawer
-                    isOpen={isOpen}
+                    isOpen={isDrawerOpen}
                     emoteReactionEmojis={emote.emoteReactionEmojis}
-                    setIsOpen={setIsOpen}
+                    setIsOpen={setIsDrawerOpen}
                 />
+                <EmojiDialog isOpen={isEmojiDialogOpen} setIsOpen={setIsEmojiDialogOpen} />
             </div>
         </>
     );
