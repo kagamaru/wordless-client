@@ -2,14 +2,14 @@ import { Emoji } from "@/@types/Emoji";
 import { travelPlacesEmojis } from "./emojis/TravelPlacesEmojis";
 import { animalsNatureEmojis } from "./emojis/AnimalsNatureEmojis";
 import { foodDrinkEmojis } from "./emojis/FoodDrinkEmojis";
-import { memes } from "./emojis/Memes";
 import { peopleBodyEmojis } from "./emojis/PeopleBodyEmojis";
 import { smileysEmotionEmojis } from "./emojis/SmileysEmotionEmojis";
 import { objectsEmojis } from "./emojis/ObjectsEmojis";
 import { activitiesEmojis } from "./emojis/ActivitiesEmojis";
 import { flagsEmojis } from "./emojis/FlagsEmojis";
+import { symbolsEmojis } from "./emojis/SymbolsEmoji";
 
-export const emojiMap: Array<Emoji> = [
+export const presetEmojiMap: Array<Emoji> = [
     ...smileysEmotionEmojis,
     ...peopleBodyEmojis,
     ...animalsNatureEmojis,
@@ -18,5 +18,9 @@ export const emojiMap: Array<Emoji> = [
     ...objectsEmojis,
     ...activitiesEmojis,
     ...flagsEmojis,
-    ...memes
+    ...symbolsEmojis
 ];
+
+export const customEmojiMap: Array<Emoji> = [];
+
+export const memeEmojiMap: Array<Emoji> = [];
