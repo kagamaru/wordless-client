@@ -1,0 +1,178 @@
+import React, { useState } from "react";
+import { Input, Modal, Tabs } from "antd";
+import { css } from "ss/css";
+import { CloseButton, EmojiButtonRow } from "@/components/atoms";
+import { EmojiButtonBlocksByType } from "@/components/molecules";
+import { presetEmojiMap, customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
+import { EmojiType, Emoji as EmojiInterface } from "@/@types/Emoji";
+import { useIsMobile } from "@/hooks";
+
+type Props = {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+};
+
+export default function EmojiDialog({ isOpen, setIsOpen }: Props) {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [activeTab, setActiveTab] = useState("preset");
+    const isMobile = useIsMobile();
+
+    // TODO: クリックイベント実装
+    const presetEmojis = () => {
+        const smileysEmotion: Array<EmojiInterface> = [];
+        const peopleBody: Array<EmojiInterface> = [];
+        const animalsNature: Array<EmojiInterface> = [];
+        const foodDrink: Array<EmojiInterface> = [];
+        const travelPlaces: Array<EmojiInterface> = [];
+        const activities: Array<EmojiInterface> = [];
+        const objects: Array<EmojiInterface> = [];
+        const symbols: Array<EmojiInterface> = [];
+        const flags: Array<EmojiInterface> = [];
+
+        presetEmojiMap.map((emoji) => {
+            switch (emoji.emojiType) {
+                case EmojiType.SmileysEmotion:
+                    smileysEmotion.push(emoji);
+                    break;
+                case EmojiType.PeopleBody:
+                    peopleBody.push(emoji);
+                    break;
+                case EmojiType.AnimalsNature:
+                    animalsNature.push(emoji);
+                    break;
+                case EmojiType.FoodDrink:
+                    foodDrink.push(emoji);
+                    break;
+                case EmojiType.TravelPlaces:
+                    travelPlaces.push(emoji);
+                    break;
+                case EmojiType.Activities:
+                    activities.push(emoji);
+                    break;
+                case EmojiType.Objects:
+                    objects.push(emoji);
+                    break;
+                case EmojiType.Symbols:
+                    symbols.push(emoji);
+                    break;
+                case EmojiType.Flags:
+                    flags.push(emoji);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        return (
+            [
+                [smileysEmotion, "笑顔と感情"],
+                [peopleBody, "人と身体"],
+                [animalsNature, "動物と自然"],
+                [foodDrink, "食べ物と飲み物"],
+                [travelPlaces, "旅行と場所"],
+                [activities, "活動"],
+                [objects, "オブジェクト"],
+                [symbols, "記号"],
+                [flags, "国旗"]
+            ] as Array<[Array<EmojiInterface>, string]>
+        ).map(([emojis, label]) => {
+            return (
+                <div key={label}>
+                    <EmojiButtonBlocksByType typeName={label} emojis={emojis} onClick={() => {}} />
+                </div>
+            );
+        });
+    };
+
+    const onEmojiSearch = (searchTerm: string): EmojiInterface[] => {
+        let searchResults: Array<EmojiInterface> = [];
+        const isJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/.test(searchTerm);
+
+        switch (activeTab) {
+            case "preset":
+                searchResults = presetEmojiMap.filter((emoji) =>
+                    isJapanese ? emoji.emojiJapaneseId?.includes(searchTerm) : emoji.emojiId.includes(searchTerm)
+                );
+                break;
+            case "custom":
+                searchResults = customEmojiMap.filter((emoji) =>
+                    isJapanese ? emoji.emojiJapaneseId?.includes(searchTerm) : emoji.emojiId.includes(searchTerm)
+                );
+                break;
+            case "meme":
+                searchResults = memeEmojiMap.filter((emoji) =>
+                    isJapanese ? emoji.emojiJapaneseId?.includes(searchTerm) : emoji.emojiId.includes(searchTerm)
+                );
+                break;
+        }
+
+        return searchResults;
+    };
+
+    const emojiDialogScrollBox = css({
+        height: isMobile ? "300px" : "500px",
+        overflowY: "auto",
+        overflowX: "hidden"
+    });
+
+    const emojiDialog = css({
+        position: "relative",
+        padding: "16px 24px 8px"
+    });
+
+    // TODO: クリックイベント実装
+    const presetTab = (
+        <div className={emojiDialogScrollBox}>
+            {searchTerm ? <EmojiButtonRow emojis={onEmojiSearch(searchTerm)} onClick={() => {}} /> : presetEmojis()}
+        </div>
+    );
+    const customTab = <div>カスタム</div>;
+    const memeTab = <div>ミーム</div>;
+
+    const tabItems = [
+        {
+            key: "preset",
+            label: "プリセット",
+            children: presetTab
+        },
+        {
+            key: "custom",
+            label: "カスタム",
+            children: customTab
+        },
+        {
+            key: "meme",
+            label: "ミーム",
+            children: memeTab
+        }
+    ];
+
+    const closeDialog = () => {
+        setIsOpen(false);
+    };
+
+    return (
+        <Modal
+            open={isOpen}
+            onCancel={() => closeDialog()}
+            footer={null}
+            closable={false}
+            centered
+            maskClosable
+            width={500}
+        >
+            <div className={emojiDialog}>
+                <CloseButton onClick={closeDialog} />
+                <div style={{ marginTop: 4, marginBottom: 4 }}>
+                    <Input
+                        placeholder="絵文字を検索..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        allowClear
+                    />
+                </div>
+                <Tabs defaultActiveKey={activeTab} items={tabItems} onChange={(key) => setActiveTab(key)}></Tabs>
+            </div>
+        </Modal>
+    );
+}
