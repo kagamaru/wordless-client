@@ -15,7 +15,7 @@ export function EmojiButton({ emojiId, size, onClick }: Props) {
 
     return (
         <span className={emojiButton} onClick={onClick}>
-            <Emoji key={emojiId} emojiId={emojiId} size={size} />
+            <Emoji emojiId={emojiId} size={size} />
         </span>
     );
 }

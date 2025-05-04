@@ -10,9 +10,9 @@ type Props = {
 export function EmojiButtonRow({ emojis, onClick }: Props) {
     return (
         <Row>
-            {emojis.map((emoji) => (
-                <Col key={emoji.emojiId} span={2}>
-                    <EmojiButton emojiId={emoji.emojiId} size={24} onClick={() => onClick(emoji.emojiId)} />
+            {emojis.map(({ emojiId }) => (
+                <Col key={emojiId} span={2}>
+                    <EmojiButton emojiId={emojiId} size={24} onClick={() => onClick(emojiId)} />
                 </Col>
             ))}
         </Row>
