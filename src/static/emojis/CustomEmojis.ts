@@ -11,98 +11,84 @@ export const customEmojis: Array<Emoji> = [
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":hello:",
-        emojiJapaneseId: "こんにちは",
-        url: s3Url + "hello.png"
+        emojiJapaneseId: "こんにちは"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":good_evening:",
-        emojiJapaneseId: "こんばんは",
-        url: s3Url + "good_evening.png"
+        emojiJapaneseId: "こんばんは"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":thank_you:",
-        emojiJapaneseId: "ありがとう",
-        url: s3Url + "thank_you.png"
+        emojiJapaneseId: "ありがとう"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":sorry:",
-        emojiJapaneseId: "ごめんなさい",
-        url: s3Url + "sorry.png"
+        emojiJapaneseId: "ごめんなさい"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":you_are_welcome:",
-        emojiJapaneseId: "どういたしまして",
-        url: s3Url + "you_are_welcome.png"
+        emojiJapaneseId: "どういたしまして"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":congratulations:",
-        emojiJapaneseId: "おめでとう",
-        url: s3Url + "congratulations.png"
+        emojiJapaneseId: "おめでとう"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":homework:",
-        emojiJapaneseId: "宿題",
-        url: s3Url + "homework.png"
+        emojiJapaneseId: "宿題"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":job:",
-        emojiJapaneseId: "仕事",
-        url: s3Url + "job.png"
+        emojiJapaneseId: "仕事"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":school_custom:",
-        emojiJapaneseId: "学校",
-        url: s3Url + "school.png"
+        emojiJapaneseId: "学校"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":test:",
-        emojiJapaneseId: "テスト",
-        url: s3Url + "test.png"
+        emojiJapaneseId: "テスト"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":one_chance:",
-        emojiJapaneseId: "ワンチャン",
-        url: s3Url + "one_chance.png"
+        emojiJapaneseId: "ワンチャン"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":maji_manji:",
-        emojiJapaneseId: "まじ卍",
-        url: s3Url + "maji_manji.png"
+        emojiJapaneseId: "まじ卍"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":last:",
-        emojiJapaneseId: "ラスト",
-        url: s3Url + "last.png"
+        emojiJapaneseId: "ラスト"
     },
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":happyhappyhappy:",
-        emojiJapaneseId: "ハッピーハッピーハッピー",
-        url: s3Url + "happyhappyhappy.png"
+        emojiJapaneseId: "ハッピーハッピーハッピー"
     }
 ];

@@ -14,7 +14,7 @@ export default defineConfig({
             NEXT_PUBLIC_COGNITO_CLIENT_ID: "cognito-user-id",
             NEXT_PUBLIC_AUTHORITY: "public-authority",
             NEXT_PUBLIC_REDIRECT_URI: "http://localhost:3000",
-            NEXT_PUBLIC_S3_URL: "https://s3"
+            NEXT_PUBLIC_S3_URL: "https://s3.example-bucket.amazonaws.com"
         }
     }
 });
