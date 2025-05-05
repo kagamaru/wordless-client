@@ -35,15 +35,12 @@ export const emoteHandlers = [
                         },
                         {
                             emojiId: ":monkey:"
-                        },
-                        {
-                            emojiId: null
                         }
                     ],
                     userAvatarUrl: s3Url + "/userProfile/fuga_fuga.png",
                     emoteReactionEmojis: [
                         {
-                            emojiId: ":party_parrot:",
+                            emojiId: ":neko_meme_scream_baby_cat:",
                             numberOfReactions: 100,
                             reactedUserIds: ["@fuga_fuga"]
                         }
@@ -82,6 +79,26 @@ export const emoteHandlers = [
                             emojiId: ":party_parrot:",
                             numberOfReactions: 100,
                             reactedUserIds: ["@fuga_fuga"]
+                        },
+                        {
+                            emojiId: ":monkey:",
+                            numberOfReactions: 1,
+                            reactedUserIds: ["@hoge_hoge"]
+                        },
+                        {
+                            emojiId: ":dolphin:",
+                            numberOfReactions: 1,
+                            reactedUserIds: ["@hoge_hoge"]
+                        },
+                        {
+                            emojiId: ":dog:",
+                            numberOfReactions: 1,
+                            reactedUserIds: ["@hoge_hoge"]
+                        },
+                        {
+                            emojiId: ":thank_you:",
+                            numberOfReactions: 1,
+                            reactedUserIds: ["@hoge_hoge"]
                         }
                     ],
                     totalNumberOfReactions: 300
@@ -95,13 +112,16 @@ export const emoteHandlers = [
                     emoteReactionId: "h",
                     emoteEmojis: [
                         {
-                            emojiId: ":bee:"
+                            emojiId: ":test:"
+                        },
+                        {
+                            emojiId: ":neko_meme_scream_baby_cat:"
                         }
                     ],
                     userAvatarUrl: s3Url + "/userProfile/apple.png",
                     emoteReactionEmojis: [
                         {
-                            emojiId: ":smile:",
+                            emojiId: ":melting_face:",
                             numberOfReactions: 8,
                             reactedUserIds: ["@apple"]
                         }
@@ -117,13 +137,16 @@ export const emoteHandlers = [
                     emoteReactionId: "g",
                     emoteEmojis: [
                         {
-                            emojiId: ":bee:"
+                            emojiId: ":dolphin:"
+                        },
+                        {
+                            emojiId: ":neko_meme_scream_baby_cat:"
                         }
                     ],
                     userAvatarUrl: s3Url + "/userProfile/apple.png",
                     emoteReactionEmojis: [
                         {
-                            emojiId: ":smile:",
+                            emojiId: ":lion:",
                             numberOfReactions: 7,
                             reactedUserIds: ["@apple"]
                         }
@@ -139,13 +162,13 @@ export const emoteHandlers = [
                     emoteReactionId: "f",
                     emoteEmojis: [
                         {
-                            emojiId: ":bee:"
+                            emojiId: ":bus:"
                         }
                     ],
                     userAvatarUrl: s3Url + "/userProfile/apple.png",
                     emoteReactionEmojis: [
                         {
-                            emojiId: ":smile:",
+                            emojiId: ":train:",
                             numberOfReactions: 6,
                             reactedUserIds: ["@apple"]
                         }
@@ -167,7 +190,7 @@ export const emoteHandlers = [
                     userAvatarUrl: s3Url + "/userProfile/apple.png",
                     emoteReactionEmojis: [
                         {
-                            emojiId: ":smile:",
+                            emojiId: ":frog:",
                             numberOfReactions: 5,
                             reactedUserIds: ["@banana"]
                         }
@@ -183,13 +206,13 @@ export const emoteHandlers = [
                     emoteReactionId: "d",
                     emoteEmojis: [
                         {
-                            emojiId: ":ant:"
+                            emojiId: ":you_are_welcome:"
                         }
                     ],
                     userAvatarUrl: s3Url + "/userProfile/apple.png",
                     emoteReactionEmojis: [
                         {
-                            emojiId: ":smile:",
+                            emojiId: ":you_are_welcome:",
                             numberOfReactions: 4,
                             reactedUserIds: ["@banana"]
                         }
@@ -211,7 +234,7 @@ export const emoteHandlers = [
                     userAvatarUrl: s3Url + "/userProfile/orange.png",
                     emoteReactionEmojis: [
                         {
-                            emojiId: ":smile:",
+                            emojiId: ":ant:",
                             numberOfReactions: 3,
                             reactedUserIds: ["@banana"]
                         }
@@ -233,7 +256,7 @@ export const emoteHandlers = [
                     userAvatarUrl: s3Url + "/userProfile/orange.png",
                     emoteReactionEmojis: [
                         {
-                            emojiId: ":smile:",
+                            emojiId: ":happyhappyhappy:",
                             numberOfReactions: 2,
                             reactedUserIds: ["@banana"]
                         }
