@@ -433,22 +433,6 @@ describe("リアクション追加ボタンをクリックした時", () => {
                 });
             });
 
-            test("「カスタム」タブ選択時、「カスタム」タブが選択される", async () => {
-                await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
-
-                await waitFor(() => {
-                    expect(screen.getByRole("tab", { name: "カスタム", selected: true })).toBeTruthy();
-                });
-            });
-
-            test("「ミーム」タブ選択時、「ミーム」タブが選択される", async () => {
-                await user.click(screen.getByRole("tab", { name: "ミーム", selected: false }));
-
-                await waitFor(() => {
-                    expect(screen.getByRole("tab", { name: "ミーム", selected: true })).toBeTruthy();
-                });
-            });
-
             test("絵文字検索テキストボックス入力時に英語入力時、検索結果が表示される", async () => {
                 await user.type(screen.getByPlaceholderText("絵文字を検索..."), "dolphin");
 
@@ -469,6 +453,91 @@ describe("リアクション追加ボタンをクリックした時", () => {
                 });
             });
 
+            describe("「カスタム」タブ選択時、", () => {
+                beforeEach(async () => {
+                    await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
+                });
+
+                test("「カスタム」タブが選択される", async () => {
+                    await waitFor(() => {
+                        expect(screen.getByRole("tab", { name: "カスタム", selected: true })).toBeTruthy();
+                    });
+                });
+
+                test("絵文字検索テキストボックス入力時に英語入力時、検索結果が表示される", async () => {
+                    await user.type(screen.getByPlaceholderText("絵文字を検索..."), "last");
+
+                    await waitFor(() => {
+                        // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
+                        const img = screen.getAllByAltText("ラスト").find((img) => img.getAttribute("width") === "32");
+                        expect(img).toBeTruthy();
+                        // NOTE: 「ラスト」以外の絵文字が表示されていないことを検証
+                        expect(screen.queryByAltText("こんにちは")).toBeFalsy();
+                    });
+                });
+
+                test("絵文字検索テキストボックス入力時に日本語入力時、検索結果が表示される", async () => {
+                    await user.type(screen.getByPlaceholderText("絵文字を検索..."), "ラスト");
+
+                    await waitFor(() => {
+                        // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
+                        const img = screen.getAllByAltText("ラスト").find((img) => img.getAttribute("width") === "32");
+                        expect(img).toBeTruthy();
+                        // NOTE: 「ラスト」以外の絵文字が表示されていないことを検証
+                        expect(screen.queryByAltText("こんにちは")).toBeFalsy();
+                    });
+                });
+            });
+
+            describe("「ミーム」タブ選択時、", () => {
+                beforeEach(async () => {
+                    await user.click(screen.getByRole("tab", { name: "ミーム", selected: false }));
+                });
+
+                test("「ミーム」タブが選択される", async () => {
+                    await waitFor(() => {
+                        expect(screen.getByRole("tab", { name: "ミーム", selected: true })).toBeTruthy();
+                    });
+                });
+
+                test("絵文字検索テキストボックス入力時に英語入力時、検索結果が表示される", async () => {
+                    await user.type(screen.getByPlaceholderText("絵文字を検索..."), "surprising");
+
+                    await waitFor(() => {
+                        // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
+                        const img = screen
+                            .getAllByAltText("猫ミーム_驚く猫")
+                            .find((img) => img.getAttribute("width") === "32");
+                        expect(img).toBeTruthy();
+                        // NOTE: 「猫ミーム_驚く猫」以外の絵文字が表示されていないことを検証
+                        expect(screen.queryByAltText("猫ミーム_叫ぶ猫")).toBeFalsy();
+                    });
+                });
+
+                test("絵文字検索テキストボックス入力時に日本語入力時、検索結果が表示される", async () => {
+                    await user.type(screen.getByPlaceholderText("絵文字を検索..."), "驚く猫");
+
+                    await waitFor(() => {
+                        // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
+                        const img = screen
+                            .getAllByAltText("猫ミーム_驚く猫")
+                            .find((img) => img.getAttribute("width") === "32");
+                        expect(img).toBeTruthy();
+                        // NOTE: 「猫ミーム_驚く猫」以外の絵文字が表示されていないことを検証
+                        expect(screen.queryByAltText("猫ミーム_叫ぶ猫")).toBeFalsy();
+                    });
+                });
+            });
+
+            test("「カスタム」タブ選択後、「プリセット」タブを選択すると、「プリセット」のタブが表示される", async () => {
+                await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
+                await user.click(screen.getByRole("tab", { name: "プリセット", selected: false }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("tab", { name: "プリセット", selected: true })).toBeTruthy();
+                });
+            });
+
             describe("絵文字検索テキストボックスの×ボタン押下時", () => {
                 test("絵文字検索テキストボックスの内容がクリアされる", async () => {
                     await user.type(screen.getByPlaceholderText("絵文字を検索..."), "snake");
@@ -479,13 +548,23 @@ describe("リアクション追加ボタンをクリックした時", () => {
                     });
                 });
 
-                // test("検索結果がクリアされる", async () => {
-                //     await user.click(screen.getByRole("button", { name: "close" }));
+                test("検索結果がクリアされる", async () => {
+                    await user.type(screen.getByPlaceholderText("絵文字を検索..."), "dolphin");
+                    await waitFor(() => {
+                        // NOTE: 検索結果として表示されていることを検証
+                        expect(screen.getByText("🐬")).toBeTruthy();
+                        // NOTE: 検索結果として表示されていないことを検証
+                        expect(screen.queryByText("🐜")).toBeFalsy();
+                    });
 
-                //     await waitFor(() => {
-                //         expect(screen.getByRole("textbox", { name: "絵文字検索" })).toHaveValue("");
-                //     });
-                // });
+                    await user.click(screen.getByRole("button", { name: "close-circle" }));
+
+                    await waitFor(() => {
+                        // NOTE: 絵文字の種類に関係なく表示されることを確認
+                        expect(screen.getByText("🐬")).toBeTruthy();
+                        expect(screen.getByText("🐜")).toBeTruthy();
+                    });
+                });
             });
 
             describe("リアクション追加ボタンをクリックした時", () => {
