@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Input, Modal, Tabs } from "antd";
 import { css } from "ss/css";
-import { CloseButton, EmojiButtonRow } from "@/components/atoms";
+import { CloseButton, ImageEmojiButtonRow, EmojiButtonRow } from "@/components/atoms";
 import { EmojiButtonBlocksByType } from "@/components/molecules";
 import { presetEmojiMap, customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
 import { EmojiType, Emoji as EmojiInterface } from "@/@types/Emoji";
@@ -76,11 +76,7 @@ export default function EmojiDialog({ isOpen, setIsOpen }: Props) {
                 [flags, "国旗"]
             ] as Array<[Array<EmojiInterface>, string]>
         ).map(([emojis, label]) => {
-            return (
-                <div key={label}>
-                    <EmojiButtonBlocksByType typeName={label} emojis={emojis} onClick={() => {}} />
-                </div>
-            );
+            return <EmojiButtonBlocksByType key={label} typeName={label} emojis={emojis} onClick={() => {}} />;
         });
     };
 
@@ -120,14 +116,20 @@ export default function EmojiDialog({ isOpen, setIsOpen }: Props) {
         padding: "16px 24px 8px"
     });
 
+    const renderEmojiTab = (emojiMap: Array<EmojiInterface>) => (
+        <div className={emojiDialogScrollBox}>
+            <ImageEmojiButtonRow emojis={searchTerm ? onEmojiSearch(searchTerm) : emojiMap} onClick={() => {}} />
+        </div>
+    );
+
     // TODO: クリックイベント実装
     const presetTab = (
         <div className={emojiDialogScrollBox}>
             {searchTerm ? <EmojiButtonRow emojis={onEmojiSearch(searchTerm)} onClick={() => {}} /> : presetEmojis()}
         </div>
     );
-    const customTab = <div>カスタム</div>;
-    const memeTab = <div>ミーム</div>;
+    const customTab = renderEmojiTab(customEmojiMap);
+    const memeTab = renderEmojiTab(memeEmojiMap);
 
     const tabItems = [
         {

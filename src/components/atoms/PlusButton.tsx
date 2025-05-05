@@ -7,8 +7,8 @@ type Props = {
 
 export function PlusButton(props: Props) {
     const button = css({
-        height: "24px !important",
-        width: "20px",
+        height: "32px",
+        width: "24px",
         marginTop: "4px"
     });
 

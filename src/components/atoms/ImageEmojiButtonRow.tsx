@@ -8,14 +8,14 @@ type Props = {
     onClick: (emojiId: EmojiString) => void;
 };
 
-export function EmojiButtonRow({ emojis, onClick }: Props) {
+export function ImageEmojiButtonRow({ emojis, onClick }: Props) {
     const isMobile = useIsMobile();
 
     return (
-        <Row>
+        <Row gutter={[0, 8]}>
             {emojis.map(({ emojiId }) => (
-                <Col key={emojiId} span={isMobile ? 4 : 2}>
-                    <EmojiButton emojiId={emojiId} size={24} onClick={() => onClick(emojiId)} />
+                <Col key={emojiId} span={isMobile ? 4 : 3}>
+                    <EmojiButton emojiId={emojiId} size={32} onClick={() => onClick(emojiId)} />
                 </Col>
             ))}
         </Row>

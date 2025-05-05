@@ -1595,7 +1595,7 @@ export const flagsEmojis: Array<Emoji> = [
         emojiType: EmojiType.Flags,
         emojiId: ":flag_sz:",
         emojiJapaneseId: "エスワティニの旗",
-        emojiChar: "🇿🇿"
+        emojiChar: "🇸🇿"
     },
     {
         emojiCategory: EmojiCategory.Preset,

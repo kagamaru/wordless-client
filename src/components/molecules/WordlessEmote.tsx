@@ -52,13 +52,13 @@ export function WordlessEmote(props: Props) {
 
     const userIdText = css({
         marginLeft: { base: "8px", lg: "0px" },
-        fontSize: "12px",
+        fontSize: "16px",
         color: "grey",
         marginBottom: { base: "2px", lg: "0px" }
     });
 
     const emoteDatetimeText = css({
-        fontSize: "8px",
+        fontSize: "12px",
         color: "grey",
         marginLeft: { base: "8px", lg: "0px" },
         marginBottom: { base: "2px", lg: "4px" }
