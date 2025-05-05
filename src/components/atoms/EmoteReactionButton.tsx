@@ -7,6 +7,7 @@ type Props = {
     emoteReactionEmojiWithNumber: EmoteReactionEmojiWithNumber;
     emoteReactionId: string;
     onClick: () => void;
+    isReacted: boolean;
 };
 
 export function EmoteReactionButton(props: Props) {
@@ -14,7 +15,9 @@ export function EmoteReactionButton(props: Props) {
         height: "32pxt",
         width: "72px",
         marginTop: "4px",
-        marginLeft: "4px"
+        marginLeft: "4px",
+        borderColor: props.isReacted ? "primary !important" : "",
+        backgroundColor: props.isReacted ? "lightPurple !important" : ""
     });
 
     const numberOfReactionsCSS = css({
@@ -37,6 +40,7 @@ export function EmoteReactionButton(props: Props) {
                 shape="round"
                 className={emojiButton}
                 onClick={props.onClick}
+                aria-pressed={props.isReacted}
             >
                 <Emoji emojiId={props.emoteReactionEmojiWithNumber.emojiId} size={24} />
                 {numberOfReactionsText(props.emoteReactionEmojiWithNumber.numberOfReactions)}

@@ -71,6 +71,11 @@ const mockFetchEmotes = vi.fn(() => {
                         emojiId: ":snake:",
                         numberOfReactions: 200,
                         reactedUserIds: ["@a"]
+                    },
+                    {
+                        emojiId: ":tiger:",
+                        numberOfReactions: 1,
+                        reactedUserIds: ["@fuga_fuga"]
                     }
                 ],
                 totalNumberOfReactions: 200
@@ -114,6 +119,12 @@ const mockFindUser = vi.fn((userId: string) => {
                 userId: "@c",
                 userName: "User C",
                 userAvatarUrl: "https://user-c.png"
+            });
+        case "@fuga_fuga":
+            return Promise.resolve({
+                userId: "@fuga_fuga",
+                userName: "User Fuga",
+                userAvatarUrl: "https://user-fuga.png"
             });
         default:
             return Promise.resolve({
@@ -292,6 +303,32 @@ describe("初期表示時", () => {
                 await waitFor(() => {
                     // NOTE: プラスボタンがあるため個数は1になる
                     expect(within(screen.getByRole("listitem", { name: "c" })).getAllByRole("button").length).toBe(1);
+                });
+            });
+
+            test("ユーザーが既にリアクション済の時、リアクションボタンを「押下済み」の状態にする", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(
+                        within(screen.getByRole("listitem", { name: "b" })).getByRole("button", {
+                            name: "reaction-b:tiger:",
+                            pressed: true
+                        })
+                    ).toBeTruthy();
+                });
+            });
+
+            test("ユーザーがリアクション済みでない時、リアクションボタンを「押下済み」の状態にしない", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(
+                        within(screen.getByRole("listitem", { name: "a" })).getByRole("button", {
+                            name: "reaction-a:party_parrot:",
+                            pressed: false
+                        })
+                    ).toBeTruthy();
                 });
             });
         });

@@ -30,7 +30,8 @@ export default defineConfig({
                     primary: { value: "#7829cc" },
                     grey: { value: "#00000073" },
                     lightGrey: { value: "#c0c0c0" },
-                    darkGrey: { value: "#757575" }
+                    darkGrey: { value: "#757575" },
+                    lightPurple: { value: "#ffeeff" }
                 }
             }
         }

@@ -29,6 +29,9 @@ export function WordlessEmote(props: Props) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isEmojiDialogOpen, setIsEmojiDialogOpen] = useState(false);
 
+    // TODO: ユーザーIDをAPIから取得する
+    const userId = "@fuga_fuga";
+
     const wordlessEmote = css({
         paddingLeft: { base: "16px", lg: "140px" },
         paddingRight: { base: "16px", lg: "140px" },
@@ -73,6 +76,7 @@ export function WordlessEmote(props: Props) {
                     key={emoteReactionEmoji.emojiId}
                     emoteReactionEmojiWithNumber={emoteReactionEmoji}
                     emoteReactionId={props.emote.emoteReactionId}
+                    isReacted={emoteReactionEmoji.reactedUserIds.includes(userId)}
                     onClick={() => {}}
                 ></EmoteReactionButton>
             ))}
