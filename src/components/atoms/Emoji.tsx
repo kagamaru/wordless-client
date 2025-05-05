@@ -2,6 +2,7 @@ import Image from "next/image";
 import { EmojiString } from "@/@types";
 import { EmojiCategory } from "@/@types/Emoji";
 import { emojiHelper } from "@/helpers";
+import { css } from "ss/css";
 
 type Props = {
     emojiId: EmojiString;
@@ -10,10 +11,13 @@ type Props = {
 
 export function Emoji({ emojiId, size }: Props) {
     const returnedEmoji = emojiHelper(emojiId);
+    const presetEmoji = css({
+        fontSize: `${size.toString()}px !important`
+    });
 
     if (returnedEmoji.emojiCategory === EmojiCategory.Preset) {
         return (
-            <div aria-label={returnedEmoji.emojiId} title={returnedEmoji.emojiJapaneseId}>
+            <div className={presetEmoji} aria-label={returnedEmoji.emojiId} title={returnedEmoji.emojiJapaneseId}>
                 {returnedEmoji.emojiChar}
             </div>
         );
