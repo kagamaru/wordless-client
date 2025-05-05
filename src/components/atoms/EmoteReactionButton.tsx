@@ -11,7 +11,7 @@ type Props = {
 
 export function EmoteReactionButton(props: Props) {
     const emojiButton = css({
-        height: "32px !important",
+        height: "32pxt",
         width: "72px",
         marginTop: "4px",
         marginLeft: "4px"

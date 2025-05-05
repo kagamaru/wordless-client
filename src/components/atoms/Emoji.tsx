@@ -22,11 +22,13 @@ export function Emoji({ emojiId, size }: Props) {
             </div>
         );
     } else {
+        const imageAlt = returnedEmoji.emojiJapaneseId || "No image available";
+
         return (
             <Image
                 src={returnedEmoji.url ?? ""}
                 title={returnedEmoji.emojiJapaneseId}
-                alt={returnedEmoji.emojiJapaneseId}
+                alt={imageAlt}
                 width={size}
                 height={size}
             />

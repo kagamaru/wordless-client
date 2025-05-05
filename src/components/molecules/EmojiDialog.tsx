@@ -116,9 +116,11 @@ export default function EmojiDialog({ isOpen, setIsOpen }: Props) {
         padding: "16px 24px 8px"
     });
 
-    const getImageEmojiButtonRow = (emojis: Array<EmojiInterface>) => {
-        return <ImageEmojiButtonRow emojis={emojis} onClick={() => {}} />;
-    };
+    const renderEmojiTab = (emojiMap: Array<EmojiInterface>) => (
+        <div className={emojiDialogScrollBox}>
+            <ImageEmojiButtonRow emojis={searchTerm ? onEmojiSearch(searchTerm) : emojiMap} onClick={() => {}} />
+        </div>
+    );
 
     // TODO: クリックイベント実装
     const presetTab = (
@@ -126,16 +128,8 @@ export default function EmojiDialog({ isOpen, setIsOpen }: Props) {
             {searchTerm ? <EmojiButtonRow emojis={onEmojiSearch(searchTerm)} onClick={() => {}} /> : presetEmojis()}
         </div>
     );
-    const customTab = (
-        <div className={emojiDialogScrollBox}>
-            {getImageEmojiButtonRow(searchTerm ? onEmojiSearch(searchTerm) : customEmojiMap)}
-        </div>
-    );
-    const memeTab = (
-        <div className={emojiDialogScrollBox}>
-            {getImageEmojiButtonRow(searchTerm ? onEmojiSearch(searchTerm) : memeEmojiMap)}
-        </div>
-    );
+    const customTab = renderEmojiTab(customEmojiMap);
+    const memeTab = renderEmojiTab(memeEmojiMap);
 
     const tabItems = [
         {
