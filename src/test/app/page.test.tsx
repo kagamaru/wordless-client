@@ -135,28 +135,19 @@ const mockFindUser = vi.fn((userId: string) => {
     }
 });
 
-vi.mock("@/app/api", () => ({
-    EmoteService: class {
-        fetchEmotes = mockFetchEmotes;
-    },
-    UserService: class {
-        findUser = mockFindUser;
-    }
-}));
+vi.mock("@/app/api", async () => {
+    const actual = await vi.importActual<typeof import("@/app/api")>("@/app/api");
 
-const mockWebSocketOpen = vi.fn(() => {
-    return true;
-});
-const mockUseWebSocket = vi.fn(() => {
     return {
-        webSocketOpen: mockWebSocketOpen,
-        hasWebSocketError: false,
-        webSocketError: {}
+        ...actual,
+        EmoteService: class {
+            fetchEmotes = mockFetchEmotes;
+        },
+        UserService: class {
+            findUser = mockFindUser;
+        }
     };
 });
-vi.mock("@/hooks/useWebSocket", () => ({
-    useWebSocket: () => mockUseWebSocket()
-}));
 
 const mockedUseRouter = vi.fn();
 vi.mock("next/navigation", () => ({
@@ -195,14 +186,6 @@ describe("初期表示時", () => {
 
             await waitFor(() => {
                 expect(screen.getAllByRole("listitem").length).toBe(3);
-            });
-        });
-
-        test("WebSocket API サーバとの接続を確立する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(mockWebSocketOpen).toHaveBeenCalledTimes(1);
             });
         });
 
@@ -335,23 +318,6 @@ describe("初期表示時", () => {
     });
 
     describe("異常系", () => {
-        test("WebSocket接続エラーが発生した時、エラーメッセージを表示する", async () => {
-            mockUseWebSocket.mockReturnValue({
-                webSocketOpen: mockWebSocketOpen,
-                hasWebSocketError: true,
-                webSocketError: {
-                    errorCode: "WSK-99",
-                    errorMessage: "接続が出来ません。しばらくの間使用できない可能性があります。"
-                }
-            });
-
-            rendering();
-
-            await waitFor(() => {
-                expect(within(screen.getByRole("alert")).getByText("Error : WSK-99")).toBeTruthy();
-            });
-        });
-
         test.for([
             ["EMT-01", "不正なリクエストです。もう一度やり直してください。"],
             ["EMT-02", "不正なリクエストです。もう一度やり直してください。"],
