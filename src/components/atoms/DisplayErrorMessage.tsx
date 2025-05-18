@@ -1,5 +1,4 @@
 import { Alert } from "antd";
-import { memo } from "react";
 import { ErrorCode } from "@/@types";
 
 type Props = {
@@ -9,16 +8,16 @@ type Props = {
     };
 };
 
-export function DisplayErrorMessage(props: Props) {
-    if (!props.error.errorCode) {
+export function DisplayErrorMessage({ error }: Props) {
+    if (!error.errorCode) {
         return;
     }
 
     return (
         <>
             <Alert
-                message={`Error : ${props.error.errorCode}`}
-                description={props.error.errorMessage}
+                message={`Error : ${error.errorCode}`}
+                description={error.errorMessage}
                 type="error"
                 showIcon
                 className="m-5"

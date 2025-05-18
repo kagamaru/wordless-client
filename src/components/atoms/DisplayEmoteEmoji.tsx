@@ -1,14 +1,14 @@
 import { Row } from "antd";
 import { memo } from "react";
-import { css } from "ss/css";
 import { Emoji } from "@/components/atoms";
 import { EmojiIdObject, EmoteEmojis } from "@/@types";
+import { css } from "ss/css";
 
 type Props = {
     emojis: EmoteEmojis;
 };
 
-export const DisplayEmoteEmoji = memo(function DisplayEmoteEmoji(props: Props) {
+function DisplayEmoteEmojiComponent({ emojis }: Props) {
     const emojiRow = css({
         marginTop: "8px",
         marginLeft: { base: "8px", lg: "0px" },
@@ -16,7 +16,7 @@ export const DisplayEmoteEmoji = memo(function DisplayEmoteEmoji(props: Props) {
     });
 
     // NOTE: 本来keyにindexを設定するのは望ましくないが、ここでは差し替えや入れ替えを伴わないためindexにする
-    const displayEmojis = props.emojis.map((emoji: EmojiIdObject, index: number) => {
+    const displayEmojis = emojis.map((emoji: EmojiIdObject, index: number) => {
         return <Emoji key={index} emojiId={emoji.emojiId} size={62} />;
     });
 
@@ -27,4 +27,6 @@ export const DisplayEmoteEmoji = memo(function DisplayEmoteEmoji(props: Props) {
             </Row>
         </>
     );
-});
+}
+
+export const DisplayEmoteEmoji = memo(DisplayEmoteEmojiComponent);

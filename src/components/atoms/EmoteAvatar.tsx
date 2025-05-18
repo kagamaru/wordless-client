@@ -9,7 +9,7 @@ type Props = {
     url: string;
 };
 
-export const EmoteAvatar = memo(function EmoteAvatar(props: Props) {
+function EmoteAvatarComponent({ userName, url }: Props) {
     const avatar = css({
         height: { base: "32px", lg: "50px !important" },
         width: { base: "32px", lg: "50px !important" }
@@ -17,7 +17,9 @@ export const EmoteAvatar = memo(function EmoteAvatar(props: Props) {
 
     return (
         <>
-            <Avatar className={avatar} src={props.url} alt={props.userName + "ProfileImage"}></Avatar>
+            <Avatar className={avatar} src={url} alt={userName + "ProfileImage"}></Avatar>
         </>
     );
-});
+}
+
+export const EmoteAvatar = memo(EmoteAvatarComponent);

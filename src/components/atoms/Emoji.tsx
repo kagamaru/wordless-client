@@ -10,7 +10,7 @@ type Props = {
     size: number;
 };
 
-export const Emoji = memo(function Emoji({ emojiId, size }: Props) {
+const EmojiComponent = ({ emojiId, size }: Props) => {
     const returnedEmoji = emojiHelper(emojiId);
     const presetEmoji = css({
         fontSize: `${size.toString()}px !important`
@@ -35,4 +35,6 @@ export const Emoji = memo(function Emoji({ emojiId, size }: Props) {
             />
         );
     }
-});
+};
+
+export const Emoji = memo(EmojiComponent);

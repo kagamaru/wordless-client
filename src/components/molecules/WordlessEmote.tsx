@@ -1,7 +1,9 @@
 "use client";
 
-import { EmoteReactionEmojiWithNumber } from "@/@types";
-import { Emote } from "@/class";
+import { Col, ConfigProvider, Row } from "antd";
+import dayjs from "dayjs";
+import { useCallback, useMemo, useState } from "react";
+import { EmoteReactionEmojiWithNumber, EmoteEmojis } from "@/@types";
 import {
     DisplayEmoteEmoji,
     EmoteAvatar,
@@ -10,21 +12,26 @@ import {
     TotalNumberOfReactionsButton,
     WordlessDivider
 } from "@/components/atoms";
+import { EmojiDialog, ReactionUsersDrawer } from "@/components/molecules";
 import { useIsMobile } from "@/hooks";
-import { Col, ConfigProvider, Row } from "antd";
-import dayjs from "dayjs";
 import { css } from "ss/css";
-import { useCallback, useMemo, useState } from "react";
-import { ReactionUsersDrawer } from "./ReactionUsersDrawer";
-import EmojiDialog from "./EmojiDialog";
 
 type Props = {
-    emote: Emote;
+    emote: {
+        userName: string;
+        userId: string;
+        userAvatarUrl: string;
+        emoteDatetime: string;
+        emoteEmojis: EmoteEmojis;
+        emoteReactionId: string;
+        totalNumberOfReactions: number;
+        emoteReactionEmojis: EmoteReactionEmojiWithNumber[];
+    };
 };
 
 dayjs.locale("ja");
 
-export function WordlessEmote(props: Props) {
+export function WordlessEmote({ emote }: Props) {
     const isMobile = useIsMobile();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isEmojiDialogOpen, setIsEmojiDialogOpen] = useState(false);
@@ -75,15 +82,13 @@ export function WordlessEmote(props: Props) {
         marginBottom: { base: "2px", lg: "4px" }
     });
 
-    const { emote } = props;
-
     const emoteEmojiButtons = () => (
         <Row>
-            {props.emote?.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
+            {emote?.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
                 <EmoteReactionButton
                     key={emoteReactionEmoji.emojiId}
                     emoteReactionEmojiWithNumber={emoteReactionEmoji}
-                    emoteReactionId={props.emote.emoteReactionId}
+                    emoteReactionId={emote.emoteReactionId}
                     isReacted={emoteReactionEmoji.reactedUserIds.includes(userId)}
                     onClickAction={() => {}}
                 ></EmoteReactionButton>
@@ -142,7 +147,7 @@ export function WordlessEmote(props: Props) {
                             {emote.totalNumberOfReactions > 0 && (
                                 <TotalNumberOfReactionsButton
                                     totalNumberOfReactions={emote.totalNumberOfReactions}
-                                    onClick={totalNumberOfReactionsButtonClick}
+                                    onClickAction={totalNumberOfReactionsButtonClick}
                                 />
                             )}
                         </ConfigProvider>

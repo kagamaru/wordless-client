@@ -7,7 +7,7 @@ type Props = {
     onClickAction: () => void;
 };
 
-export function PlusButton(props: Props) {
+export function PlusButton({ onClickAction }: Props) {
     const button = css({
         height: "32px",
         width: "24px",
@@ -16,7 +16,7 @@ export function PlusButton(props: Props) {
 
     return (
         <>
-            <Button shape="round" className={button} onClick={() => props.onClickAction()}>
+            <Button shape="round" className={button} onClick={onClickAction}>
                 +
             </Button>
         </>

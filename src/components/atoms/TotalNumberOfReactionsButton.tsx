@@ -5,10 +5,10 @@ import { css } from "ss/css";
 
 type Props = {
     totalNumberOfReactions: number;
-    onClick: () => void;
+    onClickAction: () => void;
 };
 
-export function TotalNumberOfReactionsButton(props: Props) {
+export function TotalNumberOfReactionsButton({ totalNumberOfReactions, onClickAction }: Props) {
     const totalNumberOfReactionsButton = css({
         padding: "0px !important"
     });
@@ -18,9 +18,9 @@ export function TotalNumberOfReactionsButton(props: Props) {
     });
 
     return (
-        <Button type="text" className={totalNumberOfReactionsButton} onClick={props.onClick}>
+        <Button type="text" className={totalNumberOfReactionsButton} onClick={onClickAction}>
             <Row className={totalNumberOfReactionsButtonText}>
-                <div>{props.totalNumberOfReactions}</div>
+                <div>{totalNumberOfReactions}</div>
                 <div className="ml-1">Reactions</div>
             </Row>
         </Button>
