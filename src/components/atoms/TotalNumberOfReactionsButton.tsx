@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, Row } from "antd";
 import { css } from "ss/css";
 

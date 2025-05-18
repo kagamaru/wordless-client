@@ -22,18 +22,18 @@ export default function Home() {
     });
 
     useEffect(() => {
-        if (isError && error) {
-            handleErrors(error);
-        }
-    }, [isError, error]);
-
-    useEffect(() => {
         try {
             webSocketOpen();
         } catch (e) {
             handleErrors(e);
         }
-    }, [webSocketOpen]);
+    }, []);
+
+    useEffect(() => {
+        if (isError && error) {
+            handleErrors(error);
+        }
+    }, [isError, error]);
 
     return (
         <>

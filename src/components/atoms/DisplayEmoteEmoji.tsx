@@ -1,13 +1,14 @@
-import { EmojiIdObject, EmoteEmojis } from "@/@types";
 import { Row } from "antd";
+import { memo } from "react";
 import { css } from "ss/css";
-import { Emoji } from "./Emoji";
+import { Emoji } from "@/components/atoms";
+import { EmojiIdObject, EmoteEmojis } from "@/@types";
 
 type Props = {
     emojis: EmoteEmojis;
 };
 
-export function DisplayEmoteEmoji(props: Props) {
+export const DisplayEmoteEmoji = memo(function DisplayEmoteEmoji(props: Props) {
     const emojiRow = css({
         marginTop: "8px",
         marginLeft: { base: "8px", lg: "0px" },
@@ -26,4 +27,4 @@ export function DisplayEmoteEmoji(props: Props) {
             </Row>
         </>
     );
-}
+});

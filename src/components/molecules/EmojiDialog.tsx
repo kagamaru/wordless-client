@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Input, Modal, Tabs } from "antd";
 import { css } from "ss/css";
@@ -9,10 +11,10 @@ import { useIsMobile } from "@/hooks";
 
 type Props = {
     isOpen: boolean;
-    setIsOpen: (isOpen: boolean) => void;
+    closeDialogAction: () => void;
 };
 
-export default function EmojiDialog({ isOpen, setIsOpen }: Props) {
+export default function EmojiDialog({ isOpen, closeDialogAction }: Props) {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState("preset");
     const isMobile = useIsMobile();
@@ -76,7 +78,7 @@ export default function EmojiDialog({ isOpen, setIsOpen }: Props) {
                 [flags, "国旗"]
             ] as Array<[Array<EmojiInterface>, string]>
         ).map(([emojis, label]) => {
-            return <EmojiButtonBlocksByType key={label} typeName={label} emojis={emojis} onClick={() => {}} />;
+            return <EmojiButtonBlocksByType key={label} typeName={label} emojis={emojis} onClickAction={() => {}} />;
         });
     };
 
@@ -125,7 +127,11 @@ export default function EmojiDialog({ isOpen, setIsOpen }: Props) {
     // TODO: クリックイベント実装
     const presetTab = (
         <div className={emojiDialogScrollBox}>
-            {searchTerm ? <EmojiButtonRow emojis={onEmojiSearch(searchTerm)} onClick={() => {}} /> : presetEmojis()}
+            {searchTerm ? (
+                <EmojiButtonRow emojis={onEmojiSearch(searchTerm)} onClickAction={() => {}} />
+            ) : (
+                presetEmojis()
+            )}
         </div>
     );
     const customTab = renderEmojiTab(customEmojiMap);
@@ -149,14 +155,10 @@ export default function EmojiDialog({ isOpen, setIsOpen }: Props) {
         }
     ];
 
-    const closeDialog = () => {
-        setIsOpen(false);
-    };
-
     return (
         <Modal
             open={isOpen}
-            onCancel={() => closeDialog()}
+            onCancel={closeDialogAction}
             footer={null}
             closable={false}
             centered
@@ -164,7 +166,7 @@ export default function EmojiDialog({ isOpen, setIsOpen }: Props) {
             width={500}
         >
             <div className={emojiDialog}>
-                <CloseButton onClick={closeDialog} />
+                <CloseButton onClickAction={closeDialogAction} />
                 <div style={{ marginTop: 4, marginBottom: 4 }}>
                     <Input
                         placeholder="絵文字を検索..."

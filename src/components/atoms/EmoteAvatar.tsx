@@ -1,4 +1,7 @@
+"use client";
+
 import { Avatar } from "antd";
+import { memo } from "react";
 import { css } from "ss/css";
 
 type Props = {
@@ -6,7 +9,7 @@ type Props = {
     url: string;
 };
 
-export function EmoteAvatar(props: Props) {
+export const EmoteAvatar = memo(function EmoteAvatar(props: Props) {
     const avatar = css({
         height: { base: "32px", lg: "50px !important" },
         width: { base: "32px", lg: "50px !important" }
@@ -17,4 +20,4 @@ export function EmoteAvatar(props: Props) {
             <Avatar className={avatar} src={props.url} alt={props.userName + "ProfileImage"}></Avatar>
         </>
     );
-}
+});

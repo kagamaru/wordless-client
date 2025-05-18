@@ -14,7 +14,7 @@ import { useIsMobile } from "@/hooks";
 import { Col, ConfigProvider, Row } from "antd";
 import dayjs from "dayjs";
 import { css } from "ss/css";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ReactionUsersDrawer } from "./ReactionUsersDrawer";
 import EmojiDialog from "./EmojiDialog";
 
@@ -28,6 +28,14 @@ export function WordlessEmote(props: Props) {
     const isMobile = useIsMobile();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isEmojiDialogOpen, setIsEmojiDialogOpen] = useState(false);
+
+    const onEmojiDialogOpen = useCallback(() => {
+        setIsEmojiDialogOpen(true);
+    }, []);
+
+    const onEmojiDialogClose = useCallback(() => {
+        setIsEmojiDialogOpen(false);
+    }, []);
 
     // TODO: ユーザーIDをAPIから取得する
     const userId = "@fuga_fuga";
@@ -77,11 +85,15 @@ export function WordlessEmote(props: Props) {
                     emoteReactionEmojiWithNumber={emoteReactionEmoji}
                     emoteReactionId={props.emote.emoteReactionId}
                     isReacted={emoteReactionEmoji.reactedUserIds.includes(userId)}
-                    onClick={() => {}}
+                    onClickAction={() => {}}
                 ></EmoteReactionButton>
             ))}
         </Row>
     );
+
+    const emoteEmojis = useMemo(() => {
+        return emote.emoteEmojis;
+    }, [emote.emoteEmojis]);
 
     const emoteInfo = () => {
         const emoteDatetimeFormatStyle = "YYYY-MM-DD HH:mm:ss";
@@ -124,7 +136,7 @@ export function WordlessEmote(props: Props) {
                     <Col span={22}>
                         {emoteInfo()}
                         <WordlessDivider />
-                        <DisplayEmoteEmoji emojis={emote.emoteEmojis}></DisplayEmoteEmoji>
+                        <DisplayEmoteEmoji emojis={emoteEmojis}></DisplayEmoteEmoji>
                         {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
                         <ConfigProvider wave={{ disabled: true }}>
                             {emote.totalNumberOfReactions > 0 && (
@@ -138,7 +150,7 @@ export function WordlessEmote(props: Props) {
                             <Col span={isMobile ? 3 : 1}>
                                 {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
                                 <ConfigProvider wave={{ disabled: true }}>
-                                    <PlusButton onClick={() => setIsEmojiDialogOpen(true)}></PlusButton>
+                                    <PlusButton onClickAction={onEmojiDialogOpen}></PlusButton>
                                 </ConfigProvider>
                             </Col>
                             <Col span={isMobile ? 21 : 23}>
@@ -151,9 +163,9 @@ export function WordlessEmote(props: Props) {
                 <ReactionUsersDrawer
                     isOpen={isDrawerOpen}
                     emoteReactionEmojis={emote.emoteReactionEmojis}
-                    setIsOpen={setIsDrawerOpen}
+                    setIsOpenAction={setIsDrawerOpen}
                 />
-                <EmojiDialog isOpen={isEmojiDialogOpen} setIsOpen={setIsEmojiDialogOpen} />
+                <EmojiDialog isOpen={isEmojiDialogOpen} closeDialogAction={onEmojiDialogClose} />
             </div>
         </>
     );
