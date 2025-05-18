@@ -1,8 +1,10 @@
+"use client";
+
 import { Button } from "antd";
 import { css } from "ss/css";
 
 type Props = {
-    onClick: () => void;
+    onClickAction: () => void;
 };
 
 export function PlusButton(props: Props) {
@@ -14,7 +16,7 @@ export function PlusButton(props: Props) {
 
     return (
         <>
-            <Button shape="round" className={button} onClick={() => props.onClick()}>
+            <Button shape="round" className={button} onClick={() => props.onClickAction()}>
                 +
             </Button>
         </>

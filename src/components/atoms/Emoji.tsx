@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { memo } from "react";
 import { EmojiString } from "@/@types";
 import { EmojiCategory } from "@/@types/Emoji";
 import { emojiHelper } from "@/helpers";
@@ -9,7 +10,7 @@ type Props = {
     size: number;
 };
 
-export function Emoji({ emojiId, size }: Props) {
+export const Emoji = memo(function Emoji({ emojiId, size }: Props) {
     const returnedEmoji = emojiHelper(emojiId);
     const presetEmoji = css({
         fontSize: `${size.toString()}px !important`
@@ -34,4 +35,4 @@ export function Emoji({ emojiId, size }: Props) {
             />
         );
     }
-}
+});

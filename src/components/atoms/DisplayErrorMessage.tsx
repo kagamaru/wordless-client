@@ -1,5 +1,6 @@
-import { ErrorCode } from "@/@types";
 import { Alert } from "antd";
+import { memo } from "react";
+import { ErrorCode } from "@/@types";
 
 type Props = {
     error: {

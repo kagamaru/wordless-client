@@ -1,12 +1,14 @@
-import { EmoteReactionEmojiWithNumber } from "@/@types";
+"use client";
+
 import { Button } from "antd";
 import { css } from "ss/css";
-import { Emoji } from "./Emoji";
+import { Emoji } from "@/components/atoms";
+import { EmoteReactionEmojiWithNumber } from "@/@types";
 
 type Props = {
     emoteReactionEmojiWithNumber: EmoteReactionEmojiWithNumber;
     emoteReactionId: string;
-    onClick: () => void;
+    onClickAction: () => void;
     isReacted: boolean;
 };
 
@@ -39,7 +41,7 @@ export function EmoteReactionButton(props: Props) {
                 aria-label={props.emoteReactionId + props.emoteReactionEmojiWithNumber.emojiId}
                 shape="round"
                 className={emojiButton}
-                onClick={props.onClick}
+                onClick={props.onClickAction}
                 aria-pressed={props.isReacted}
             >
                 <Emoji emojiId={props.emoteReactionEmojiWithNumber.emojiId} size={24} />
