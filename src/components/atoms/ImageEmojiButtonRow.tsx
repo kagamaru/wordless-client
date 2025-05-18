@@ -15,7 +15,7 @@ export function ImageEmojiButtonRow({ emojis, onClick }: Props) {
         <Row gutter={[0, 8]}>
             {emojis.map(({ emojiId }) => (
                 <Col key={emojiId} span={isMobile ? 4 : 3}>
-                    <EmojiButton emojiId={emojiId} size={32} onClick={() => onClick(emojiId)} />
+                    <EmojiButton emojiId={emojiId} size={32} onClickAction={() => onClick(emojiId)} />
                 </Col>
             ))}
         </Row>

@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, ConfigProvider } from "antd";
 
 export function LoginButton() {

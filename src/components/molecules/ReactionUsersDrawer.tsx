@@ -1,23 +1,25 @@
-import React, { useEffect } from "react";
+"use client";
+
+import React, { useCallback, useEffect } from "react";
 import { Drawer, Avatar, Row, Typography } from "antd";
-import { css } from "ss/css";
-import { EmojiString, EmoteReactionEmojiWithNumber, User } from "@/@types";
 import { useQuery } from "@tanstack/react-query";
+import { EmojiString, EmoteReactionEmojiWithNumber, User } from "@/@types";
 import { UserService } from "@/app/api";
 import { CloseButton, DisplayErrorMessage, Emoji } from "@/components/atoms";
 import { useError } from "@/hooks";
+import { css } from "ss/css";
 
 type Props = {
     isOpen: boolean;
     emoteReactionEmojis: EmoteReactionEmojiWithNumber[];
-    setIsOpen: (isOpen: boolean) => void;
+    setIsOpenAction: (isOpen: boolean) => void;
 };
 
 type EmojiUsersMap = Map<EmojiString, User[]>;
 
-export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpen }: Props) {
+export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenAction }: Props) {
     const { handledError, handleErrors } = useError();
-    const closeDrawer = () => setIsOpen(false);
+    const closeDrawer = useCallback(() => setIsOpenAction(false), [setIsOpenAction]);
 
     const {
         data: emojiUsersMap,
@@ -43,12 +45,6 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpen }: 
         retry: 0,
         enabled: emoteReactionEmojis.length > 0
     });
-
-    useEffect(() => {
-        if (isError && error) {
-            handleErrors(error);
-        }
-    }, [isError, error]);
 
     const drawerTitle = css({
         fontSize: 16,
@@ -91,19 +87,25 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpen }: 
         </div>
     );
 
+    useEffect(() => {
+        if (isError && error) {
+            handleErrors(error);
+        }
+    }, [isError, error]);
+
     return (
         <>
             <Drawer placement="right" closable={false} onClose={closeDrawer} open={isOpen} width={300}>
                 {isError ? (
                     <>
-                        <CloseButton onClick={closeDrawer} />
+                        <CloseButton onClickAction={closeDrawer} />
                         <DisplayErrorMessage error={handledError} />
                     </>
                 ) : (
                     <>
                         <Row justify="space-between" align="middle">
                             <div className={drawerTitle}>リアクションしたユーザー</div>
-                            <CloseButton onClick={closeDrawer} />
+                            <CloseButton onClickAction={closeDrawer} />
                         </Row>
                         <div style={{ padding: 16 }}>
                             {emojiUsersMap && emojiUsersMap.size > 0 ? (

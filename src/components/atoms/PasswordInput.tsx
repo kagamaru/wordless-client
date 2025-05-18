@@ -1,3 +1,5 @@
+"use client";
+
 import { Form, Input } from "antd";
 
 export function PasswordInput() {
