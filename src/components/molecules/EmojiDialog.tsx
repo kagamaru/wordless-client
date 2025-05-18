@@ -14,7 +14,7 @@ type Props = {
     closeDialogAction: () => void;
 };
 
-export default function EmojiDialog({ isOpen, closeDialogAction }: Props) {
+export function EmojiDialog({ isOpen, closeDialogAction }: Props) {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState("preset");
     const isMobile = useIsMobile();

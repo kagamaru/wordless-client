@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "antd";
-import { css } from "ss/css";
 import { Emoji } from "@/components/atoms";
 import { EmoteReactionEmojiWithNumber } from "@/@types";
+import { css } from "ss/css";
 
 type Props = {
     emoteReactionEmojiWithNumber: EmoteReactionEmojiWithNumber;
@@ -12,14 +12,19 @@ type Props = {
     isReacted: boolean;
 };
 
-export function EmoteReactionButton(props: Props) {
+export function EmoteReactionButton({
+    emoteReactionEmojiWithNumber,
+    emoteReactionId,
+    onClickAction,
+    isReacted
+}: Props) {
     const emojiButton = css({
         height: "32pxt",
         width: "72px",
         marginTop: "4px",
         marginLeft: "4px",
-        borderColor: props.isReacted ? "primary !important" : "",
-        backgroundColor: props.isReacted ? "lightPurple !important" : ""
+        borderColor: isReacted ? "primary !important" : "",
+        backgroundColor: isReacted ? "lightPurple !important" : ""
     });
 
     const numberOfReactionsCSS = css({
@@ -38,14 +43,14 @@ export function EmoteReactionButton(props: Props) {
     return (
         <>
             <Button
-                aria-label={props.emoteReactionId + props.emoteReactionEmojiWithNumber.emojiId}
+                aria-label={emoteReactionId + emoteReactionEmojiWithNumber.emojiId}
                 shape="round"
                 className={emojiButton}
-                onClick={props.onClickAction}
-                aria-pressed={props.isReacted}
+                onClick={onClickAction}
+                aria-pressed={isReacted}
             >
-                <Emoji emojiId={props.emoteReactionEmojiWithNumber.emojiId} size={24} />
-                {numberOfReactionsText(props.emoteReactionEmojiWithNumber.numberOfReactions)}
+                <Emoji emojiId={emoteReactionEmojiWithNumber.emojiId} size={24} />
+                {numberOfReactionsText(emoteReactionEmojiWithNumber.numberOfReactions)}
             </Button>
         </>
     );
