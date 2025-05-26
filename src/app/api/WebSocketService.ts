@@ -36,7 +36,7 @@ export class WebSocketService {
 
     public onReact(request: ReactRequest): void {
         if (this.socket.readyState === WebSocket.OPEN) {
-            this.socket.send(JSON.stringify(request));
+            this.socket.send(JSON.stringify({ action: "onReact", ...request }));
         } else {
             console.warn("WebSocket is not open. Message not sent.");
         }

@@ -2,8 +2,8 @@
 
 import { Col, ConfigProvider, Row } from "antd";
 import dayjs from "dayjs";
-import { useCallback, useMemo, useState } from "react";
-import { EmoteReactionEmojiWithNumber, EmoteEmojis } from "@/@types";
+import { useCallback, useContext, useMemo, useState } from "react";
+import { EmoteReactionEmojiWithNumber, EmoteEmojis, EmojiString } from "@/@types";
 import {
     DisplayEmoteEmoji,
     EmoteAvatar,
@@ -13,6 +13,7 @@ import {
     WordlessDivider
 } from "@/components/atoms";
 import { EmojiDialog, ReactionUsersDrawer } from "@/components/molecules";
+import { WebSocketContext } from "@/components/template";
 import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";
 
@@ -35,6 +36,7 @@ export function WordlessEmote({ emote }: Props) {
     const isMobile = useIsMobile();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isEmojiDialogOpen, setIsEmojiDialogOpen] = useState(false);
+    const webSocketService = useContext(WebSocketContext);
 
     const onEmojiDialogOpen = useCallback(() => {
         setIsEmojiDialogOpen(true);
@@ -82,17 +84,38 @@ export function WordlessEmote({ emote }: Props) {
         marginBottom: { base: "2px", lg: "4px" }
     });
 
+    const alreadyReactedEmojiIds: Array<EmojiString> = [];
+
     const emoteEmojiButtons = () => (
         <Row>
-            {emote?.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
-                <EmoteReactionButton
-                    key={emoteReactionEmoji.emojiId}
-                    emoteReactionEmojiWithNumber={emoteReactionEmoji}
-                    emoteReactionId={emote.emoteReactionId}
-                    isReacted={emoteReactionEmoji.reactedUserIds.includes(userId)}
-                    onClickAction={() => {}}
-                ></EmoteReactionButton>
-            ))}
+            {emote?.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => {
+                if (emoteReactionEmoji.reactedUserIds.length === 0) {
+                    return undefined;
+                }
+
+                const isAlreadyReacted = emoteReactionEmoji.reactedUserIds.includes(userId);
+                if (isAlreadyReacted) {
+                    alreadyReactedEmojiIds.push(emoteReactionEmoji.emojiId);
+                }
+
+                return (
+                    <EmoteReactionButton
+                        key={emoteReactionEmoji.emojiId}
+                        emoteReactionEmojiWithNumber={emoteReactionEmoji}
+                        emoteReactionId={emote.emoteReactionId}
+                        isReacted={isAlreadyReacted}
+                        onClickAction={() => {
+                            webSocketService?.onReact({
+                                emoteReactionId: emote.emoteReactionId,
+                                reactedUserId: userId,
+                                reactedEmojiId: emoteReactionEmoji.emojiId,
+                                operation: isAlreadyReacted ? "decrement" : "increment",
+                                Authorization: localStorage.getItem("IdToken") ?? ""
+                            });
+                        }}
+                    ></EmoteReactionButton>
+                );
+            })}
         </Row>
     );
 
@@ -170,7 +193,12 @@ export function WordlessEmote({ emote }: Props) {
                     emoteReactionEmojis={emote.emoteReactionEmojis}
                     setIsOpenAction={setIsDrawerOpen}
                 />
-                <EmojiDialog isOpen={isEmojiDialogOpen} closeDialogAction={onEmojiDialogClose} />
+                <EmojiDialog
+                    emoteReactionId={emote.emoteReactionId}
+                    isOpen={isEmojiDialogOpen}
+                    closeDialogAction={onEmojiDialogClose}
+                    alreadyReactedEmojiIds={alreadyReactedEmojiIds}
+                />
             </div>
         </>
     );

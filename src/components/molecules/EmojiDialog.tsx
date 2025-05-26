@@ -1,25 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Input, Modal, Tabs } from "antd";
-import { css } from "ss/css";
 import { CloseButton, ImageEmojiButtonRow, EmojiButtonRow } from "@/components/atoms";
 import { EmojiButtonBlocksByType } from "@/components/molecules";
+import { WebSocketContext } from "@/components/template";
 import { presetEmojiMap, customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
 import { EmojiType, Emoji as EmojiInterface } from "@/@types/Emoji";
+import { EmojiString } from "@/@types";
 import { useIsMobile } from "@/hooks";
+import { css } from "ss/css";
 
 type Props = {
+    emoteReactionId: string;
     isOpen: boolean;
+    alreadyReactedEmojiIds: Array<EmojiString>;
     closeDialogAction: () => void;
 };
 
-export function EmojiDialog({ isOpen, closeDialogAction }: Props) {
+export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, closeDialogAction }: Props) {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState("preset");
     const isMobile = useIsMobile();
+    const webSocketService = useContext(WebSocketContext);
 
-    // TODO: クリックイベント実装
+    const onEmojiClick = (emoteReactionId: string, reactedEmojiId: EmojiString) => {
+        webSocketService?.onReact({
+            emoteReactionId,
+            reactedUserId: "@fuga_fuga",
+            reactedEmojiId,
+            operation: alreadyReactedEmojiIds.includes(reactedEmojiId) ? "decrement" : "increment",
+            Authorization: localStorage.getItem("IdToken") ?? ""
+        });
+        closeDialogAction();
+    };
+
     const presetEmojis = () => {
         const smileysEmotion: Array<EmojiInterface> = [];
         const peopleBody: Array<EmojiInterface> = [];
@@ -78,7 +93,14 @@ export function EmojiDialog({ isOpen, closeDialogAction }: Props) {
                 [flags, "国旗"]
             ] as Array<[Array<EmojiInterface>, string]>
         ).map(([emojis, label]) => {
-            return <EmojiButtonBlocksByType key={label} typeName={label} emojis={emojis} onClickAction={() => {}} />;
+            return (
+                <EmojiButtonBlocksByType
+                    key={label}
+                    typeName={label}
+                    emojis={emojis}
+                    onClickAction={(emojiId) => onEmojiClick(emoteReactionId, emojiId)}
+                />
+            );
         });
     };
 
@@ -120,7 +142,10 @@ export function EmojiDialog({ isOpen, closeDialogAction }: Props) {
 
     const renderEmojiTab = (emojiMap: Array<EmojiInterface>) => (
         <div className={emojiDialogScrollBox}>
-            <ImageEmojiButtonRow emojis={searchTerm ? onEmojiSearch(searchTerm) : emojiMap} onClick={() => {}} />
+            <ImageEmojiButtonRow
+                emojis={searchTerm ? onEmojiSearch(searchTerm) : emojiMap}
+                onClickAction={(emojiId) => onEmojiClick(emoteReactionId, emojiId)}
+            />
         </div>
     );
 
@@ -128,7 +153,10 @@ export function EmojiDialog({ isOpen, closeDialogAction }: Props) {
     const presetTab = (
         <div className={emojiDialogScrollBox}>
             {searchTerm ? (
-                <EmojiButtonRow emojis={onEmojiSearch(searchTerm)} onClickAction={() => {}} />
+                <EmojiButtonRow
+                    emojis={onEmojiSearch(searchTerm)}
+                    onClickAction={(emojiId) => onEmojiClick(emoteReactionId, emojiId)}
+                />
             ) : (
                 presetEmojis()
             )}

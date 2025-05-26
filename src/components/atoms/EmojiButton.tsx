@@ -7,7 +7,7 @@ import { css } from "ss/css";
 type Props = {
     emojiId: EmojiString;
     size: number;
-    onClickAction: () => void;
+    onClickAction: (emojiId: EmojiString) => void;
 };
 
 export function EmojiButton({ emojiId, size, onClickAction }: Props) {
@@ -16,7 +16,7 @@ export function EmojiButton({ emojiId, size, onClickAction }: Props) {
     });
 
     return (
-        <span className={emojiButton} onClick={onClickAction}>
+        <span className={emojiButton} onClick={() => onClickAction(emojiId)}>
             <Emoji emojiId={emojiId} size={size} />
         </span>
     );
