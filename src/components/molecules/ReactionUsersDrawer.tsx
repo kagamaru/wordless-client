@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Drawer, Avatar, Row, Typography } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { EmojiString, EmoteReactionEmojiWithNumber, User } from "@/@types";
@@ -18,33 +18,53 @@ type Props = {
 type EmojiUsersMap = Map<EmojiString, User[]>;
 
 export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenAction }: Props) {
-    const { handledError, handleErrors } = useError();
+    const [emojiUsersMap, setEmojiUsersMap] = useState<EmojiUsersMap | undefined>(new Map());
+    const { hasError, handledError } = useError();
     const closeDrawer = useCallback(() => setIsOpenAction(false), [setIsOpenAction]);
 
-    const {
-        data: emojiUsersMap,
-        isError,
-        error
-    } = useQuery({
-        queryKey: ["users", emoteReactionEmojis],
-        queryFn: async (): Promise<EmojiUsersMap | undefined> => {
-            if (emoteReactionEmojis.length === 0) return undefined;
+    const { data: emojiUsersMapData, isPending } = useQuery({
+        queryKey: ["reactionUsers", emoteReactionEmojis],
+        queryFn: async () => {
+            if (emoteReactionEmojis.length === 0) {
+                return new Map<EmojiString, User[]>();
+            }
 
             const userService = new UserService();
             const token = localStorage.getItem("IdToken") ?? "";
 
-            const result: EmojiUsersMap = new Map();
+            const allPromises: Promise<[EmojiString, User]>[] = [];
 
-            for (const emoji of emoteReactionEmojis) {
-                const userPromises = emoji.reactedUserIds.map((userId) => userService.findUser(userId, token));
-                result.set(emoji.emojiId, await Promise.all(userPromises));
+            for (const emoteReactionEmoji of emoteReactionEmojis) {
+                for (const userId of emoteReactionEmoji.reactedUserIds) {
+                    const promise = userService.findUser(userId, token).then((user) => {
+                        // NOTE： タプルであると明示する
+                        return [emoteReactionEmoji.emojiId, user] as [EmojiString, User];
+                    });
+                    allPromises.push(promise);
+                }
             }
 
-            return result;
+            const results = await Promise.all(allPromises);
+
+            const emojiUsersMap = new Map<EmojiString, User[]>();
+
+            for (const [emojiId, user] of results) {
+                if (!emojiUsersMap.has(emojiId)) {
+                    emojiUsersMap.set(emojiId, []);
+                }
+                emojiUsersMap.get(emojiId)?.push(user);
+            }
+
+            return emojiUsersMap;
         },
-        retry: 0,
-        enabled: emoteReactionEmojis.length > 0
+        enabled: isOpen
     });
+
+    useEffect(() => {
+        if (emojiUsersMapData) {
+            setEmojiUsersMap(emojiUsersMapData);
+        }
+    }, [emojiUsersMapData, isOpen]);
 
     const drawerTitle = css({
         fontSize: 16,
@@ -87,16 +107,10 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
         </div>
     );
 
-    useEffect(() => {
-        if (isError && error) {
-            handleErrors(error);
-        }
-    }, [isError, error]);
-
     return (
         <>
             <Drawer placement="right" closable={false} onClose={closeDrawer} open={isOpen} width={300}>
-                {isError ? (
+                {hasError ? (
                     <>
                         <CloseButton onClickAction={closeDrawer} />
                         <DisplayErrorMessage error={handledError} />
@@ -108,7 +122,9 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
                             <CloseButton onClickAction={closeDrawer} />
                         </Row>
                         <div style={{ padding: 16 }}>
-                            {emojiUsersMap && emojiUsersMap.size > 0 ? (
+                            {isPending ? (
+                                <Typography.Text>読み込み中...</Typography.Text>
+                            ) : emojiUsersMap && emojiUsersMap.size > 0 ? (
                                 Array.from(emojiUsersMap).map(([emojiId, users]) => (
                                     <div key={emojiId}>
                                         <Emoji emojiId={emojiId} size={24} />
