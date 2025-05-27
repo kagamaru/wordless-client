@@ -2,6 +2,7 @@ import { CloseButton } from "@/components/atoms/CloseButton";
 import { ImageEmojiButtonRow } from "@/components/atoms/ImageEmojiButtonRow";
 import { DisplayEmoteEmoji } from "@/components/atoms/DisplayEmoteEmoji";
 import { DisplayErrorMessage } from "@/components/atoms/DisplayErrorMessage";
+import { DisplayErrorMessageWithoutErrorCode } from "@/components/atoms/DisplayErrorMessageWithoutErrorCode";
 import { EmailAddressInput } from "@/components/atoms/EmailAddressInput";
 import { Emoji } from "@/components/atoms/Emoji";
 import { EmojiButton } from "@/components/atoms/EmojiButton";
@@ -21,6 +22,7 @@ export {
     ImageEmojiButtonRow,
     DisplayEmoteEmoji,
     DisplayErrorMessage,
+    DisplayErrorMessageWithoutErrorCode,
     EmailAddressInput,
     Emoji,
     EmojiButton,
