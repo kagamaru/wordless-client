@@ -1,6 +1,7 @@
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { ErrorCode } from "@/@types";
 import { errorMessages } from "@/static/ErrorMessages";
-import { useState } from "react";
 
 export const useError = () => {
     const [hasError, setHasError] = useState(false);
@@ -15,6 +16,10 @@ export const useError = () => {
     const handleErrors = (error: Error | DOMException | unknown): void => {
         let errorCode: ErrorCode;
 
+        if (error instanceof Error && error.message === "Unauthorized") {
+            useRouter().push("/auth/login");
+            return;
+        }
         if (error instanceof DOMException && error.name === "AbortError") {
             errorCode = "ABT-01";
         } else if (error instanceof Error && error.message === "Failed to fetch") {
