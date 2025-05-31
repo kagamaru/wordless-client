@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Input, Modal, Tabs } from "antd";
 import { CloseButton, ImageEmojiButtonRow, EmojiButtonRow } from "@/components/atoms";
 import { EmojiButtonBlocksByType } from "@/components/molecules";
@@ -24,16 +24,19 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
     const isMobile = useIsMobile();
     const webSocketService = useContext(WebSocketContext);
 
-    const onEmojiClick = (emoteReactionId: string, reactedEmojiId: EmojiString) => {
-        webSocketService?.onReact({
-            emoteReactionId,
-            reactedUserId: "@fuga_fuga",
-            reactedEmojiId,
-            operation: alreadyReactedEmojiIds.includes(reactedEmojiId) ? "decrement" : "increment",
-            Authorization: localStorage.getItem("IdToken") ?? ""
-        });
-        closeDialogAction();
-    };
+    const onEmojiClick = useCallback(
+        (reactedEmojiId: EmojiString) => {
+            webSocketService?.onReact({
+                emoteReactionId,
+                reactedUserId: "@fuga_fuga",
+                reactedEmojiId,
+                operation: alreadyReactedEmojiIds.includes(reactedEmojiId) ? "decrement" : "increment",
+                Authorization: localStorage.getItem("IdToken") ?? ""
+            });
+            closeDialogAction();
+        },
+        [webSocketService, emoteReactionId, alreadyReactedEmojiIds, closeDialogAction]
+    );
 
     const presetEmojis = () => {
         const smileysEmotion: Array<EmojiInterface> = [];
@@ -98,7 +101,7 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
                     key={label}
                     typeName={label}
                     emojis={emojis}
-                    onClickAction={(emojiId) => onEmojiClick(emoteReactionId, emojiId)}
+                    onClickAction={(emojiId) => onEmojiClick(emojiId)}
                 />
             );
         });
@@ -144,7 +147,7 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
         <div className={emojiDialogScrollBox}>
             <ImageEmojiButtonRow
                 emojis={searchTerm ? onEmojiSearch(searchTerm) : emojiMap}
-                onClickAction={(emojiId) => onEmojiClick(emoteReactionId, emojiId)}
+                onClickAction={(emojiId) => onEmojiClick(emojiId)}
             />
         </div>
     );
@@ -153,10 +156,7 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
     const presetTab = (
         <div className={emojiDialogScrollBox}>
             {searchTerm ? (
-                <EmojiButtonRow
-                    emojis={onEmojiSearch(searchTerm)}
-                    onClickAction={(emojiId) => onEmojiClick(emoteReactionId, emojiId)}
-                />
+                <EmojiButtonRow emojis={onEmojiSearch(searchTerm)} onClickAction={(emojiId) => onEmojiClick(emojiId)} />
             ) : (
                 presetEmojis()
             )}
