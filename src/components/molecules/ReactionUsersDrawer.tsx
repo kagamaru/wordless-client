@@ -19,7 +19,6 @@ type EmojiUsersMap = Map<EmojiString, User[]>;
 export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenAction }: Props) {
     const [emojiUsersMap, setEmojiUsersMap] = useState<EmojiUsersMap | undefined>(new Map());
 
-    const [hasAllUserFetchError, setHasAllUserFetchError] = useState(false);
     const [hasUserFetchError, setHasUserFetchError] = useState(false);
 
     const closeDrawer = useCallback(() => setIsOpenAction(false), [setIsOpenAction]);
@@ -27,7 +26,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
     const {
         data: emojiUsersMapData,
         isPending,
-        isError
+        isError: allUserFetchError
     } = useQuery({
         queryKey: ["reactionUsers", emoteReactionEmojis],
         queryFn: async () => {
@@ -89,12 +88,6 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
         }
     }, [emojiUsersMapData, isOpen]);
 
-    useEffect(() => {
-        if (isError) {
-            setHasAllUserFetchError(true);
-        }
-    }, [isError]);
-
     const drawerTitle = css({
         fontSize: 16,
         fontWeight: 600
@@ -139,7 +132,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
     return (
         <>
             <Drawer placement="right" closable={false} onClose={closeDrawer} open={isOpen} width={300}>
-                {hasAllUserFetchError ? (
+                {allUserFetchError ? (
                     <>
                         <CloseButton onClickAction={closeDrawer} />
                         <DisplayErrorMessageWithoutErrorCode errorMessage="ユーザー情報の取得に失敗しました。" />
