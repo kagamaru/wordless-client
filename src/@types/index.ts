@@ -1,3 +1,4 @@
+import { ReactRequest } from "@/@types/request/ReactRequest";
 import { Emoji } from "@/@types/Emoji";
 import { EmojiIdObject } from "@/@types/EmojiIdObject";
 import { EmojiString } from "@/@types/EmojiString";
@@ -8,6 +9,7 @@ import { ErrorCode } from "@/@types/ErrorCode";
 import { User } from "./User";
 
 export type {
+    ReactRequest,
     Emoji,
     EmojiIdObject,
     EmojiString,

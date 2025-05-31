@@ -14,6 +14,9 @@ export async function fetchWithTimeout<T>(url: string, options?: RestApiRequestO
         clearTimeout(timeoutId);
 
         if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error("Unauthorized");
+            }
             throw new Error(JSON.stringify(await response.json()));
         }
 
@@ -45,6 +48,9 @@ export async function postWithTimeout<T>(
         clearTimeout(timeoutId);
 
         if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error("Unauthorized");
+            }
             throw new Error(JSON.stringify(await response.json()));
         }
 

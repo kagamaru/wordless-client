@@ -1,9 +1,12 @@
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ErrorCode } from "@/@types";
 import { errorMessages } from "@/static/ErrorMessages";
-import { useState } from "react";
 
 export const useError = () => {
+    const router = useRouter();
     const [hasError, setHasError] = useState(false);
+    const [authError, setAuthError] = useState(false);
     const [handledError, setHandledError] = useState<{
         errorCode: ErrorCode | undefined;
         errorMessage: string;
@@ -15,6 +18,10 @@ export const useError = () => {
     const handleErrors = (error: Error | DOMException | unknown): void => {
         let errorCode: ErrorCode;
 
+        if (error instanceof Error && error.message === "Unauthorized") {
+            setAuthError(true);
+            return;
+        }
         if (error instanceof DOMException && error.name === "AbortError") {
             errorCode = "ABT-01";
         } else if (error instanceof Error && error.message === "Failed to fetch") {
@@ -36,6 +43,13 @@ export const useError = () => {
             return "エラーが発生しています。しばらくの間使用できない可能性があります。";
         }
     };
+
+    useEffect(() => {
+        if (authError) {
+            localStorage.removeItem("IdToken");
+            router.push("/auth/login");
+        }
+    }, [authError]);
 
     return {
         hasError,

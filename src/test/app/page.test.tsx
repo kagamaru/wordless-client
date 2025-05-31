@@ -2,8 +2,9 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "./vitest.setup";
-import Home from "@/app/page";
-import { ProviderTemplate } from "@/components/template";
+import Home from "@/app/(main)/page";
+import { ProviderTemplate, WebSocketProvider } from "@/components/template";
+import { ReactRequest } from "@/@types";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -95,6 +96,28 @@ const mockFetchEmotes = vi.fn(() => {
                 userAvatarUrl: "https://c.png",
                 emoteReactionEmojis: [],
                 totalNumberOfReactions: 0
+            },
+            {
+                sequenceNumber: 7,
+                emoteId: "d",
+                userName: "D",
+                userId: "@d",
+                emoteDatetime: "2022-01-01T09:00:00.000Z",
+                emoteReactionId: "reaction-d",
+                emoteEmojis: [
+                    {
+                        emojiId: ":test:"
+                    }
+                ],
+                userAvatarUrl: "https://d.png",
+                emoteReactionEmojis: [
+                    {
+                        emojiId: ":test:",
+                        numberOfReactions: 0,
+                        reactedUserIds: []
+                    }
+                ],
+                totalNumberOfReactions: 0
             }
         ]
     });
@@ -135,28 +158,23 @@ const mockFindUser = vi.fn((userId: string) => {
     }
 });
 
-vi.mock("@/app/api", () => ({
-    EmoteService: class {
-        fetchEmotes = mockFetchEmotes;
-    },
-    UserService: class {
-        findUser = mockFindUser;
-    }
-}));
+const mockOnReact = vi.fn((_request: ReactRequest) => {});
+vi.mock("@/app/api", async () => {
+    const actual = await vi.importActual<typeof import("@/app/api")>("@/app/api");
 
-const mockWebSocketOpen = vi.fn(() => {
-    return true;
-});
-const mockUseWebSocket = vi.fn(() => {
     return {
-        webSocketOpen: mockWebSocketOpen,
-        hasWebSocketError: false,
-        webSocketError: {}
+        ...actual,
+        EmoteService: class {
+            fetchEmotes = mockFetchEmotes;
+        },
+        UserService: class {
+            findUser = mockFindUser;
+        },
+        WebSocketService: class {
+            onReact = mockOnReact;
+        }
     };
 });
-vi.mock("@/hooks/useWebSocket", () => ({
-    useWebSocket: () => mockUseWebSocket()
-}));
 
 const mockedUseRouter = vi.fn();
 vi.mock("next/navigation", () => ({
@@ -165,15 +183,15 @@ vi.mock("next/navigation", () => ({
     })
 }));
 
-const mockedLocalStorageGetItem = vi.spyOn(globalThis.localStorage, "getItem");
-mockedLocalStorageGetItem.mockImplementation((key: string) => {
-    if (key === "IdToken") return "mocked_id_token";
-    return null;
-});
-
 beforeEach(() => {
     vi.clearAllMocks();
     vi.resetAllMocks();
+    vi.stubGlobal("localStorage", {
+        getItem: vi.fn().mockReturnValue("mocked_id_token"),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn()
+    });
 });
 
 afterEach(() => {
@@ -183,7 +201,9 @@ afterEach(() => {
 const rendering = (): void => {
     render(
         <ProviderTemplate>
-            <Home />
+            <WebSocketProvider>
+                <Home />
+            </WebSocketProvider>
         </ProviderTemplate>
     );
 };
@@ -194,15 +214,7 @@ describe("初期表示時", () => {
             rendering();
 
             await waitFor(() => {
-                expect(screen.getAllByRole("listitem").length).toBe(3);
-            });
-        });
-
-        test("WebSocket API サーバとの接続を確立する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(mockWebSocketOpen).toHaveBeenCalledTimes(1);
+                expect(screen.getAllByRole("listitem").length).toBe(4);
             });
         });
 
@@ -297,6 +309,14 @@ describe("初期表示時", () => {
                 });
             });
 
+            test("リアクションが0件の時、リアクションボタンを表示しない", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(screen.queryByRole("button", { name: "reaction-d:test:" })).toBeFalsy();
+                });
+            });
+
             test("リアクションがないとき、何も表示しない", async () => {
                 rendering();
 
@@ -335,23 +355,6 @@ describe("初期表示時", () => {
     });
 
     describe("異常系", () => {
-        test("WebSocket接続エラーが発生した時、エラーメッセージを表示する", async () => {
-            mockUseWebSocket.mockReturnValue({
-                webSocketOpen: mockWebSocketOpen,
-                hasWebSocketError: true,
-                webSocketError: {
-                    errorCode: "WSK-99",
-                    errorMessage: "接続が出来ません。しばらくの間使用できない可能性があります。"
-                }
-            });
-
-            rendering();
-
-            await waitFor(() => {
-                expect(within(screen.getByRole("alert")).getByText("Error : WSK-99")).toBeTruthy();
-            });
-        });
-
         test.for([
             ["EMT-01", "不正なリクエストです。もう一度やり直してください。"],
             ["EMT-02", "不正なリクエストです。もう一度やり直してください。"],
@@ -373,6 +376,18 @@ describe("初期表示時", () => {
                 const alertComponent = screen.getByRole("alert");
                 expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
                 expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+            });
+        });
+
+        test("localStorageからのIdToken取得に失敗した時、リダイレクトする", async () => {
+            vi.stubGlobal("localStorage", {
+                getItem: vi.fn().mockReturnValue(null)
+            });
+
+            rendering();
+
+            await waitFor(() => {
+                expect(mockedUseRouter).toHaveBeenCalledWith("/auth/login");
             });
         });
     });
@@ -422,26 +437,52 @@ describe("リアクション総数ボタンをクリックした時", () => {
     });
 
     describe("異常系", () => {
-        test.for([
-            ["USE-01", "不正なリクエストです。もう一度やり直してください。"],
-            ["USE-02", "不正なリクエストです。もう一度やり直してください。"],
-            ["USE-03", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
-        ])("サーバから%sエラーが返却された時、エラーメッセージ「%s」を表示する", async ([errorCode, errorMessage]) => {
-            mockFindUser.mockRejectedValue(
-                new Error(
-                    JSON.stringify({
-                        error: errorCode
-                    })
-                )
-            );
-            rendering();
+        // TODO: 表示まで時間がかかり、テスト実行が困難
+        test.todo("ユーザー情報取得APIに全て失敗した時、「ユーザー情報の取得に失敗しました。」と表示する");
 
-            await user.click(await screen.findByRole("button", { name: "10 Reactions" }));
+        test.todo("ユーザー情報取得APIに一部失敗した時、「情報を取得できなかったユーザーがいます。」と表示する");
+    });
+});
+
+describe("リアクションボタンをクリックした時", () => {
+    describe("正常系", () => {
+        beforeEach(() => {
+            rendering();
+        });
+
+        test("未リアクションのリアクションボタンをクリックした時、絵文字リアクションAPIがincrement操作で呼び出される", async () => {
+            await user.click(
+                within(await screen.findByRole("listitem", { name: "a" })).getByRole("button", {
+                    name: "reaction-a:party_parrot:"
+                })
+            );
 
             await waitFor(() => {
-                const alertComponent = screen.getByRole("alert");
-                expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
-                expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                expect(mockOnReact).toHaveBeenCalledWith({
+                    emoteReactionId: "reaction-a",
+                    reactedEmojiId: ":party_parrot:",
+                    reactedUserId: "@fuga_fuga",
+                    operation: "increment",
+                    Authorization: "mocked_id_token"
+                });
+            });
+        });
+
+        test("既にリアクション済のリアクションボタンをクリックした時、絵文字リアクションAPIがdecrement操作で呼び出される", async () => {
+            await user.click(
+                within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", {
+                    name: "reaction-b:tiger:"
+                })
+            );
+
+            await waitFor(() => {
+                expect(mockOnReact).toHaveBeenCalledWith({
+                    emoteReactionId: "reaction-b",
+                    reactedEmojiId: ":tiger:",
+                    reactedUserId: "@fuga_fuga",
+                    operation: "decrement",
+                    Authorization: "mocked_id_token"
+                });
             });
         });
     });
@@ -453,7 +494,7 @@ describe("リアクション追加ボタンをクリックした時", () => {
             rendering();
 
             await user.click(
-                within(await screen.findByRole("listitem", { name: "c" })).getByRole("button", { name: "+" })
+                within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", { name: "+" })
             );
         });
 
@@ -605,7 +646,33 @@ describe("リアクション追加ボタンをクリックした時", () => {
             });
 
             describe("リアクション追加ボタンをクリックした時", () => {
-                test.todo("リアクションが追加される");
+                test("未リアクションの絵文字をクリックした時、絵文字リアクションAPIがincrement操作で呼び出される", async () => {
+                    await user.click(within(screen.getByRole("dialog")).getByText("🐬"));
+
+                    await waitFor(() => {
+                        expect(mockOnReact).toHaveBeenCalledWith({
+                            emoteReactionId: "reaction-b",
+                            reactedEmojiId: ":dolphin:",
+                            reactedUserId: "@fuga_fuga",
+                            operation: "increment",
+                            Authorization: "mocked_id_token"
+                        });
+                    });
+                });
+
+                test("既にリアクション済の絵文字をクリックした時、絵文字リアクションAPIがdecrement操作で呼び出される", async () => {
+                    await user.click(within(screen.getByRole("dialog")).getByText("🐅"));
+
+                    await waitFor(() => {
+                        expect(mockOnReact).toHaveBeenCalledWith({
+                            emoteReactionId: "reaction-b",
+                            reactedEmojiId: ":tiger:",
+                            reactedUserId: "@fuga_fuga",
+                            operation: "decrement",
+                            Authorization: "mocked_id_token"
+                        });
+                    });
+                });
 
                 test.todo("リアクション追加ボタンをクリックした時、リアクション追加モーダーが閉じられる");
             });

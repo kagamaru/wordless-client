@@ -1,17 +1,44 @@
-export const WebSocketService = (): WebSocket => {
-    const webSocket = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? "");
+import { ReactRequest } from "@/@types";
 
-    webSocket.onopen = (): void => {
-        console.log("WebSocket connected");
-    };
+export class WebSocketService {
+    private socket: WebSocket;
 
-    webSocket.onclose = () => {
-        console.log("WebSocket disconnected");
-    };
+    constructor(url: string, onErrorCallback: (error: Error) => void) {
+        this.socket = new WebSocket(url);
+        this.socket.onopen = () => {
+            console.log("WebSocket connected");
+        };
 
-    webSocket.onerror = (error) => {
-        console.log(error);
-    };
+        this.socket.onclose = (event) => {
+            console.log("WebSocket disconnected");
+            if (!event.wasClean) {
+                onErrorCallback(
+                    new Error(
+                        JSON.stringify({
+                            errorCode: "WSK-99"
+                        })
+                    )
+                );
+            }
+        };
 
-    return webSocket;
-};
+        this.socket.onerror = () => {
+            console.error("WebSocket error");
+            onErrorCallback(
+                new Error(
+                    JSON.stringify({
+                        errorCode: "WSK-99"
+                    })
+                )
+            );
+        };
+    }
+
+    public onReact(request: ReactRequest): void {
+        if (this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify({ action: "onReact", ...request }));
+        } else {
+            console.warn("WebSocket is not open. Message not sent.");
+        }
+    }
+}
