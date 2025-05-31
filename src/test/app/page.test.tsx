@@ -378,6 +378,18 @@ describe("初期表示時", () => {
                 expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
             });
         });
+
+        test("localStorageからのIdToken取得に失敗した時、リダイレクトする", async () => {
+            vi.stubGlobal("localStorage", {
+                getItem: vi.fn().mockReturnValue(null)
+            });
+
+            rendering();
+
+            await waitFor(() => {
+                expect(mockedUseRouter).toHaveBeenCalledWith("/auth/login");
+            });
+        });
     });
 });
 
