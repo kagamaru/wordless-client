@@ -1,10 +1,12 @@
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ErrorCode } from "@/@types";
 import { errorMessages } from "@/static/ErrorMessages";
 
 export const useError = () => {
+    const router = useRouter();
     const [hasError, setHasError] = useState(false);
+    const [authError, setAuthError] = useState(false);
     const [handledError, setHandledError] = useState<{
         errorCode: ErrorCode | undefined;
         errorMessage: string;
@@ -17,7 +19,7 @@ export const useError = () => {
         let errorCode: ErrorCode;
 
         if (error instanceof Error && error.message === "Unauthorized") {
-            useRouter().push("/auth/login");
+            setAuthError(true);
             return;
         }
         if (error instanceof DOMException && error.name === "AbortError") {
@@ -41,6 +43,13 @@ export const useError = () => {
             return "エラーが発生しています。しばらくの間使用できない可能性があります。";
         }
     };
+
+    useEffect(() => {
+        if (authError) {
+            localStorage.removeItem("IdToken");
+            router.push("/auth/login");
+        }
+    }, [authError]);
 
     return {
         hasError,
