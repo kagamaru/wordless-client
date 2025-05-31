@@ -1,5 +1,3 @@
-import { useRouter } from "next/navigation";
-
 export async function fetchWithTimeout<T>(url: string, options?: RestApiRequestOption, timeout = 5000): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -17,7 +15,6 @@ export async function fetchWithTimeout<T>(url: string, options?: RestApiRequestO
 
         if (!response.ok) {
             if (response.status === 401) {
-                localStorage.removeItem("IdToken");
                 throw new Error("Unauthorized");
             }
             throw new Error(JSON.stringify(await response.json()));
@@ -52,7 +49,6 @@ export async function postWithTimeout<T>(
 
         if (!response.ok) {
             if (response.status === 401) {
-                localStorage.removeItem("IdToken");
                 throw new Error("Unauthorized");
             }
             throw new Error(JSON.stringify(await response.json()));
