@@ -88,44 +88,44 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
         }
     }, [emojiUsersMapData, isOpen]);
 
-    const drawerTitle = css({
+    const drawerTitleStyle = css({
         fontSize: 16,
         fontWeight: 600
     });
 
-    const userItem = css({
+    const userItemStyle = css({
         display: "flex",
         alignItems: "center",
         marginBottom: 4,
         textDecoration: "none"
     });
 
-    const userInfoText = css({
+    const userInfoStyle = css({
         marginLeft: 2,
         color: "black"
     });
 
-    const textWrapper = css({
+    const textWrapperStyle = css({
         textOverflow: "ellipsis",
         overflow: "hidden",
         whiteSpace: "nowrap",
         maxWidth: "150px"
     });
 
-    const userNameText = css({
+    const userNameTextStyle = css({
         fontSize: 14,
         fontWeight: 600
     });
 
-    const userIdText = css({
+    const userIdTextStyle = css({
         fontSize: 12,
-        color: "gray"
+        color: "grey"
     });
 
     const UserInfo = ({ userName, userId }: { userName: string; userId: string }) => (
-        <div className={userInfoText}>
-            <div className={`${textWrapper} ${userNameText}`}>{userName}</div>
-            <div className={`${textWrapper} ${userIdText}`}>{userId}</div>
+        <div className={userInfoStyle}>
+            <div className={`${textWrapperStyle} ${userNameTextStyle}`}>{userName}</div>
+            <div className={`${textWrapperStyle} ${userIdTextStyle}`}>{userId}</div>
         </div>
     );
 
@@ -140,7 +140,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
                 ) : (
                     <>
                         <Row justify="space-between" align="middle">
-                            <div className={drawerTitle}>リアクションしたユーザー</div>
+                            <div className={drawerTitleStyle}>リアクションしたユーザー</div>
                             <CloseButton onClickAction={closeDrawer} />
                         </Row>
                         <div style={{ padding: 16 }}>
@@ -159,7 +159,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
                                                         <a
                                                             key={user.userId}
                                                             href={`/users/${user.userId}`}
-                                                            className={userItem}
+                                                            className={userItemStyle}
                                                         >
                                                             <Avatar src={user.userAvatarUrl} size={48} />
                                                             <UserInfo userName={user.userName} userId={user.userId} />

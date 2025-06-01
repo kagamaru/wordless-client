@@ -9,7 +9,7 @@ type Props = {
 };
 
 function DisplayEmoteEmojiComponent({ emojis }: Props) {
-    const emojiRow = css({
+    const emojiRowStyle = css({
         marginTop: "8px",
         marginLeft: { base: "8px", lg: "0px" },
         fontSize: "62px !important"
@@ -22,7 +22,7 @@ function DisplayEmoteEmojiComponent({ emojis }: Props) {
 
     return (
         <>
-            <Row className={emojiRow} align="middle">
+            <Row className={emojiRowStyle} align="middle">
                 {displayEmojis}
             </Row>
         </>

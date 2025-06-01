@@ -9,17 +9,17 @@ type Props = {
 };
 
 export function TotalNumberOfReactionsButton({ totalNumberOfReactions, onClickAction }: Props) {
-    const totalNumberOfReactionsButton = css({
+    const totalNumberOfReactionsButtonStyle = css({
         padding: "0px !important"
     });
 
-    const totalNumberOfReactionsButtonText = css({
+    const totalNumberOfReactionsButtonTextStyle = css({
         color: "grey"
     });
 
     return (
-        <Button type="text" className={totalNumberOfReactionsButton} onClick={onClickAction}>
-            <Row className={totalNumberOfReactionsButtonText}>
+        <Button type="text" className={totalNumberOfReactionsButtonStyle} onClick={onClickAction}>
+            <Row className={totalNumberOfReactionsButtonTextStyle}>
                 <div>{totalNumberOfReactions}</div>
                 <div className="ml-1">Reactions</div>
             </Row>

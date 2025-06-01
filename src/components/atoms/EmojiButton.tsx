@@ -11,12 +11,12 @@ type Props = {
 };
 
 export function EmojiButton({ emojiId, size, onClickAction }: Props) {
-    const emojiButton = css({
+    const emojiButtonStyle = css({
         cursor: "pointer"
     });
 
     return (
-        <span className={emojiButton} onClick={() => onClickAction(emojiId)}>
+        <span className={emojiButtonStyle} onClick={() => onClickAction(emojiId)}>
             <Emoji emojiId={emojiId} size={size} />
         </span>
     );

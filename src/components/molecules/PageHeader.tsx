@@ -5,24 +5,24 @@ import { Col, Row } from "antd";
 import { css } from "ss/css";
 
 export function PageHeader() {
-    const pageHeader = css({
+    const pageHeaderStyle = css({
         padding: "16px",
         color: "white",
         background: "primary"
     });
 
-    const textClass = css({
+    const wordlessTitleTextStyle = css({
         fontSize: "24px !important",
         fontWeight: "bold"
     });
 
     return (
         <>
-            <Row className={pageHeader}>
-                <Col className={textClass} span={2}>
+            <Row className={pageHeaderStyle}>
+                <Col className={wordlessTitleTextStyle} span={2}>
                     <MenuOutlined />
                 </Col>
-                <Col className={textClass} span={22}>
+                <Col className={wordlessTitleTextStyle} span={22}>
                     <span className="ml-4">Wordless</span>
                 </Col>
             </Row>
