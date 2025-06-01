@@ -1,4 +1,5 @@
-import { ReactRequest } from "@/@types";
+import { OnReactIncomingMessage, ReactRequest } from "@/@types";
+import { useEmoteStore } from "@/store";
 
 export class WebSocketService {
     private socket: WebSocket;
@@ -19,6 +20,15 @@ export class WebSocketService {
                         })
                     )
                 );
+            }
+        };
+
+        this.socket.onmessage = (event: MessageEvent) => {
+            try {
+                const data = JSON.parse(event.data) as OnReactIncomingMessage;
+                useEmoteStore.getState().updateEmoteReactionEmojis(data);
+            } catch (err) {
+                console.error("Invalid message received:", event.data);
             }
         };
 

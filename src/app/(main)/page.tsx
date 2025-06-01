@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { EmoteService } from "@/app/api";
 import { DisplayErrorMessage } from "@/components/atoms";
 import { PageHeader } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
 import { useError } from "@/hooks";
-import { useQuery } from "@tanstack/react-query";
+import { useEmoteStore } from "@/store";
 
 export default function Home() {
     const { handledError, handleErrors } = useError();
+    const emotes = useEmoteStore((state) => state.emotes);
 
     const { data, isError, error } = useQuery({
         queryKey: ["emotes"],
@@ -25,11 +27,17 @@ export default function Home() {
         }
     }, [isError, error]);
 
+    useEffect(() => {
+        if (data) {
+            useEmoteStore.setState({ emotes: data.emotes });
+        }
+    }, [data]);
+
     return (
         <>
             <PageHeader></PageHeader>
             {isError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
-            {data && <WordlessEmotes emotes={data.emotes}></WordlessEmotes>}
+            {emotes && <WordlessEmotes emotes={emotes}></WordlessEmotes>}
         </>
     );
 }
