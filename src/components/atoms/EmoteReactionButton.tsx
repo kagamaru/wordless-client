@@ -18,7 +18,7 @@ export function EmoteReactionButton({
     onClickAction,
     isReacted
 }: Props) {
-    const emojiButton = css({
+    const emojiButtonStyle = css({
         height: "32pxt",
         width: "72px",
         marginTop: "4px",
@@ -27,14 +27,14 @@ export function EmoteReactionButton({
         backgroundColor: isReacted ? "lightPurple !important" : ""
     });
 
-    const numberOfReactionsCSS = css({
+    const numberOfReactionsStyle = css({
         fontSize: "12px",
         fontWeight: "bold"
     });
 
     const numberOfReactionsText = (numReactions: number) => {
         if (numReactions > 99) {
-            return <span className={numberOfReactionsCSS}>99+</span>;
+            return <span className={numberOfReactionsStyle}>99+</span>;
         } else {
             return <span>{numReactions}</span>;
         }
@@ -45,7 +45,7 @@ export function EmoteReactionButton({
             <Button
                 aria-label={emoteReactionId + emoteReactionEmojiWithNumber.emojiId}
                 shape="round"
-                className={emojiButton}
+                className={emojiButtonStyle}
                 onClick={onClickAction}
                 aria-pressed={isReacted}
             >

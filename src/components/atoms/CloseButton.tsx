@@ -9,13 +9,13 @@ type Props = {
 };
 
 export function CloseButton({ onClickAction }: Props) {
-    const closeButton = css({
+    const closeButtonStyle = css({
         display: "flex",
         justifyContent: "flex-end"
     });
 
     return (
-        <div className={closeButton}>
+        <div className={closeButtonStyle}>
             {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
             <ConfigProvider wave={{ disabled: true }}>
                 <Button icon={<CloseOutlined />} onClick={onClickAction} />

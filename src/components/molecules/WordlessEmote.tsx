@@ -49,17 +49,17 @@ export function WordlessEmote({ emote }: Props) {
     // TODO: ユーザーIDをAPIから取得する
     const userId = "@fuga_fuga";
 
-    const wordlessEmote = css({
+    const wordlessEmoteStyle = css({
         paddingLeft: { base: "16px", lg: "140px" },
         paddingRight: { base: "16px", lg: "140px" },
         marginTop: "20px"
     });
 
-    const textBlock = css({
+    const textBlockStyle = css({
         marginBottom: "2px"
     });
 
-    const userNameText = css({
+    const userNameTextStyle = css({
         fontSize: { base: "20px", lg: "24px" },
         color: "black !important",
         marginLeft: { base: "8px", lg: "0px" },
@@ -70,14 +70,14 @@ export function WordlessEmote({ emote }: Props) {
         marginRight: { base: "0px", lg: "8px" }
     });
 
-    const userIdText = css({
+    const userIdTextStyle = css({
         marginLeft: { base: "8px", lg: "0px" },
         fontSize: "16px",
         color: "grey",
         marginBottom: { base: "2px", lg: "0px" }
     });
 
-    const emoteDatetimeText = css({
+    const emoteDatetimeTextStyle = css({
         fontSize: "12px",
         color: "grey",
         marginLeft: { base: "8px", lg: "0px" },
@@ -127,10 +127,10 @@ export function WordlessEmote({ emote }: Props) {
         const emoteDatetimeFormatStyle = "YYYY-MM-DD HH:mm:ss";
         if (isMobile) {
             return (
-                <div className={textBlock}>
-                    <div className={userNameText}>{emote.userName}</div>
-                    <div className={userIdText}>{emote.userId}</div>
-                    <div className={emoteDatetimeText}>
+                <div className={textBlockStyle}>
+                    <div className={userNameTextStyle}>{emote.userName}</div>
+                    <div className={userIdTextStyle}>{emote.userId}</div>
+                    <div className={emoteDatetimeTextStyle}>
                         {dayjs(emote.emoteDatetime).format(emoteDatetimeFormatStyle)}
                     </div>
                 </div>
@@ -138,11 +138,11 @@ export function WordlessEmote({ emote }: Props) {
         } else {
             return (
                 <div>
-                    <Row align="bottom" className={textBlock}>
-                        <div className={userNameText}>{emote.userName}</div>
-                        <div className={userIdText}>{emote.userId}</div>
+                    <Row align="bottom" className={textBlockStyle}>
+                        <div className={userNameTextStyle}>{emote.userName}</div>
+                        <div className={userIdTextStyle}>{emote.userId}</div>
                     </Row>
-                    <div className={emoteDatetimeText}>
+                    <div className={emoteDatetimeTextStyle}>
                         {dayjs(emote.emoteDatetime).format(emoteDatetimeFormatStyle)}
                     </div>
                 </div>
@@ -156,7 +156,7 @@ export function WordlessEmote({ emote }: Props) {
 
     return (
         <>
-            <div className={wordlessEmote}>
+            <div className={wordlessEmoteStyle}>
                 <Row>
                     <Col span={2} className="m-auto">
                         <EmoteAvatar url={emote.userAvatarUrl} userName={emote.userName}></EmoteAvatar>

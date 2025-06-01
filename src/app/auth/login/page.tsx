@@ -65,13 +65,13 @@ export default function LoginSignup() {
     //     // await authService.signup(email, password);
     // };
 
-    const alertDescriptionBlock = css({
+    const alertBlockStyle = css({
         textAlign: "left"
     });
 
     const loginTab = (
         <>
-            <div className={alertDescriptionBlock}>
+            <div className={alertBlockStyle}>
                 {loginMutation.isError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
             </div>
             <Form form={form} onFinish={onLoginClick}>
@@ -107,7 +107,7 @@ export default function LoginSignup() {
         }
     ];
 
-    const loginSignupPage = css({
+    const loginSignupPageStyle = css({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -115,35 +115,35 @@ export default function LoginSignup() {
         background: "loginPageBackground"
     });
 
-    const loginSignupPageBlock = css({
+    const loginSignupPageBlockStyle = css({
         textAlign: "center"
     });
 
-    const wordlessTitle = css({
+    const wordlessTitleStyle = css({
         color: "primary",
         fontSize: "48px",
         fontWeight: "bold"
     });
 
-    const wordlessSubTitle = css({
+    const wordlessSubTitleStyle = css({
         marginBottom: "8px",
         fontSize: "16px",
         color: "grey"
     });
 
-    const loginSignupCard = css({
+    const loginSignupCardStyle = css({
         width: isMobile ? "99%" : 500,
-        margin: "auto !important",
+        margin: "auto",
         marginTop: 50
     });
 
     return (
         <>
-            <div className={loginSignupPage}>
-                <div className={loginSignupPageBlock}>
-                    <div className={wordlessTitle}>Wordless</div>
-                    <div className={wordlessSubTitle}>- 絵文字でつながるSNS -</div>
-                    <Card className={loginSignupCard}>
+            <div className={loginSignupPageStyle}>
+                <div className={loginSignupPageBlockStyle}>
+                    <div className={wordlessTitleStyle}>Wordless</div>
+                    <div className={wordlessSubTitleStyle}>- 絵文字でつながるSNS -</div>
+                    <Card className={loginSignupCardStyle}>
                         <Tabs activeKey={activeTab} items={tabItems} onChange={setActiveTab} centered></Tabs>
                     </Card>
                 </div>
