@@ -112,7 +112,7 @@ export default function LoginSignup() {
         alignItems: "center",
         justifyContent: "center",
         height: "100vh",
-        background: "linear-gradient(135deg, rgba(220, 198, 224, 0.8), rgba(165, 180, 252, 0.8))"
+        background: "loginPageBackground"
     });
 
     const loginSignupPageBlock = css({
