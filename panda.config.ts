@@ -31,7 +31,10 @@ export default defineConfig({
                     grey: { value: "#00000073" },
                     lightGrey: { value: "#c0c0c0" },
                     darkGrey: { value: "#757575" },
-                    lightPurple: { value: "#ffeeff" }
+                    lightPurple: { value: "#ffeeff" },
+                    loginPageBackground: {
+                        value: "linear-gradient(135deg, rgba(220, 198, 224, 0.8), rgba(165, 180, 252, 0.8))"
+                    }
                 }
             }
         }

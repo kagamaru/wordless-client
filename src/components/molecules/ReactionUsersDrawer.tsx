@@ -119,7 +119,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
 
     const userIdText = css({
         fontSize: 12,
-        color: "gray"
+        color: "grey"
     });
 
     const UserInfo = ({ userName, userId }: { userName: string; userId: string }) => (
