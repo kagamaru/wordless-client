@@ -1,4 +1,5 @@
 import { ReactRequest } from "@/@types/request/ReactRequest";
+import { OnReactIncomingMessage } from "@/@types/webSocketMessage/OnReactIncomingMessage";
 import { Emoji } from "@/@types/Emoji";
 import { EmojiIdObject } from "@/@types/EmojiIdObject";
 import { EmojiString } from "@/@types/EmojiString";
@@ -10,6 +11,7 @@ import { User } from "./User";
 
 export type {
     ReactRequest,
+    OnReactIncomingMessage,
     Emoji,
     EmojiIdObject,
     EmojiString,

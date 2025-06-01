@@ -16,9 +16,10 @@ export const websocketHandlers = [
                             {
                                 emojiId: data.reactedEmojiId,
                                 numberOfReactions: data.operation === "increment" ? 1 : 0,
-                                reactedUserId: data.operation === "increment" ? ["@fuga_fuga"] : []
+                                reactedUserIds: data.operation === "increment" ? ["@fuga_fuga"] : []
                             }
-                        ]
+                        ],
+                        totalNumberOfReactions: data.operation === "increment" ? 1 : 0
                     })
                 );
             }
