@@ -10,8 +10,6 @@ export const useMock = (): boolean => {
                 await initMocks().then(() => {
                     setIsMockReady(true);
                 });
-            } else {
-                setIsMockReady(true);
             }
         })();
     }, []);
