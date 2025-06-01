@@ -450,40 +450,50 @@ describe("リアクションボタンをクリックした時", () => {
             rendering();
         });
 
-        test("未リアクションのリアクションボタンをクリックした時、絵文字リアクションAPIがincrement操作で呼び出される", async () => {
-            await user.click(
-                within(await screen.findByRole("listitem", { name: "a" })).getByRole("button", {
-                    name: "reaction-a:party_parrot:"
-                })
-            );
+        describe("未リアクションのリアクションボタンをクリックした時", () => {
+            test("絵文字リアクションAPIがincrement操作で呼び出される", async () => {
+                await user.click(
+                    within(await screen.findByRole("listitem", { name: "a" })).getByRole("button", {
+                        name: "reaction-a:party_parrot:"
+                    })
+                );
 
-            await waitFor(() => {
-                expect(mockOnReact).toHaveBeenCalledWith({
-                    emoteReactionId: "reaction-a",
-                    reactedEmojiId: ":party_parrot:",
-                    reactedUserId: "@fuga_fuga",
-                    operation: "increment",
-                    Authorization: "mocked_id_token"
+                await waitFor(() => {
+                    expect(mockOnReact).toHaveBeenCalledWith({
+                        emoteReactionId: "reaction-a",
+                        reactedEmojiId: ":party_parrot:",
+                        reactedUserId: "@fuga_fuga",
+                        operation: "increment",
+                        Authorization: "mocked_id_token"
+                    });
                 });
             });
+
+            // NOTE: WebSocketの内部ロジックのmock化が困難
+            test.todo("リアクションボタンをクリックした時、リアクションボタンの表示が更新される");
         });
 
-        test("既にリアクション済のリアクションボタンをクリックした時、絵文字リアクションAPIがdecrement操作で呼び出される", async () => {
-            await user.click(
-                within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", {
-                    name: "reaction-b:tiger:"
-                })
-            );
+        describe("既にリアクション済のリアクションボタンをクリックした時", () => {
+            test("絵文字リアクションAPIがdecrement操作で呼び出される", async () => {
+                await user.click(
+                    within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", {
+                        name: "reaction-b:tiger:"
+                    })
+                );
 
-            await waitFor(() => {
-                expect(mockOnReact).toHaveBeenCalledWith({
-                    emoteReactionId: "reaction-b",
-                    reactedEmojiId: ":tiger:",
-                    reactedUserId: "@fuga_fuga",
-                    operation: "decrement",
-                    Authorization: "mocked_id_token"
+                await waitFor(() => {
+                    expect(mockOnReact).toHaveBeenCalledWith({
+                        emoteReactionId: "reaction-b",
+                        reactedEmojiId: ":tiger:",
+                        reactedUserId: "@fuga_fuga",
+                        operation: "decrement",
+                        Authorization: "mocked_id_token"
+                    });
                 });
             });
+
+            // NOTE: WebSocketの内部ロジックのmock化が困難
+            test.todo("リアクションボタンをクリックした時、リアクションボタンの表示が更新される");
         });
     });
 });
