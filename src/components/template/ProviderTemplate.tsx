@@ -22,6 +22,7 @@ export function ProviderTemplate({
     const [token, setToken] = useState("");
     const router = useRouter();
     const isMockReady = useMock();
+    const isMockEnabled = process.env.NEXT_PUBLIC_API_MOCKING === "enabled";
 
     useEffect(() => {
         const fetchToken = (): string | void => {
@@ -37,23 +38,21 @@ export function ProviderTemplate({
         setToken(token ?? "");
     }, [router]);
 
-    return (
-        isMockReady && (
-            <>
-                <AuthContext.Provider value={{ token, setToken }}>
-                    <QueryClientProvider client={queryClient}>
-                        <ConfigProvider
-                            theme={{
-                                token: {
-                                    colorPrimary: "#7829cc"
-                                }
-                            }}
-                        >
-                            {children}
-                        </ConfigProvider>
-                    </QueryClientProvider>
-                </AuthContext.Provider>
-            </>
-        )
+    const renderProvider = () => (
+        <AuthContext.Provider value={{ token, setToken }}>
+            <QueryClientProvider client={queryClient}>
+                <ConfigProvider
+                    theme={{
+                        token: {
+                            colorPrimary: "#7829cc"
+                        }
+                    }}
+                >
+                    {children}
+                </ConfigProvider>
+            </QueryClientProvider>
+        </AuthContext.Provider>
     );
+
+    return (isMockEnabled && isMockReady) || !isMockEnabled ? renderProvider() : <></>;
 }
