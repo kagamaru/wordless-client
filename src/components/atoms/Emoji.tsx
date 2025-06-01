@@ -12,13 +12,13 @@ type Props = {
 
 const EmojiComponent = ({ emojiId, size }: Props) => {
     const returnedEmoji = emojiHelper(emojiId);
-    const presetEmoji = css({
+    const presetEmojiStyle = css({
         fontSize: `${size.toString()}px !important`
     });
 
     if (returnedEmoji.emojiCategory === EmojiCategory.Preset) {
         return (
-            <div className={presetEmoji} aria-label={returnedEmoji.emojiId} title={returnedEmoji.emojiJapaneseId}>
+            <div className={presetEmojiStyle} aria-label={returnedEmoji.emojiId} title={returnedEmoji.emojiJapaneseId}>
                 {returnedEmoji.emojiChar}
             </div>
         );

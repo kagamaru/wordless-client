@@ -10,14 +10,14 @@ type Props = {
 };
 
 function EmoteAvatarComponent({ userName, url }: Props) {
-    const avatar = css({
+    const avatarStyle = css({
         height: { base: "32px", lg: "50px !important" },
         width: { base: "32px", lg: "50px !important" }
     });
 
     return (
         <>
-            <Avatar className={avatar} src={url} alt={userName + "ProfileImage"}></Avatar>
+            <Avatar className={avatarStyle} src={url} alt={userName + "ProfileImage"}></Avatar>
         </>
     );
 }

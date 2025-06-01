@@ -8,7 +8,7 @@ type Props = {
 };
 
 export function PlusButton({ onClickAction }: Props) {
-    const button = css({
+    const plusButtonStyle = css({
         height: "32px",
         width: "24px",
         marginTop: "4px"
@@ -16,7 +16,7 @@ export function PlusButton({ onClickAction }: Props) {
 
     return (
         <>
-            <Button shape="round" className={button} onClick={onClickAction}>
+            <Button shape="round" className={plusButtonStyle} onClick={onClickAction}>
                 +
             </Button>
         </>

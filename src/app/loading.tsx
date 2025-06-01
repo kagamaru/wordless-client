@@ -5,7 +5,7 @@ import { Spin } from "antd";
 import { css } from "ss/css";
 
 export default function Loading() {
-    const pageLoading = css({
+    const pageLoadingStyle = css({
         height: "100vh",
         display: "flex",
         justifyContent: "center",
@@ -13,7 +13,7 @@ export default function Loading() {
     });
 
     return (
-        <div className={pageLoading}>
+        <div className={pageLoadingStyle}>
             <Spin indicator={<LoadingOutlined style={{ fontSize: 160 }} spin />} />
         </div>
     );

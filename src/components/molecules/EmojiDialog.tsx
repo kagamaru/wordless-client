@@ -132,19 +132,19 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
         return searchResults;
     };
 
-    const emojiDialogScrollBox = css({
+    const emojiDialogScrollBoxStyle = css({
         height: isMobile ? "300px" : "500px",
         overflowY: "auto",
         overflowX: "hidden"
     });
 
-    const emojiDialog = css({
+    const emojiDialogStyle = css({
         position: "relative",
         padding: "16px 24px 8px"
     });
 
     const renderEmojiTab = (emojiMap: Array<EmojiInterface>) => (
-        <div className={emojiDialogScrollBox}>
+        <div className={emojiDialogScrollBoxStyle}>
             <ImageEmojiButtonRow
                 emojis={searchTerm ? onEmojiSearch(searchTerm) : emojiMap}
                 onClickAction={(emojiId) => onEmojiClick(emojiId)}
@@ -154,7 +154,7 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
 
     // TODO: クリックイベント実装
     const presetTab = (
-        <div className={emojiDialogScrollBox}>
+        <div className={emojiDialogScrollBoxStyle}>
             {searchTerm ? (
                 <EmojiButtonRow emojis={onEmojiSearch(searchTerm)} onClickAction={(emojiId) => onEmojiClick(emojiId)} />
             ) : (
@@ -193,7 +193,7 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
             maskClosable
             width={500}
         >
-            <div className={emojiDialog}>
+            <div className={emojiDialogStyle}>
                 <CloseButton onClickAction={closeDialogAction} />
                 <div style={{ marginTop: 4, marginBottom: 4 }}>
                     <Input
