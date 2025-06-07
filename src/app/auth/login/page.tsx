@@ -1,6 +1,11 @@
 "use client";
 
-import { AuthService } from "@/app/api";
+import { AuthenticationResultType } from "@aws-sdk/client-cognito-identity-provider";
+import { useMutation } from "@tanstack/react-query";
+import { Card, Form, Tabs } from "antd";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { css } from "ss/css";
 import {
     DisplayErrorMessage,
     EmailAddressInput,
@@ -9,22 +14,23 @@ import {
     ResetPasswordLink,
     SignupButton
 } from "@/components/atoms";
+import { postWithTimeout } from "@/helpers";
 import { useError, useIsMobile } from "@/hooks";
-import { useMutation } from "@tanstack/react-query";
-import { Card, Form, Tabs } from "antd";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { css } from "ss/css";
 
 export default function LoginSignup() {
     const [form] = Form.useForm();
     const [activeTab, setActiveTab] = useState("login");
-    const { handledError, handleErrors } = useError();
+    const { getErrorMessage } = useError();
     const isMobile = useIsMobile();
     const router = useRouter();
-    const authService = new AuthService();
-    const loginMutation = useMutation({
-        mutationFn: authService.signin,
+    const { mutateAsync, isError } = useMutation({
+        mutationFn: async (request: { email: string; password: string }) => {
+            const response = await postWithTimeout<AuthenticationResultType>(`/api/auth`, {
+                email: request.email,
+                password: request.password
+            });
+            return response.data;
+        },
         retry: 0
     });
 
@@ -38,7 +44,7 @@ export default function LoginSignup() {
         }
 
         try {
-            const loginResult = await loginMutation.mutateAsync({
+            const loginResult = await mutateAsync({
                 email: form.getFieldValue("emailAddress"),
                 password: form.getFieldValue("password")
             });
@@ -50,8 +56,8 @@ export default function LoginSignup() {
             }
 
             router.push("/");
-        } catch {
-            handleErrors(new Error(JSON.stringify({ error: "AUN-01" })));
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -72,7 +78,11 @@ export default function LoginSignup() {
     const loginTab = (
         <>
             <div className={alertBlockStyle}>
-                {loginMutation.isError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
+                {isError && (
+                    <DisplayErrorMessage
+                        error={{ errorCode: "AUN-99", errorMessage: getErrorMessage("AUN-99") }}
+                    ></DisplayErrorMessage>
+                )}
             </div>
             <Form form={form} onFinish={onLoginClick}>
                 <EmailAddressInput />

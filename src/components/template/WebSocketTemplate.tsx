@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useEffect, useRef, useState } from "react";
-import { WebSocketService } from "@/app/api";
 import { useError } from "@/hooks";
+import { WebSocketService } from "@/app/api/_WebSocketService";
 
 export const WebSocketContext = createContext<WebSocketService | null>(null);
 

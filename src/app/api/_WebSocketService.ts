@@ -1,10 +1,10 @@
-import { OnReactIncomingMessage, ReactRequest } from "@/@types";
+import { APIResponse, ErrorCode, OnReactIncomingMessage, ReactRequest } from "@/@types";
 import { useEmoteStore } from "@/store";
 
 export class WebSocketService {
     private socket: WebSocket;
 
-    constructor(url: string, onErrorCallback: (error: Error) => void) {
+    constructor(url: string, onErrorCallback: (error: APIResponse<ErrorCode>) => void) {
         this.socket = new WebSocket(url);
         this.socket.onopen = () => {
             console.log("WebSocket connected");
@@ -13,13 +13,10 @@ export class WebSocketService {
         this.socket.onclose = (event) => {
             console.log("WebSocket disconnected");
             if (!event.wasClean) {
-                onErrorCallback(
-                    new Error(
-                        JSON.stringify({
-                            errorCode: "WSK-99"
-                        })
-                    )
-                );
+                onErrorCallback({
+                    data: "WSK-99",
+                    status: 500
+                });
             }
         };
 
@@ -27,20 +24,17 @@ export class WebSocketService {
             try {
                 const data = JSON.parse(event.data) as OnReactIncomingMessage;
                 useEmoteStore.getState().updateEmoteReactionEmojis(data);
-            } catch (err) {
+            } catch {
                 console.error("Invalid message received:", event.data);
             }
         };
 
         this.socket.onerror = () => {
             console.error("WebSocket error");
-            onErrorCallback(
-                new Error(
-                    JSON.stringify({
-                        errorCode: "WSK-99"
-                    })
-                )
-            );
+            onErrorCallback({
+                data: "WSK-99",
+                status: 500
+            });
         };
     }
 
