@@ -4,9 +4,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Drawer, Avatar, Row, Typography } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { EmojiString, EmoteReactionEmojiWithNumber, User } from "@/@types";
-import { UserService } from "@/app/api";
 import { CloseButton, DisplayErrorMessageWithoutErrorCode, Emoji } from "@/components/atoms";
 import { css } from "ss/css";
+import { fetchNextjsServer } from "@/helpers";
 
 type Props = {
     isOpen: boolean;
@@ -34,16 +34,20 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
                 return new Map<EmojiString, User[]>();
             }
 
-            const userService = new UserService();
             const token = localStorage.getItem("IdToken") ?? "";
 
             const allPromises: Promise<[EmojiString, User] | ["hasError", Error]>[] = [];
 
             for (const emoteReactionEmoji of emoteReactionEmojis) {
                 for (const userId of emoteReactionEmoji.reactedUserIds) {
-                    const promise = userService
-                        .findUser(userId, token)
-                        .then((user) => {
+                    const promise = fetchNextjsServer<User>(`/api/user/${userId}`, {
+                        headers: {
+                            authorization: token,
+                            "Content-Type": "application/json"
+                        }
+                    })
+                        .then(async (response) => {
+                            const user = response.data;
                             // NOTE： タプルであると明示する
                             return [emoteReactionEmoji.emojiId, user] as [EmojiString, User];
                         })

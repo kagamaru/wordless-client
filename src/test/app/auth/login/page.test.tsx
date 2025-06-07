@@ -1,33 +1,34 @@
-import LoginSignup from "@/app/auth/login/page";
+import { NewDeviceMetadataType } from "@aws-sdk/client-cognito-identity-provider";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "../../vitest.setup";
-import { NewDeviceMetadataType } from "@aws-sdk/client-cognito-identity-provider";
+import LoginSignup from "@/app/auth/login/page";
 import { ProviderTemplate } from "@/components/template";
 
 vitestSetup();
 const user = userEvent.setup();
 
-const mockSignin = vi.fn(() => {
-    return {
-        AccessToken: "mock-access-token",
-        ExpiresIn: 3600,
-        TokenType: "Bearer",
-        RefreshToken: "mock-refresh-token",
-        IdToken: "mock-id-token",
-        NewDeviceMetadata: {
-            DeviceKey: "mock-device-key",
-            DeviceGroupKey: "mock-device-group-key"
-        } as NewDeviceMetadataType
-    };
-});
+const mockSignin = vi.fn();
 
-vi.mock("@/app/api/AuthService", () => ({
-    AuthService: class {
-        signin = mockSignin;
-    }
-}));
+const server = setupServer(
+    http.post("http://localhost:3000/api/auth", () => {
+        mockSignin();
+        return HttpResponse.json({
+            AccessToken: "mock-access-token",
+            IdToken: "mock-id-token",
+            RefreshToken: "mock-refresh-token",
+            ExpiresIn: 3600,
+            TokenType: "Bearer",
+            NewDeviceMetadata: {
+                DeviceKey: "mock-device-key",
+                DeviceGroupKey: "mock-device-group-key"
+            } as NewDeviceMetadataType
+        });
+    })
+);
 
 const mockedUseRouter = vi.fn();
 vi.mock("next/navigation", () => ({
@@ -36,13 +37,22 @@ vi.mock("next/navigation", () => ({
     })
 }));
 
+beforeAll(() => {
+    server.listen();
+});
+
 beforeEach(() => {
     vi.clearAllMocks();
     vi.resetAllMocks();
 });
 
+afterAll(() => {
+    server.close();
+});
+
 afterEach(() => {
     cleanup();
+    server.resetHandlers();
 });
 
 const rendering = (): void => {
@@ -58,31 +68,44 @@ describe("初期表示時", () => {
         rendering();
     });
 
-    test("ログインタブが選択されている", () => {
-        expect(screen.getByRole("tab", { name: "ログイン", selected: true })).toBeTruthy();
+    test("ログインタブが選択されている", async () => {
+        await waitFor(() => {
+            expect(screen.getByRole("tab", { name: "ログイン", selected: true })).toBeTruthy();
+        });
     });
 
-    test("Eメールテキストボックスが表示されている", () => {
-        expect(screen.getByRole("textbox", { name: "Eメール" })).toBeTruthy();
+    test("Eメールテキストボックスが表示されている", async () => {
+        await waitFor(() => {
+            expect(screen.getByRole("textbox", { name: "Eメール" })).toBeTruthy();
+        });
     });
 
-    test("パスワード入力テキストボックスが表示されている", () => {
-        expect(screen.getByLabelText("パスワード")).toBeTruthy();
+    test("パスワード入力テキストボックスが表示されている", async () => {
+        await waitFor(() => {
+            expect(screen.getByLabelText("パスワード")).toBeTruthy();
+        });
     });
 
-    test("ログインボタンが表示されている", () => {
-        expect(screen.getByRole("button", { name: "ログイン" })).toBeTruthy();
+    test("ログインボタンが表示されている", async () => {
+        await waitFor(() => {
+            expect(screen.getByRole("button", { name: "ログイン" })).toBeTruthy();
+        });
     });
 
-    test("パスワードを忘れた場合ボタンが表示されている", () => {
-        expect(screen.getByRole("button", { name: "パスワードを忘れた場合" })).toBeTruthy();
+    test("パスワードを忘れた場合ボタンが表示されている", async () => {
+        await waitFor(() => {
+            expect(screen.getByRole("button", { name: "パスワードを忘れた場合" })).toBeTruthy();
+        });
     });
 });
 
 describe("ユーザー登録タブ押下時", () => {
     beforeEach(async () => {
         rendering();
-        await user.click(screen.getByRole("tab", { name: "ユーザー登録", selected: false }));
+
+        await waitFor(async () => {
+            await user.click(screen.getByRole("tab", { name: "ユーザー登録", selected: false }));
+        });
     });
 
     test("ユーザー登録タブが選択されている", () => {
@@ -119,10 +142,10 @@ describe("ログインボタン押下時", () => {
 
     describe("Eメールとパスワードが両方正しいものである時、", () => {
         beforeEach(async () => {
-            await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com");
-            await user.type(screen.getByLabelText("パスワード"), "example01");
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(await screen.findByLabelText("パスワード"), "example01");
 
-            await user.click(screen.getByRole("button", { name: "ログイン" }));
+            await user.click(await screen.findByRole("button", { name: "ログイン" }));
         });
 
         test("ダッシュボード画面に遷移する", async () => {
@@ -140,8 +163,8 @@ describe("ログインボタン押下時", () => {
 
     describe("Eメールが入力されていない時、", () => {
         beforeEach(async () => {
-            await user.type(screen.getByLabelText("パスワード"), "example01");
-            await user.click(screen.getByRole("button", { name: "ログイン" }));
+            await user.type(await screen.findByLabelText("パスワード"), "example01");
+            await user.click(await screen.findByRole("button", { name: "ログイン" }));
         });
 
         test("「Eメールを入力してください」を表示する", async () => {
@@ -167,10 +190,10 @@ describe("ログインボタン押下時", () => {
 
     describe("Eメールとして正しい形式でない時、", () => {
         beforeEach(async () => {
-            await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@");
-            await user.type(screen.getByLabelText("パスワード"), "example01");
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@");
+            await user.type(await screen.findByLabelText("パスワード"), "example01");
 
-            await user.click(screen.getByRole("button", { name: "ログイン" }));
+            await user.click(await screen.findByRole("button", { name: "ログイン" }));
         });
 
         test("「有効なEメールを入力してください」を表示する", async () => {
@@ -199,9 +222,9 @@ describe("ログインボタン押下時", () => {
 
     describe("パスワードが入力されていない時、", () => {
         beforeEach(async () => {
-            await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@gmail.com");
 
-            await user.click(screen.getByRole("button", { name: "ログイン" }));
+            await user.click(await screen.findByRole("button", { name: "ログイン" }));
         });
 
         test("「パスワードを入力してください」を表示する", async () => {
@@ -230,10 +253,10 @@ describe("ログインボタン押下時", () => {
 
     describe("パスワードが6文字以下の時、", () => {
         beforeEach(async () => {
-            await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com");
-            await user.type(screen.getByLabelText("パスワード"), "ex01");
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(await screen.findByLabelText("パスワード"), "ex01");
 
-            await user.click(screen.getByRole("button", { name: "ログイン" }));
+            await user.click(await screen.findByRole("button", { name: "ログイン" }));
         });
 
         test("「パスワードは7文字以上で入力してください」を表示する", async () => {
@@ -264,10 +287,10 @@ describe("ログインボタン押下時", () => {
 
     describe("パスワードに数字が含まれていない時", () => {
         beforeEach(async () => {
-            await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com");
-            await user.type(screen.getByLabelText("パスワード"), "wordless");
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(await screen.findByLabelText("パスワード"), "wordless");
 
-            await user.click(screen.getByRole("button", { name: "ログイン" }));
+            await user.click(await screen.findByRole("button", { name: "ログイン" }));
         });
 
         test("「パスワードには数字を含める必要があります」を表示する", async () => {
@@ -297,17 +320,19 @@ describe("ログインボタン押下時", () => {
     });
 
     test("ログインAPIでエラーが返却された時、エラーメッセージを表示する", async () => {
-        mockSignin.mockRejectedValue({
-            name: "NotAuthorizedException",
-            message: "Incorrect username or password."
-        });
-        await user.type(screen.getByRole("textbox", { name: "Eメール" }), "incorrect@gmail.com");
-        await user.type(screen.getByLabelText("パスワード"), "incorrect01");
+        server.use(
+            http.post("http://localhost:3000/api/auth", () => {
+                return HttpResponse.json({ data: "AUN-01" }, { status: 401 });
+            })
+        );
 
-        await user.click(screen.getByRole("button", { name: "ログイン" }));
+        await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "incorrect@gmail.com");
+        await user.type(await screen.findByLabelText("パスワード"), "incorrect01");
 
-        const alertComponent = screen.getByRole("alert");
-        expect(within(alertComponent).getByText("Error : AUN-01")).toBeTruthy();
+        await user.click(await screen.findByRole("button", { name: "ログイン" }));
+
+        const alertComponent = await screen.findByRole("alert");
+        expect(within(alertComponent).getByText("Error : AUN-99")).toBeTruthy();
         expect(within(alertComponent).getByText("認証できませんでした。IDとパスワードをご確認ください。")).toBeTruthy();
     });
 });

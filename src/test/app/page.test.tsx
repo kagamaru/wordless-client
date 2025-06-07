@@ -1,6 +1,8 @@
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "./vitest.setup";
 import Home from "@/app/(main)/page";
 import { ProviderTemplate, WebSocketProvider } from "@/components/template";
@@ -9,167 +11,9 @@ import { ReactRequest } from "@/@types";
 vitestSetup();
 const user = userEvent.setup();
 
-const mockFetchEmotes = vi.fn(() => {
-    return Promise.resolve({
-        emotes: [
-            {
-                sequenceNumber: 10,
-                emoteId: "a",
-                userName: "A",
-                userId: "@a",
-                emoteDatetime: "2025-01-01T09:00:00.000Z",
-                emoteReactionId: "reaction-a",
-                emoteEmojis: [
-                    {
-                        emojiId: ":panda:"
-                    },
-                    {
-                        emojiId: ":panda:"
-                    },
-                    {
-                        emojiId: ":panda:"
-                    },
-                    {
-                        emojiId: ":panda:"
-                    }
-                ],
-                userAvatarUrl: "https://a.png",
-                emoteReactionEmojis: [
-                    {
-                        emojiId: ":party_parrot:",
-                        numberOfReactions: 10,
-                        reactedUserIds: ["@a", "@b"]
-                    },
-                    {
-                        emojiId: ":snake:",
-                        numberOfReactions: 2,
-                        reactedUserIds: ["@c"]
-                    }
-                ],
-                totalNumberOfReactions: 10
-            },
-            {
-                sequenceNumber: 9,
-                emoteId: "b",
-                userName: "B",
-                userId: "@b",
-                emoteDatetime: "2024-01-01T09:12:30.000Z",
-                emoteReactionId: "reaction-b",
-                emoteEmojis: [
-                    {
-                        emojiId: ":smiling_face:"
-                    },
-                    {
-                        emojiId: ":smiling_face:"
-                    },
-                    {
-                        emojiId: ":smiling_face:"
-                    }
-                ],
-                userAvatarUrl: "https://b.png",
-                emoteReactionEmojis: [
-                    {
-                        emojiId: ":snake:",
-                        numberOfReactions: 200,
-                        reactedUserIds: ["@a"]
-                    },
-                    {
-                        emojiId: ":tiger:",
-                        numberOfReactions: 1,
-                        reactedUserIds: ["@fuga_fuga"]
-                    }
-                ],
-                totalNumberOfReactions: 200
-            },
-            {
-                sequenceNumber: 8,
-                emoteId: "c",
-                userName: "C",
-                userId: "@c",
-                emoteDatetime: "2023-01-01T09:00:00.000Z",
-                emoteReactionId: "reaction-c",
-                emoteEmojis: [
-                    {
-                        emojiId: ":bear:"
-                    }
-                ],
-                userAvatarUrl: "https://c.png",
-                emoteReactionEmojis: [],
-                totalNumberOfReactions: 0
-            },
-            {
-                sequenceNumber: 7,
-                emoteId: "d",
-                userName: "D",
-                userId: "@d",
-                emoteDatetime: "2022-01-01T09:00:00.000Z",
-                emoteReactionId: "reaction-d",
-                emoteEmojis: [
-                    {
-                        emojiId: ":test:"
-                    }
-                ],
-                userAvatarUrl: "https://d.png",
-                emoteReactionEmojis: [
-                    {
-                        emojiId: ":test:",
-                        numberOfReactions: 0,
-                        reactedUserIds: []
-                    }
-                ],
-                totalNumberOfReactions: 0
-            }
-        ]
-    });
-});
-
-const mockFindUser = vi.fn((userId: string) => {
-    switch (userId) {
-        case "@a":
-            return Promise.resolve({
-                userId: "@a",
-                userName: "User A",
-                userAvatarUrl: "https://user-a.png"
-            });
-        case "@b":
-            return Promise.resolve({
-                userId: "@b",
-                userName: "User B",
-                userAvatarUrl: "https://user-b.png"
-            });
-        case "@c":
-            return Promise.resolve({
-                userId: "@c",
-                userName: "User C",
-                userAvatarUrl: "https://user-c.png"
-            });
-        case "@fuga_fuga":
-            return Promise.resolve({
-                userId: "@fuga_fuga",
-                userName: "User Fuga",
-                userAvatarUrl: "https://user-fuga.png"
-            });
-        default:
-            return Promise.resolve({
-                userId: "@user1",
-                userName: "User One",
-                userAvatarUrl: "https://user1.png"
-            });
-    }
-});
-
 const mockOnReact = vi.fn((_request: ReactRequest) => {});
-vi.mock("@/app/api", async () => {
-    const actual = await vi.importActual<typeof import("@/app/api")>("@/app/api");
-
+vi.mock("@/app/api/_WebSocketService", async () => {
     return {
-        ...actual,
-        EmoteService: class {
-            fetchEmotes = mockFetchEmotes;
-        },
-        UserService: class {
-            findUser = mockFindUser;
-        },
         WebSocketService: class {
             onReact = mockOnReact;
         }
@@ -182,6 +26,162 @@ vi.mock("next/navigation", () => ({
         push: mockedUseRouter
     })
 }));
+
+const server = setupServer(
+    http.get("http://localhost:3000/api/emote", () => {
+        return HttpResponse.json({
+            emotes: [
+                {
+                    sequenceNumber: 10,
+                    emoteId: "a",
+                    userName: "A",
+                    userId: "@a",
+                    emoteDatetime: "2025-01-01T09:00:00.000Z",
+                    emoteReactionId: "reaction-a",
+                    emoteEmojis: [
+                        {
+                            emojiId: ":panda:"
+                        },
+                        {
+                            emojiId: ":panda:"
+                        },
+                        {
+                            emojiId: ":panda:"
+                        },
+                        {
+                            emojiId: ":panda:"
+                        }
+                    ],
+                    userAvatarUrl: "https://a.png",
+                    emoteReactionEmojis: [
+                        {
+                            emojiId: ":party_parrot:",
+                            numberOfReactions: 10,
+                            reactedUserIds: ["@a", "@b"]
+                        },
+                        {
+                            emojiId: ":snake:",
+                            numberOfReactions: 2,
+                            reactedUserIds: ["@c"]
+                        }
+                    ],
+                    totalNumberOfReactions: 10
+                },
+                {
+                    sequenceNumber: 9,
+                    emoteId: "b",
+                    userName: "B",
+                    userId: "@b",
+                    emoteDatetime: "2024-01-01T09:12:30.000Z",
+                    emoteReactionId: "reaction-b",
+                    emoteEmojis: [
+                        {
+                            emojiId: ":smiling_face:"
+                        },
+                        {
+                            emojiId: ":smiling_face:"
+                        },
+                        {
+                            emojiId: ":smiling_face:"
+                        }
+                    ],
+                    userAvatarUrl: "https://b.png",
+                    emoteReactionEmojis: [
+                        {
+                            emojiId: ":snake:",
+                            numberOfReactions: 200,
+                            reactedUserIds: ["@a"]
+                        },
+                        {
+                            emojiId: ":tiger:",
+                            numberOfReactions: 1,
+                            reactedUserIds: ["@fuga_fuga"]
+                        }
+                    ],
+                    totalNumberOfReactions: 200
+                },
+                {
+                    sequenceNumber: 8,
+                    emoteId: "c",
+                    userName: "C",
+                    userId: "@c",
+                    emoteDatetime: "2023-01-01T09:00:00.000Z",
+                    emoteReactionId: "reaction-c",
+                    emoteEmojis: [
+                        {
+                            emojiId: ":bear:"
+                        }
+                    ],
+                    userAvatarUrl: "https://c.png",
+                    emoteReactionEmojis: [],
+                    totalNumberOfReactions: 0
+                },
+                {
+                    sequenceNumber: 7,
+                    emoteId: "d",
+                    userName: "D",
+                    userId: "@d",
+                    emoteDatetime: "2022-01-01T09:00:00.000Z",
+                    emoteReactionId: "reaction-d",
+                    emoteEmojis: [
+                        {
+                            emojiId: ":test:"
+                        }
+                    ],
+                    userAvatarUrl: "https://d.png",
+                    emoteReactionEmojis: [
+                        {
+                            emojiId: ":test:",
+                            numberOfReactions: 0,
+                            reactedUserIds: []
+                        }
+                    ],
+                    totalNumberOfReactions: 0
+                }
+            ]
+        });
+    }),
+    http.get("http://localhost:3000/api/user/:userId", ({ params }) => {
+        const { userId } = params;
+
+        switch (userId) {
+            case "@a":
+                return HttpResponse.json({
+                    userId: "@a",
+                    userName: "User A",
+                    userAvatarUrl: "https://user-a.png"
+                });
+            case "@b":
+                return HttpResponse.json({
+                    userId: "@b",
+                    userName: "User B",
+                    userAvatarUrl: "https://user-b.png"
+                });
+            case "@c":
+                return HttpResponse.json({
+                    userId: "@c",
+                    userName: "User C",
+                    userAvatarUrl: "https://user-c.png"
+                });
+            case "@fuga_fuga":
+                return HttpResponse.json({
+                    userId: "@fuga_fuga",
+                    userName: "User Fuga",
+                    userAvatarUrl: "https://user-fuga.png"
+                });
+            default:
+                return HttpResponse.json({
+                    userId: "@user1",
+                    userName: "User One",
+                    userAvatarUrl: "https://user1.png"
+                });
+        }
+    })
+);
+
+beforeAll(() => {
+    server.listen();
+});
 
 beforeEach(() => {
     vi.clearAllMocks();
@@ -196,6 +196,11 @@ beforeEach(() => {
 
 afterEach(() => {
     cleanup();
+    server.resetHandlers();
+});
+
+afterAll(() => {
+    server.close();
 });
 
 const rendering = (): void => {
@@ -362,12 +367,10 @@ describe("初期表示時", () => {
             ["EMT-04", "接続できません。もう一度やり直してください。"],
             ["EMT-05", "接続できません。もう一度やり直してください。"]
         ])("サーバから%sエラーが返却された時、エラーメッセージ「%s」を表示する", async ([errorCode, errorMessage]) => {
-            mockFetchEmotes.mockRejectedValue(
-                new Error(
-                    JSON.stringify({
-                        error: errorCode
-                    })
-                )
+            server.use(
+                http.get("http://localhost:3000/api/emote", () => {
+                    return HttpResponse.json({ data: errorCode }, { status: 400 });
+                })
             );
 
             rendering();
