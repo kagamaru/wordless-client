@@ -1,14 +1,12 @@
 import { http, HttpResponse } from "msw";
 
-const restApiUrl = process.env.NEXT_PUBLIC_REST_API_URL ?? "";
-
 export const emoteHandlers = [
-    http.get(restApiUrl + "emotes/", ({ request }) => {
+    http.get("http://localhost:3000/api/emote/", ({ request }) => {
         const urlSearchParams = new URL(request.url).searchParams;
         if (!urlSearchParams.get("userId") || !urlSearchParams.get("numberOfCompletedAcquisitionsCompleted")) {
             return HttpResponse.json(
                 {
-                    error: "EMT-01"
+                    data: "EMT-01"
                 },
                 {
                     status: 400

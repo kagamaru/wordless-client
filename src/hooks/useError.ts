@@ -1,12 +1,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ErrorCode } from "@/@types";
+import { APIResponse, ErrorCode } from "@/@types";
 import { errorMessages } from "@/static/ErrorMessages";
 
 export const useError = () => {
     const router = useRouter();
     const [hasError, setHasError] = useState(false);
-    const [authError, setAuthError] = useState(false);
+    const [hasAuthError, setHasAuthError] = useState(false);
     const [handledError, setHandledError] = useState<{
         errorCode: ErrorCode | undefined;
         errorMessage: string;
@@ -15,19 +15,14 @@ export const useError = () => {
         errorMessage: ""
     });
 
-    const handleErrors = (error: Error | DOMException | unknown): void => {
+    const handleErrors = (error: APIResponse<ErrorCode>): void => {
         let errorCode: ErrorCode;
 
-        if (error instanceof Error && error.message === "Unauthorized") {
-            setAuthError(true);
+        if (error.status === 401) {
+            setHasAuthError(true);
             return;
-        }
-        if (error instanceof DOMException && error.name === "AbortError") {
-            errorCode = "ABT-01";
-        } else if (error instanceof Error && error.message === "Failed to fetch") {
-            return;
-        } else if (error instanceof Error) {
-            errorCode = JSON.parse(error.message)?.error ?? "ERR-01";
+        } else if (error.data) {
+            errorCode = error.data;
         } else {
             errorCode = "ERR-01";
         }
@@ -45,13 +40,14 @@ export const useError = () => {
     };
 
     useEffect(() => {
-        if (authError) {
+        if (hasAuthError) {
             localStorage.removeItem("IdToken");
             router.push("/auth/login");
         }
-    }, [authError]);
+    }, [hasAuthError]);
 
     return {
+        hasAuthError,
         hasError,
         handledError,
         handleErrors,

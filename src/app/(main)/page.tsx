@@ -2,10 +2,11 @@
 
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { EmoteService } from "@/app/api";
+import { FetchEmotesResponse } from "@/class";
 import { DisplayErrorMessage } from "@/components/atoms";
 import { PageHeader } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
+import { fetchNextjsServer } from "@/helpers";
 import { useError } from "@/hooks";
 import { useEmoteStore } from "@/store";
 
@@ -16,14 +17,23 @@ export default function Home() {
     const { data, isError, error } = useQuery({
         queryKey: ["emotes"],
         queryFn: async () => {
-            return await new EmoteService().fetchEmotes("@fuga_fuga", localStorage.getItem("IdToken") ?? "");
+            const response = await fetchNextjsServer<FetchEmotesResponse>(
+                `/api/emote?userId=${"@fuga_fuga"}&numberOfCompletedAcquisitionsCompleted=${"10"}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        authorization: localStorage.getItem("IdToken") ?? ""
+                    }
+                }
+            );
+            return response.data;
         },
         retry: 0
     });
 
     useEffect(() => {
         if (isError && error) {
-            handleErrors(error);
+            handleErrors(JSON.parse(error.message));
         }
     }, [isError, error]);
 

@@ -1,1 +1,1 @@
-export { initMocks } from "./setup";
+export { initMocks } from "./setup/initMocks";
