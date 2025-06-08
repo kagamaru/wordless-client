@@ -1,12 +1,12 @@
 import { http, HttpResponse } from "msw";
 
 export const emoteHandlers = [
-    http.get("http://localhost:3000/api/emote", ({ request }) => {
+    http.get("http://localhost:3000/api/emote/", ({ request }) => {
         const urlSearchParams = new URL(request.url).searchParams;
         if (!urlSearchParams.get("userId") || !urlSearchParams.get("numberOfCompletedAcquisitionsCompleted")) {
             return HttpResponse.json(
                 {
-                    error: "EMT-01"
+                    data: "EMT-01"
                 },
                 {
                     status: 400
