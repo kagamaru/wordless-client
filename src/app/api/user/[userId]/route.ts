@@ -3,7 +3,7 @@ import { fetchWithTimeout, handleAPIError } from "@/helpers";
 
 import { User } from "@/@types";
 
-const restApiUrl = process.env.NEXT_PUBLIC_REST_API_URL ?? "";
+const restApiUrl = process.env.REST_API_URL ?? "";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params;
