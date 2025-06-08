@@ -5,8 +5,8 @@ import { Drawer, Avatar, Row, Typography } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { EmojiString, EmoteReactionEmojiWithNumber, User } from "@/@types";
 import { CloseButton, DisplayErrorMessageWithoutErrorCode, Emoji } from "@/components/atoms";
-import { css } from "ss/css";
 import { fetchNextjsServer } from "@/helpers";
+import { css } from "ss/css";
 
 type Props = {
     isOpen: boolean;
@@ -14,17 +14,17 @@ type Props = {
     setIsOpenAction: (isOpen: boolean) => void;
 };
 
-type EmojiUsersMap = Map<EmojiString, User[]>;
+type UserReactionMap = Map<EmojiString, User[]>;
 
 export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenAction }: Props) {
-    const [emojiUsersMap, setEmojiUsersMap] = useState<EmojiUsersMap | undefined>(new Map());
+    const [userReactionMap, setUserReactionMap] = useState<UserReactionMap | undefined>(new Map());
 
     const [hasUserFetchError, setHasUserFetchError] = useState(false);
 
     const closeDrawer = useCallback(() => setIsOpenAction(false), [setIsOpenAction]);
 
     const {
-        data: emojiUsersMapData,
+        data: userReactionMapData,
         isPending,
         isError: allUserFetchError
     } = useQuery({
@@ -66,7 +66,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
                 throw new Error("全てのユーザー取得に失敗しました。");
             }
 
-            const emojiUsersMap = new Map<EmojiString, User[]>();
+            const userReactionMap = new Map<EmojiString, User[]>();
 
             for (const result of results) {
                 if (result[0] === "hasError") {
@@ -75,22 +75,23 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
                 }
 
                 const [emojiId, user] = result;
-                if (!emojiUsersMap.has(emojiId)) {
-                    emojiUsersMap.set(emojiId, []);
+                if (!userReactionMap.has(emojiId)) {
+                    userReactionMap.set(emojiId, []);
                 }
-                emojiUsersMap.get(emojiId)?.push(user);
+                userReactionMap.get(emojiId)?.push(user);
             }
 
-            return emojiUsersMap;
+            return userReactionMap;
         },
-        enabled: isOpen
+        enabled: isOpen,
+        retry: 0
     });
 
     useEffect(() => {
-        if (emojiUsersMapData) {
-            setEmojiUsersMap(emojiUsersMapData);
+        if (userReactionMapData) {
+            setUserReactionMap(userReactionMapData);
         }
-    }, [emojiUsersMapData, isOpen]);
+    }, [userReactionMapData, isOpen]);
 
     const drawerTitleStyle = css({
         fontSize: 16,
@@ -154,8 +155,8 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
                                     {hasUserFetchError && (
                                         <DisplayErrorMessageWithoutErrorCode errorMessage="情報を取得できなかったユーザーがいます。" />
                                     )}
-                                    {emojiUsersMap && emojiUsersMap.size > 0 ? (
-                                        Array.from(emojiUsersMap).map(([emojiId, users]) => (
+                                    {userReactionMap && userReactionMap.size > 0 ? (
+                                        Array.from(userReactionMap).map(([emojiId, users]) => (
                                             <div key={emojiId}>
                                                 <Emoji emojiId={emojiId} size={24} />
                                                 <div style={{ padding: 8 }}>
