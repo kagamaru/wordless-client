@@ -17,12 +17,15 @@ export default function Home() {
     const { data, isError, error } = useQuery({
         queryKey: ["emotes"],
         queryFn: async () => {
-            const response = await fetchNextjsServer<FetchEmotesResponse>(`/api/emote?userId=${"@fuga_fuga"}`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: localStorage.getItem("IdToken") ?? ""
+            const response = await fetchNextjsServer<FetchEmotesResponse>(
+                `/api/emote?userId=${"@fuga_fuga"}&numberOfCompletedAcquisitionsCompleted=${"10"}`,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        authorization: localStorage.getItem("IdToken") ?? ""
+                    }
                 }
-            });
+            );
             return response.data;
         },
         retry: 0
