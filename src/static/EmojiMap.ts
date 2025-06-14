@@ -3,7 +3,7 @@ import { travelPlacesEmojis } from "./emojis/TravelPlacesEmojis";
 import { animalsNatureEmojis } from "./emojis/AnimalsNatureEmojis";
 import { customEmojis } from "./emojis/CustomEmojis";
 import { foodDrinkEmojis } from "./emojis/FoodDrinkEmojis";
-import { memeEmojis } from "./emojis/MemesEmojis";
+import { memeEmojis } from "./emojis/MemeEmojis";
 import { peopleBodyEmojis } from "./emojis/PeopleBodyEmojis";
 import { smileysEmotionEmojis } from "./emojis/SmileysEmotionEmojis";
 import { objectsEmojis } from "./emojis/ObjectsEmojis";
@@ -22,16 +22,12 @@ export const presetEmojiMap: Array<Emoji> = [
     ...symbolsEmojis
 ];
 
+const s3Url = process.env.NEXT_PUBLIC_S3_URL;
 export const customEmojiMap: Array<Emoji> = [
     ...customEmojis.map((emoji) => ({
         ...emoji,
-        url: `${process.env.NEXT_PUBLIC_S3_URL}/custom/${emoji.emojiId.replaceAll(":", "")}.png`
+        url: `${s3Url}/custom/${emoji.emojiId.replaceAll(":", "")}.png`
     }))
 ];
 
-export const memeEmojiMap: Array<Emoji> = [
-    ...memeEmojis.map((emoji) => ({
-        ...emoji,
-        url: `${process.env.NEXT_PUBLIC_S3_URL}/meme/${emoji.emojiId.replaceAll(":", "")}.gif`
-    }))
-];
+export const memeEmojiMap: Array<Emoji> = memeEmojis;
