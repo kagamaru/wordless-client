@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Input, Modal, Tabs } from "antd";
 import { CloseButton, ImageEmojiButtonRow, EmojiButtonRow } from "@/components/atoms";
 import { EmojiButtonBlocksByType } from "@/components/molecules";
@@ -183,6 +183,13 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
         }
     ];
 
+    useEffect(() => {
+        if (isOpen) {
+            setActiveTab("preset");
+            setSearchTerm("");
+        }
+    }, [isOpen]);
+
     return (
         <Modal
             open={isOpen}
@@ -203,7 +210,7 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
                         allowClear
                     />
                 </div>
-                <Tabs defaultActiveKey={activeTab} items={tabItems} onChange={(key) => setActiveTab(key)}></Tabs>
+                <Tabs activeKey={activeTab} items={tabItems} onChange={(key) => setActiveTab(key)}></Tabs>
             </div>
         </Modal>
     );
