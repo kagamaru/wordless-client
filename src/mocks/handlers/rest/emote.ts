@@ -25,7 +25,7 @@ export const emoteHandlers = [
                     emoteReactionId: "f027ab3c-c422-4f98-8446-071f3d9eb78d",
                     emoteEmojis: [
                         {
-                            emojiId: ":bear:"
+                            emojiId: ":neko_meme_banana_cat:"
                         },
                         {
                             emojiId: ":bear:"
