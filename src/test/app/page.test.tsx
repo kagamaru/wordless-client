@@ -440,10 +440,37 @@ describe("リアクション総数ボタンをクリックした時", () => {
     });
 
     describe("異常系", () => {
-        // TODO: 表示まで時間がかかり、テスト実行が困難
-        test.todo("ユーザー情報取得APIに全て失敗した時、「ユーザー情報の取得に失敗しました。」と表示する");
+        test("ユーザー情報取得APIに全て失敗した時、「ユーザー情報の取得に失敗しました。」と表示する", async () => {
+            server.use(
+                http.get("http://localhost:3000/api/user/:userId", () => {
+                    return HttpResponse.json({ data: "USE-01" }, { status: 400 });
+                })
+            );
 
-        test.todo("ユーザー情報取得APIに一部失敗した時、「情報を取得できなかったユーザーがいます。」と表示する");
+            rendering();
+            await user.click(await screen.findByRole("button", { name: "10 Reactions" }));
+
+            await waitFor(() => {
+                expect(within(screen.getByRole("dialog")).getByText("ユーザー情報の取得に失敗しました。")).toBeTruthy();
+            });
+        });
+
+        test("ユーザー情報取得APIに一部失敗した時、「情報を取得できなかったユーザーがいます。」と表示する", async () => {
+            server.use(
+                http.get("http://localhost:3000/api/user/@a", () => {
+                    return HttpResponse.json({ data: "USE-02" }, { status: 400 });
+                })
+            );
+
+            rendering();
+            await user.click(await screen.findByRole("button", { name: "10 Reactions" }));
+
+            await waitFor(() => {
+                expect(
+                    within(screen.getByRole("dialog")).getByText("情報を取得できなかったユーザーがいます。")
+                ).toBeTruthy();
+            });
+        });
     });
 });
 
@@ -695,6 +722,34 @@ describe("リアクション追加ボタンをクリックした時", () => {
 
                 await waitFor(() => {
                     expect(screen.queryByRole("dialog")).toBeFalsy();
+                });
+            });
+
+            describe("再表示時", () => {
+                test("検索テキストボックスの内容が初期化される", async () => {
+                    await user.type(screen.getByPlaceholderText("絵文字を検索..."), "snake");
+                    await user.click(screen.getByRole("button", { name: "close" }));
+
+                    await user.click(
+                        within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", { name: "+" })
+                    );
+
+                    await waitFor(() => {
+                        expect(screen.getByPlaceholderText("絵文字を検索...").innerText).toBeFalsy();
+                    });
+                });
+
+                test("タブが「プリセット」に初期化される", async () => {
+                    await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
+                    await user.click(screen.getByRole("button", { name: "close" }));
+
+                    await user.click(
+                        within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", { name: "+" })
+                    );
+
+                    await waitFor(() => {
+                        expect(screen.getByRole("tab", { name: "プリセット", selected: true })).toBeTruthy();
+                    });
                 });
             });
         });
