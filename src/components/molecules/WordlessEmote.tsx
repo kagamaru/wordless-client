@@ -13,7 +13,7 @@ import {
     WordlessDivider
 } from "@/components/atoms";
 import { EmojiDialog, ReactionUsersDrawer } from "@/components/molecules";
-import { WebSocketContext } from "@/components/template";
+import { UserInfoContext, WebSocketContext } from "@/components/template";
 import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";
 
@@ -37,6 +37,7 @@ export function WordlessEmote({ emote }: Props) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isEmojiDialogOpen, setIsEmojiDialogOpen] = useState(false);
     const webSocketService = useContext(WebSocketContext);
+    const userInfo = useContext(UserInfoContext)?.userInfo;
 
     const onEmojiDialogOpen = useCallback(() => {
         setIsEmojiDialogOpen(true);
@@ -46,8 +47,7 @@ export function WordlessEmote({ emote }: Props) {
         setIsEmojiDialogOpen(false);
     }, []);
 
-    // TODO: ユーザーIDをAPIから取得する
-    const userId = "@fuga_fuga";
+    const userId = userInfo?.userId;
 
     const wordlessEmoteStyle = css({
         paddingLeft: { base: "16px", lg: "140px" },
@@ -93,6 +93,10 @@ export function WordlessEmote({ emote }: Props) {
                     return undefined;
                 }
 
+                if (!userId) {
+                    return undefined;
+                }
+
                 const isAlreadyReacted = emoteReactionEmoji.reactedUserIds.includes(userId);
                 if (isAlreadyReacted) {
                     alreadyReactedEmojiIds.push(emoteReactionEmoji.emojiId);
@@ -105,6 +109,9 @@ export function WordlessEmote({ emote }: Props) {
                         emoteReactionId={emote.emoteReactionId}
                         isReacted={isAlreadyReacted}
                         onClickAction={() => {
+                            if (!userId) {
+                                return;
+                            }
                             webSocketService?.onReact({
                                 emoteReactionId: emote.emoteReactionId,
                                 reactedUserId: userId,

@@ -11,6 +11,7 @@ import { EmoteAvatar } from "@/components/atoms/EmoteAvatar";
 import { EmoteReactionButton } from "@/components/atoms/EmoteReactionButton";
 import { LoginButton } from "@/components/atoms/LoginButton";
 import { PasswordInput } from "@/components/atoms/PasswordInput";
+import { RedirectLoginButton } from "@/components/atoms/RedirectLoginButton";
 import { PlusButton } from "@/components/atoms/PlusButton";
 import { ResetPasswordLink } from "@/components/atoms/ResetPasswordLink";
 import { SignupButton } from "@/components/atoms/SignupButton";
@@ -31,6 +32,7 @@ export {
     EmoteReactionButton,
     LoginButton,
     PasswordInput,
+    RedirectLoginButton,
     PlusButton,
     ResetPasswordLink,
     SignupButton,
