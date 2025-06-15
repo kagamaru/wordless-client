@@ -6,7 +6,22 @@ import { ProviderTemplate } from "@/components/template";
 
 export const metadata: Metadata = {
     title: "Wordless",
-    description: "言葉のないSNS Wordless"
+    description: "言葉のないSNS Wordless",
+    openGraph: {
+        images: [
+            {
+                url: "/ogp/thumbnail.png",
+                width: 1200,
+                height: 630
+            }
+        ],
+        title: "Wordless",
+        description: "言葉のないSNS Wordless",
+        url: "",
+        siteName: "Wordless",
+        locale: "ja",
+        type: "website"
+    }
 };
 
 export default function RootLayout({
