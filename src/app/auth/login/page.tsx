@@ -14,13 +14,12 @@ import {
     ResetPasswordLink,
     SignupButton
 } from "@/components/atoms";
-import { postWithTimeout } from "@/helpers";
-import { useError, useIsMobile } from "@/hooks";
+import { getErrorMessage, postWithTimeout } from "@/helpers";
+import { useIsMobile } from "@/hooks";
 
 export default function LoginSignup() {
     const [form] = Form.useForm();
     const [activeTab, setActiveTab] = useState("login");
-    const { getErrorMessage } = useError();
     const isMobile = useIsMobile();
     const router = useRouter();
     const { mutateAsync, isError } = useMutation({

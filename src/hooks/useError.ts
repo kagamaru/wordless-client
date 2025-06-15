@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { APIResponse, ErrorCode } from "@/@types";
-import { errorMessages } from "@/static/ErrorMessages";
+import { getErrorMessage } from "@/helpers";
 
 export const useError = () => {
     const router = useRouter();
@@ -31,14 +31,6 @@ export const useError = () => {
         setHandledError({ errorCode, errorMessage: getErrorMessage(errorCode) });
     };
 
-    const getErrorMessage = (errorCode: ErrorCode): string => {
-        if (errorCode in errorMessages) {
-            return errorMessages[errorCode];
-        } else {
-            return "エラーが発生しています。しばらくの間使用できない可能性があります。";
-        }
-    };
-
     useEffect(() => {
         if (hasAuthError) {
             localStorage.removeItem("IdToken");
@@ -50,7 +42,6 @@ export const useError = () => {
         hasAuthError,
         hasError,
         handledError,
-        handleErrors,
-        getErrorMessage
+        handleErrors
     };
 };
