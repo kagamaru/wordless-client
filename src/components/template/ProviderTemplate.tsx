@@ -1,9 +1,8 @@
 "use client";
 
-import { ConfigProvider } from "antd";
-import { createContext, Dispatch, SetStateAction, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { ConfigProvider } from "antd";
+import { createContext, Dispatch, SetStateAction, useState } from "react";
 import { useMock } from "@/hooks";
 
 interface AuthContextType {
@@ -20,23 +19,8 @@ export function ProviderTemplate({
 }>) {
     const queryClient = new QueryClient();
     const [token, setToken] = useState("");
-    const router = useRouter();
     const isMockReady = useMock();
     const isMockEnabled = process.env.NEXT_PUBLIC_API_MOCKING === "enabled";
-
-    useEffect(() => {
-        const fetchToken = (): string | void => {
-            const token = localStorage.getItem("IdToken");
-            if (!token) {
-                router.push("/auth/login");
-                return;
-            }
-            return token;
-        };
-
-        const token = fetchToken();
-        setToken(token ?? "");
-    }, [router]);
 
     const renderProvider = () => (
         <AuthContext.Provider value={{ token, setToken }}>

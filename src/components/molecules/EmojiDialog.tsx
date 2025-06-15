@@ -4,7 +4,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Input, Modal, Tabs } from "antd";
 import { CloseButton, ImageEmojiButtonRow, EmojiButtonRow } from "@/components/atoms";
 import { EmojiButtonBlocksByType } from "@/components/molecules";
-import { WebSocketContext } from "@/components/template";
+import { UserInfoContext, WebSocketContext } from "@/components/template";
 import { presetEmojiMap, customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
 import { EmojiType, Emoji as EmojiInterface } from "@/@types/Emoji";
 import { EmojiString } from "@/@types";
@@ -23,13 +23,18 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
     const [activeTab, setActiveTab] = useState("preset");
     const isMobile = useIsMobile();
     const webSocketService = useContext(WebSocketContext);
+    const userInfo = useContext(UserInfoContext)?.userInfo;
 
     const onEmojiClick = useCallback(
         (reactedEmojiId: EmojiString) => {
+            if (!userInfo) {
+                return;
+            }
+
             webSocketService?.onReact({
                 emoteReactionId,
-                reactedUserId: "@fuga_fuga",
-                reactedEmojiId,
+                reactedUserId: userInfo.userId,
+                reactedEmojiId: reactedEmojiId,
                 operation: alreadyReactedEmojiIds.includes(reactedEmojiId) ? "decrement" : "increment",
                 Authorization: localStorage.getItem("IdToken") ?? ""
             });

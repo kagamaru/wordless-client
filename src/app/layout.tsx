@@ -2,7 +2,7 @@ import "@/layouts/globals.css";
 import "@/layouts/font.css";
 import "@/layouts/spacing.css";
 import type { Metadata } from "next";
-import { ProviderTemplate } from "@/components/template";
+import { ProviderTemplate, UserInfoTemplate } from "@/components/template";
 
 export const metadata: Metadata = {
     title: "Wordless",
@@ -18,7 +18,9 @@ export default function RootLayout({
         <html lang="ja">
             <body>
                 <main>
-                    <ProviderTemplate>{children}</ProviderTemplate>
+                    <ProviderTemplate>
+                        <UserInfoTemplate>{children}</UserInfoTemplate>
+                    </ProviderTemplate>
                 </main>
             </body>
         </html>

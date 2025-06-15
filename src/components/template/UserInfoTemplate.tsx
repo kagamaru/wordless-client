@@ -1,0 +1,21 @@
+"use client";
+
+import { createContext } from "react";
+import { useUserInfo } from "@/hooks";
+import { User } from "@/@types";
+
+type UserInfoContextType = {
+    userInfo: User | undefined;
+};
+
+export const UserInfoContext = createContext<UserInfoContextType | undefined>(undefined);
+
+export function UserInfoTemplate({
+    children
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
+    const { data: userInfo } = useUserInfo();
+
+    return <UserInfoContext.Provider value={{ userInfo }}>{children}</UserInfoContext.Provider>;
+}
