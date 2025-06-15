@@ -5,7 +5,7 @@ import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "./vitest.setup";
 import Home from "@/app/(main)/page";
-import { ProviderTemplate, WebSocketProvider } from "@/components/template";
+import { ErrorBoundary, ProviderTemplate, UserInfoTemplate, WebSocketProvider } from "@/components/template";
 import { ReactRequest } from "@/@types";
 
 vitestSetup();
@@ -26,7 +26,15 @@ vi.mock("next/navigation", () => ({
         push: mockedUseRouter
     })
 }));
+vi.mock("jwt-decode", () => ({
+    jwtDecode: vi.fn((_token: string) => {
+        return {
+            sub: "mock-sub"
+        };
+    })
+}));
 
+const mockFetchUserInfo = vi.fn();
 const server = setupServer(
     http.get("http://localhost:3000/api/emote", () => {
         return HttpResponse.json({
@@ -95,7 +103,7 @@ const server = setupServer(
                         {
                             emojiId: ":tiger:",
                             numberOfReactions: 1,
-                            reactedUserIds: ["@fuga_fuga"]
+                            reactedUserIds: ["@x"]
                         }
                     ],
                     totalNumberOfReactions: 200
@@ -176,6 +184,14 @@ const server = setupServer(
                     userAvatarUrl: "https://image.test/user1.png"
                 });
         }
+    }),
+    http.get("http://localhost:3000/api/userSub/:userSub", () => {
+        mockFetchUserInfo();
+        return HttpResponse.json({
+            userId: "@x",
+            userName: "User X",
+            userAvatarUrl: "https://image.test/x.png"
+        });
     })
 );
 
@@ -206,9 +222,13 @@ afterAll(() => {
 const rendering = (): void => {
     render(
         <ProviderTemplate>
-            <WebSocketProvider>
-                <Home />
-            </WebSocketProvider>
+            <ErrorBoundary>
+                <UserInfoTemplate>
+                    <WebSocketProvider>
+                        <Home />
+                    </WebSocketProvider>
+                </UserInfoTemplate>
+            </ErrorBoundary>
         </ProviderTemplate>
     );
 };
@@ -270,6 +290,14 @@ describe("初期表示時", () => {
                 expect(screen.getByAltText("AProfileImage")).toBeTruthy();
                 expect(screen.getByAltText("BProfileImage")).toBeTruthy();
                 expect(screen.getByAltText("BProfileImage")).toBeTruthy();
+            });
+        });
+
+        test("ユーザー情報を取得する", async () => {
+            rendering();
+
+            await waitFor(() => {
+                expect(mockFetchUserInfo).toHaveBeenCalled();
             });
         });
 
@@ -476,14 +504,12 @@ describe("リアクション総数ボタンをクリックした時", () => {
 
 describe("リアクションボタンをクリックした時", () => {
     describe("正常系", () => {
-        beforeEach(() => {
-            rendering();
-        });
-
         describe("未リアクションのリアクションボタンをクリックした時", () => {
             test("絵文字リアクションAPIがincrement操作で呼び出される", async () => {
+                rendering();
+
                 await user.click(
-                    within(await screen.findByRole("listitem", { name: "a" })).getByRole("button", {
+                    await within(await screen.findByRole("listitem", { name: "a" })).findByRole("button", {
                         name: "reaction-a:party_parrot:"
                     })
                 );
@@ -492,7 +518,7 @@ describe("リアクションボタンをクリックした時", () => {
                     expect(mockOnReact).toHaveBeenCalledWith({
                         emoteReactionId: "reaction-a",
                         reactedEmojiId: ":party_parrot:",
-                        reactedUserId: "@fuga_fuga",
+                        reactedUserId: "@x",
                         operation: "increment",
                         Authorization: "mocked_id_token"
                     });
@@ -505,8 +531,10 @@ describe("リアクションボタンをクリックした時", () => {
 
         describe("既にリアクション済のリアクションボタンをクリックした時", () => {
             test("絵文字リアクションAPIがdecrement操作で呼び出される", async () => {
+                rendering();
+
                 await user.click(
-                    within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", {
+                    await within(await screen.findByRole("listitem", { name: "b" })).findByRole("button", {
                         name: "reaction-b:tiger:"
                     })
                 );
@@ -515,7 +543,7 @@ describe("リアクションボタンをクリックした時", () => {
                     expect(mockOnReact).toHaveBeenCalledWith({
                         emoteReactionId: "reaction-b",
                         reactedEmojiId: ":tiger:",
-                        reactedUserId: "@fuga_fuga",
+                        reactedUserId: "@x",
                         operation: "decrement",
                         Authorization: "mocked_id_token"
                     });
@@ -693,7 +721,7 @@ describe("リアクション追加ボタンをクリックした時", () => {
                         expect(mockOnReact).toHaveBeenCalledWith({
                             emoteReactionId: "reaction-b",
                             reactedEmojiId: ":dolphin:",
-                            reactedUserId: "@fuga_fuga",
+                            reactedUserId: "@x",
                             operation: "increment",
                             Authorization: "mocked_id_token"
                         });
@@ -707,7 +735,7 @@ describe("リアクション追加ボタンをクリックした時", () => {
                         expect(mockOnReact).toHaveBeenCalledWith({
                             emoteReactionId: "reaction-b",
                             reactedEmojiId: ":tiger:",
-                            reactedUserId: "@fuga_fuga",
+                            reactedUserId: "@x",
                             operation: "decrement",
                             Authorization: "mocked_id_token"
                         });
