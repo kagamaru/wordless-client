@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { fetchWithTimeout } from "@/helpers";
+import { fetchNextjsServer } from "@/helpers";
 import { User } from "@/@types";
 
 export const useUserInfo = () => {
@@ -18,13 +18,13 @@ export const useUserInfo = () => {
         }
     }, [router]);
 
-    return useQuery({
+    const { data, error } = useQuery({
         queryKey: ["userInfo", token],
         queryFn: async () => {
             if (!token) throw new Error("Token missing");
 
             const { sub } = jwtDecode<{ sub: string }>(token);
-            const user = await fetchWithTimeout<User>(`/api/userSub/${sub}`, {
+            const user = await fetchNextjsServer<User>(`/api/userSub/${sub}`, {
                 headers: {
                     "Content-Type": "application/json",
                     authorization: token
@@ -33,6 +33,9 @@ export const useUserInfo = () => {
 
             return user.data;
         },
-        enabled: !!token
+        enabled: !!token,
+        retry: false
     });
+
+    return { data, error };
 };

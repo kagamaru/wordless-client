@@ -15,7 +15,11 @@ export function UserInfoTemplate({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const { data: userInfo } = useUserInfo();
+    const { data: userInfo, error } = useUserInfo();
+
+    if (error) {
+        throw new Error(JSON.parse(error.message).data);
+    }
 
     return <UserInfoContext.Provider value={{ userInfo }}>{children}</UserInfoContext.Provider>;
 }
