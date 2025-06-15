@@ -52,7 +52,7 @@ const server = setupServer(
                             emojiId: ":panda:"
                         }
                     ],
-                    userAvatarUrl: "https://a.png",
+                    userAvatarUrl: "https://image.test/a.png",
                     emoteReactionEmojis: [
                         {
                             emojiId: ":party_parrot:",
@@ -85,7 +85,7 @@ const server = setupServer(
                             emojiId: ":smiling_face:"
                         }
                     ],
-                    userAvatarUrl: "https://b.png",
+                    userAvatarUrl: "https://image.test/b.png",
                     emoteReactionEmojis: [
                         {
                             emojiId: ":snake:",
@@ -112,7 +112,7 @@ const server = setupServer(
                             emojiId: ":bear:"
                         }
                     ],
-                    userAvatarUrl: "https://c.png",
+                    userAvatarUrl: "https://image.test/c.png",
                     emoteReactionEmojis: [],
                     totalNumberOfReactions: 0
                 },
@@ -128,7 +128,7 @@ const server = setupServer(
                             emojiId: ":test:"
                         }
                     ],
-                    userAvatarUrl: "https://d.png",
+                    userAvatarUrl: "https://image.test/d.png",
                     emoteReactionEmojis: [
                         {
                             emojiId: ":test:",
@@ -149,31 +149,31 @@ const server = setupServer(
                 return HttpResponse.json({
                     userId: "@a",
                     userName: "User A",
-                    userAvatarUrl: "https://user-a.png"
+                    userAvatarUrl: "https://image.test/a.png"
                 });
             case "@b":
                 return HttpResponse.json({
                     userId: "@b",
                     userName: "User B",
-                    userAvatarUrl: "https://user-b.png"
+                    userAvatarUrl: "https://image.test/b.png"
                 });
             case "@c":
                 return HttpResponse.json({
                     userId: "@c",
                     userName: "User C",
-                    userAvatarUrl: "https://user-c.png"
+                    userAvatarUrl: "https://image.test/c.png"
                 });
             case "@fuga_fuga":
                 return HttpResponse.json({
                     userId: "@fuga_fuga",
                     userName: "User Fuga",
-                    userAvatarUrl: "https://user-fuga.png"
+                    userAvatarUrl: "https://image.test/fuga.png"
                 });
             default:
                 return HttpResponse.json({
                     userId: "@user1",
                     userName: "User One",
-                    userAvatarUrl: "https://user1.png"
+                    userAvatarUrl: "https://image.test/user1.png"
                 });
         }
     })
