@@ -4,14 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 import { GET } from "@/app/api/user/[userId]/route";
 
-const userApiUrl = "https://localhost.com/dev/users/@test";
+const userApiUrl = "https://api.mock.test/v1/users/@test";
 
 const server = setupServer(
     http.get(userApiUrl, () => {
         return HttpResponse.json({
             userId: "@test",
             userName: "TEST",
-            userAvatarUrl: "https://d.png"
+            userAvatarUrl: "https://image.test/d.png"
         });
     })
 );
@@ -60,7 +60,7 @@ describe("正常系", () => {
         expect(data).toEqual({
             userId: "@test",
             userName: "TEST",
-            userAvatarUrl: "https://d.png"
+            userAvatarUrl: "https://image.test/d.png"
         });
     });
 });

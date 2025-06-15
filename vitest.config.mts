@@ -7,12 +7,12 @@ export default defineConfig({
     test: {
         environment: "jsdom",
         env: {
-            NEXT_PUBLIC_WEBSOCKET_URL: "wss://localhost.com/dev/",
-            NEXT_PUBLIC_S3_URL: "https://s3.example-bucket.amazonaws.com",
+            NEXT_PUBLIC_WEBSOCKET_URL: "wss://mock.test/ws/",
+            NEXT_PUBLIC_S3_URL: "https://mock-bucket.test/assets/",
             NEXT_PUBLIC_API_MOCKING: "disabled",
-            REST_API_URL: "https://localhost.com/dev/",
-            REGION_AWS: "us-west-2",
-            COGNITO_CLIENT_ID: "cognito-user-id"
+            REST_API_URL: "https://api.mock.test/v1/",
+            REGION_AWS: "mock-region-1",
+            COGNITO_CLIENT_ID: "mock-client-id-XXXX"
         }
     }
 });

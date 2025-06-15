@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 import { GET } from "@/app/api/emote/route";
 
-const emoteApiUrl = "https://localhost.com/dev/emotes";
+const emoteApiUrl = "https://api.mock.test/v1/emotes";
 
 const server = setupServer(
     http.get(emoteApiUrl, () => {
@@ -31,7 +31,7 @@ const server = setupServer(
                             emojiId: ":panda:"
                         }
                     ],
-                    userAvatarUrl: "https://a.png",
+                    userAvatarUrl: "https://image.test/a.png",
                     emoteReactionEmojis: [
                         {
                             emojiId: ":party_parrot:",
@@ -64,7 +64,7 @@ const server = setupServer(
                             emojiId: ":smiling_face:"
                         }
                     ],
-                    userAvatarUrl: "https://b.png",
+                    userAvatarUrl: "https://image.test/b.png",
                     emoteReactionEmojis: [
                         {
                             emojiId: ":snake:",
@@ -91,7 +91,7 @@ const server = setupServer(
                             emojiId: ":bear:"
                         }
                     ],
-                    userAvatarUrl: "https://c.png",
+                    userAvatarUrl: "https://image.test/c.png",
                     emoteReactionEmojis: [],
                     totalNumberOfReactions: 0
                 },
@@ -107,7 +107,7 @@ const server = setupServer(
                             emojiId: ":test:"
                         }
                     ],
-                    userAvatarUrl: "https://d.png",
+                    userAvatarUrl: "https://image.test/d.png",
                     emoteReactionEmojis: [
                         {
                             emojiId: ":test:",
