@@ -2,7 +2,7 @@ import { Divider } from "antd";
 import { css } from "ss/css";
 
 export function WordlessDivider() {
-    const divider = css({
+    const dividerStyle = css({
         margin: "0px !important",
         borderTop: "1px solid !important",
         borderColor: "lightGrey !important"
@@ -10,7 +10,7 @@ export function WordlessDivider() {
 
     return (
         <>
-            <Divider className={divider} />
+            <Divider className={dividerStyle} />
         </>
     );
 }

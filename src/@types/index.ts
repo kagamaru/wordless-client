@@ -1,22 +1,27 @@
-import { EmoteGetAllResponse } from "@/@types/apiType/EmoteGetAllResponse";
-import { EmoteReactionGetResponse } from "@/@types/apiType/EmoteReactionGetResponse";
-
+import { ReactRequest } from "@/@types/request/ReactRequest";
+import { RestApiRequestOption } from "@/@types/request/RestApiRequestOption";
+import { APIResponse } from "@/@types/response/APIResponse";
+import { OnReactIncomingMessage } from "@/@types/webSocketMessage/OnReactIncomingMessage";
 import { Emoji } from "@/@types/Emoji";
 import { EmojiIdObject } from "@/@types/EmojiIdObject";
 import { EmojiString } from "@/@types/EmojiString";
-import { Emote } from "@/@types/Emote";
 import { EmoteEmojis } from "@/@types/EmoteEmojis";
 import { EmoteReaction } from "@/@types/EmoteReaction";
 import { EmoteReactionEmojiWithNumber } from "@/@types/EmoteReactionEmojiWithNumber";
+import { ErrorCode } from "@/@types/ErrorCode";
+import { User } from "./User";
 
 export type {
-    EmoteGetAllResponse,
-    EmoteReactionGetResponse,
+    ReactRequest,
+    RestApiRequestOption,
+    OnReactIncomingMessage,
+    APIResponse,
     Emoji,
     EmojiIdObject,
     EmojiString,
-    Emote,
     EmoteEmojis,
     EmoteReaction,
-    EmoteReactionEmojiWithNumber
+    EmoteReactionEmojiWithNumber,
+    ErrorCode,
+    User
 };

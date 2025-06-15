@@ -1,77 +1,204 @@
 "use client";
 
-import { EmoteReactionEmojiWithNumber } from "@/@types";
-import { Emote } from "@/@types/Emote";
-import { EmoteReaction } from "@/@types/EmoteReaction";
-import { DisplayEmoteEmoji, EmoteAvatar, EmoteReactionButton, PlusButton, WordlessDivider } from "@/components/atoms";
 import { Col, ConfigProvider, Row } from "antd";
+import dayjs from "dayjs";
+import { useCallback, useContext, useMemo, useState } from "react";
+import { EmoteReactionEmojiWithNumber, EmoteEmojis, EmojiString } from "@/@types";
+import {
+    DisplayEmoteEmoji,
+    EmoteAvatar,
+    EmoteReactionButton,
+    PlusButton,
+    TotalNumberOfReactionsButton,
+    WordlessDivider
+} from "@/components/atoms";
+import { EmojiDialog, ReactionUsersDrawer } from "@/components/molecules";
+import { WebSocketContext } from "@/components/template";
+import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";
 
 type Props = {
-    emote: Emote;
-    emoteReaction: EmoteReaction;
+    emote: {
+        userName: string;
+        userId: string;
+        userAvatarUrl: string;
+        emoteDatetime: string;
+        emoteEmojis: EmoteEmojis;
+        emoteReactionId: string;
+        totalNumberOfReactions: number;
+        emoteReactionEmojis: EmoteReactionEmojiWithNumber[];
+    };
 };
 
-export function WordlessEmote(props: Props) {
-    const wordlessEmote = css({
+dayjs.locale("ja");
+
+export function WordlessEmote({ emote }: Props) {
+    const isMobile = useIsMobile();
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isEmojiDialogOpen, setIsEmojiDialogOpen] = useState(false);
+    const webSocketService = useContext(WebSocketContext);
+
+    const onEmojiDialogOpen = useCallback(() => {
+        setIsEmojiDialogOpen(true);
+    }, []);
+
+    const onEmojiDialogClose = useCallback(() => {
+        setIsEmojiDialogOpen(false);
+    }, []);
+
+    // TODO: ユーザーIDをAPIから取得する
+    const userId = "@fuga_fuga";
+
+    const wordlessEmoteStyle = css({
         paddingLeft: { base: "16px", lg: "140px" },
         paddingRight: { base: "16px", lg: "140px" },
         marginTop: "20px"
     });
 
-    const textBlock = css({
+    const textBlockStyle = css({
         marginBottom: "2px"
     });
 
-    const authorText = css({
-        fontSize: { base: "24px", lg: "28px" },
+    const userNameTextStyle = css({
+        fontSize: { base: "20px", lg: "24px" },
         color: "black !important",
-        marginLeft: { base: "8px", lg: "0px" }
+        marginLeft: { base: "8px", lg: "0px" },
+        overflow: { base: "hidden", lg: undefined },
+        textOverflow: "ellipsis",
+        whiteSpace: { base: "nowrap", lg: undefined },
+        maxWidth: { base: undefined, lg: "770px" },
+        marginRight: { base: "0px", lg: "8px" }
     });
 
-    const smallText = css({
-        marginBottom: { base: "4px", lg: "7px" },
-        marginLeft: { base: "8px", lg: "20px" },
+    const userIdTextStyle = css({
+        marginLeft: { base: "8px", lg: "0px" },
+        fontSize: "16px",
+        color: "grey",
+        marginBottom: { base: "2px", lg: "0px" }
+    });
+
+    const emoteDatetimeTextStyle = css({
         fontSize: "12px",
-        color: "grey"
+        color: "grey",
+        marginLeft: { base: "8px", lg: "0px" },
+        marginBottom: { base: "2px", lg: "4px" }
     });
 
-    const { emote } = props;
+    const alreadyReactedEmojiIds: Array<EmojiString> = [];
 
-    const emoteEmojiButtons = () =>
-        props.emoteReaction.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => (
-            <EmoteReactionButton
-                key={emoteReactionEmoji.emojiId}
-                emoteReactionEmojiWithNumber={emoteReactionEmoji}
-                onClick={() => {}}
-            ></EmoteReactionButton>
-        ));
+    const emoteEmojiButtons = () => (
+        <Row>
+            {emote?.emoteReactionEmojis.map((emoteReactionEmoji: EmoteReactionEmojiWithNumber) => {
+                if (emoteReactionEmoji.reactedUserIds.length === 0) {
+                    return undefined;
+                }
+
+                const isAlreadyReacted = emoteReactionEmoji.reactedUserIds.includes(userId);
+                if (isAlreadyReacted) {
+                    alreadyReactedEmojiIds.push(emoteReactionEmoji.emojiId);
+                }
+
+                return (
+                    <EmoteReactionButton
+                        key={emoteReactionEmoji.emojiId}
+                        emoteReactionEmojiWithNumber={emoteReactionEmoji}
+                        emoteReactionId={emote.emoteReactionId}
+                        isReacted={isAlreadyReacted}
+                        onClickAction={() => {
+                            webSocketService?.onReact({
+                                emoteReactionId: emote.emoteReactionId,
+                                reactedUserId: userId,
+                                reactedEmojiId: emoteReactionEmoji.emojiId,
+                                operation: isAlreadyReacted ? "decrement" : "increment",
+                                Authorization: localStorage.getItem("IdToken") ?? ""
+                            });
+                        }}
+                    ></EmoteReactionButton>
+                );
+            })}
+        </Row>
+    );
+
+    const emoteEmojis = useMemo(() => {
+        return emote.emoteEmojis;
+    }, [emote.emoteEmojis]);
+
+    const emoteInfo = () => {
+        const emoteDatetimeFormatStyle = "YYYY-MM-DD HH:mm:ss";
+        if (isMobile) {
+            return (
+                <div className={textBlockStyle}>
+                    <div className={userNameTextStyle}>{emote.userName}</div>
+                    <div className={userIdTextStyle}>{emote.userId}</div>
+                    <div className={emoteDatetimeTextStyle}>
+                        {dayjs(emote.emoteDatetime).format(emoteDatetimeFormatStyle)}
+                    </div>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <Row align="bottom" className={textBlockStyle}>
+                        <div className={userNameTextStyle}>{emote.userName}</div>
+                        <div className={userIdTextStyle}>{emote.userId}</div>
+                    </Row>
+                    <div className={emoteDatetimeTextStyle}>
+                        {dayjs(emote.emoteDatetime).format(emoteDatetimeFormatStyle)}
+                    </div>
+                </div>
+            );
+        }
+    };
+
+    const totalNumberOfReactionsButtonClick = () => {
+        setIsDrawerOpen(true);
+    };
 
     return (
         <>
-            <div className={wordlessEmote}>
+            <div className={wordlessEmoteStyle}>
                 <Row>
                     <Col span={2} className="m-auto">
-                        <EmoteAvatar url={emote.userAvatarUrl}></EmoteAvatar>
+                        <EmoteAvatar url={emote.userAvatarUrl} userName={emote.userName}></EmoteAvatar>
                     </Col>
                     <Col span={22}>
-                        <Row align="bottom" className={textBlock}>
-                            <div className={authorText}>{emote.userName}</div>
-                            <div className={smallText}>{emote.userId}</div>
-                            <div className={smallText}>{emote.emoteDatetime}</div>
-                        </Row>
+                        {emoteInfo()}
                         <WordlessDivider />
-                        <DisplayEmoteEmoji emojis={emote.emoteEmojis}></DisplayEmoteEmoji>
+                        <DisplayEmoteEmoji emojis={emoteEmojis}></DisplayEmoteEmoji>
+                        {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
+                        <ConfigProvider wave={{ disabled: true }}>
+                            {emote.totalNumberOfReactions > 0 && (
+                                <TotalNumberOfReactionsButton
+                                    totalNumberOfReactions={emote.totalNumberOfReactions}
+                                    onClickAction={totalNumberOfReactionsButtonClick}
+                                />
+                            )}
+                        </ConfigProvider>
                         <Row className={"mb-3"}>
-                            {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
-                            <ConfigProvider wave={{ disabled: true }}>
-                                <PlusButton onClick={() => {}}></PlusButton>
-                                {emoteEmojiButtons()}
-                            </ConfigProvider>
+                            <Col span={isMobile ? 3 : 1}>
+                                {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
+                                <ConfigProvider wave={{ disabled: true }}>
+                                    <PlusButton onClickAction={onEmojiDialogOpen}></PlusButton>
+                                </ConfigProvider>
+                            </Col>
+                            <Col span={isMobile ? 21 : 23}>
+                                <ConfigProvider wave={{ disabled: true }}>{emoteEmojiButtons()}</ConfigProvider>
+                            </Col>
                         </Row>
                     </Col>
                 </Row>
                 <WordlessDivider />
+                <ReactionUsersDrawer
+                    isOpen={isDrawerOpen}
+                    emoteReactionEmojis={emote.emoteReactionEmojis}
+                    setIsOpenAction={setIsDrawerOpen}
+                />
+                <EmojiDialog
+                    emoteReactionId={emote.emoteReactionId}
+                    isOpen={isEmojiDialogOpen}
+                    closeDialogAction={onEmojiDialogClose}
+                    alreadyReactedEmojiIds={alreadyReactedEmojiIds}
+                />
             </div>
         </>
     );

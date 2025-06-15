@@ -4,6 +4,14 @@ on:
   pull_request:
     branches: [ "main", "develop" ]
 
+env:
+  NEXT_PUBLIC_WEBSOCKET_URL: ${{secrets.NEXT_PUBLIC_WEBSOCKET_URL}}
+  NEXT_PUBLIC_API_MOCKING: ${{secrets.NEXT_PUBLIC_API_MOCKING}}
+  NEXT_PUBLIC_S3_URL: ${{secrets.NEXT_PUBLIC_S3_URL}}
+  REST_API_URL: ${{secrets.REST_API_URL}}
+  REGION_AWS: ${{secrets.REGION_AWS}}
+  COGNITO_CLIENT_ID: ${{secrets.COGNITO_CLIENT_ID}}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,6 +31,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
+    - name: Set timezone to JST
+      run: sudo timedatectl set-timezone Asia/Tokyo
     - run: pnpm install
     - run: pnpm run build
-    # TODO: 単体テスト実装後、pnpm run test する
+    - run: pnpm run test

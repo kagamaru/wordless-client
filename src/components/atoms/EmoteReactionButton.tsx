@@ -1,39 +1,56 @@
-import { EmojiType } from "@/@types/Emoji";
-import { EmoteReactionEmojiWithNumber } from "@/@types";
-import { emojiHelper } from "@/helpers";
+"use client";
+
 import { Button } from "antd";
-import Image from "next/image";
-import * as emoji from "node-emoji";
+import { Emoji } from "@/components/atoms";
+import { EmoteReactionEmojiWithNumber } from "@/@types";
 import { css } from "ss/css";
 
 type Props = {
     emoteReactionEmojiWithNumber: EmoteReactionEmojiWithNumber;
-    onClick: () => void;
+    emoteReactionId: string;
+    onClickAction: () => void;
+    isReacted: boolean;
 };
 
-export function EmoteReactionButton(props: Props) {
-    const emojiButton = css({
-        height: "24px !important",
-        width: "60px",
+export function EmoteReactionButton({
+    emoteReactionEmojiWithNumber,
+    emoteReactionId,
+    onClickAction,
+    isReacted
+}: Props) {
+    const emojiButtonStyle = css({
+        height: "32pxt",
+        width: "72px",
         marginTop: "4px",
-        marginLeft: "4px"
+        marginLeft: "4px",
+        borderColor: isReacted ? "primary !important" : "",
+        backgroundColor: isReacted ? "lightPurple !important" : ""
     });
 
-    const emoteReactionButton = () => {
-        const returnedEmoji = emojiHelper(props.emoteReactionEmojiWithNumber.emojiId);
+    const numberOfReactionsStyle = css({
+        fontSize: "12px",
+        fontWeight: "bold"
+    });
 
-        if (returnedEmoji.emojiType === EmojiType.Preset) {
-            return <span>{emoji.get(props.emoteReactionEmojiWithNumber.emojiId)}</span>;
+    const numberOfReactionsText = (numReactions: number) => {
+        if (numReactions > 99) {
+            return <span className={numberOfReactionsStyle}>99+</span>;
         } else {
-            return <Image src={returnedEmoji.url ?? ""} alt="" width={24} height={24} />;
+            return <span>{numReactions}</span>;
         }
     };
 
     return (
         <>
-            <Button shape="round" className={emojiButton} onClick={() => props.onClick()}>
-                {emoteReactionButton()}
-                <span>{props.emoteReactionEmojiWithNumber.numberOfReactions}</span>
+            <Button
+                aria-label={emoteReactionId + emoteReactionEmojiWithNumber.emojiId}
+                shape="round"
+                className={emojiButtonStyle}
+                onClick={onClickAction}
+                aria-pressed={isReacted}
+            >
+                <Emoji emojiId={emoteReactionEmojiWithNumber.emojiId} size={24} />
+                {numberOfReactionsText(emoteReactionEmojiWithNumber.numberOfReactions)}
             </Button>
         </>
     );

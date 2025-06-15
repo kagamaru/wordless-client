@@ -4,8 +4,10 @@
     "private": true,
     "scripts": {
         "dev": "next dev --turbopack",
+        "dev:mock": "NEXT_PUBLIC_API_MOCKING=enabled next dev",
         "build": "next build",
         "start": "next start",
+        "test": "vitest",
         "lint": "run-p --continue-on-error --print-label lint:*",
         "lint:eslint": "next lint",
         "lint:prettier": "prettier --cache --check .",
@@ -17,27 +19,47 @@
     },
     "dependencies": {
         "@ant-design/icons": "^5.5.2",
+        "@aws-sdk/client-cognito-identity-provider": "^3.768.0",
+        "@tanstack/react-query": "^5.69.0",
+        "@testing-library/user-event": "^14.6.1",
         "antd": "^5.22.5",
+        "dayjs": "^1.11.13",
+        "jwt-decode": "^4.0.0",
         "less": "^4.2.1",
         "next": "15.0.4",
         "node-emoji": "^2.2.0",
+        "oidc-client-ts": "^3.2.0",
         "react": "^19.0.0",
-        "react-dom": "^19.0.0"
+        "react-dom": "^19.0.0",
+        "react-oidc-context": "^3.2.0",
+        "zustand": "^5.0.5"
     },
     "devDependencies": {
         "@pandacss/dev": "^0.49.0",
         "@secretlint/secretlint-rule-preset-recommend": "^9.0.0",
+        "@testing-library/dom": "^10.4.0",
+        "@testing-library/react": "^16.2.0",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
+        "@vitejs/plugin-react": "^4.3.4",
         "eslint": "^8",
         "eslint-config-next": "15.0.4",
         "eslint-plugin-simple-import-sort": "^12.1.1",
+        "jsdom": "^26.0.0",
+        "msw": "^2.7.3",
         "npm-run-all2": "^7.0.1",
         "pnpm": "^9.15.0",
         "prettier": "^3.4.2",
         "secretlint": "^9.0.0",
         "typescript": "^5",
-        "typescript-eslint": "^8.17.0"
+        "typescript-eslint": "^8.17.0",
+        "vite-tsconfig-paths": "^5.1.4",
+        "vitest": "^3.0.8"
+    },
+    "msw": {
+        "workerDirectory": [
+            "public"
+        ]
     }
 }
