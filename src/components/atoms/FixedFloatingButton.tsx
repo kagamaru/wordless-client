@@ -47,8 +47,8 @@ export const FixedFloatingButton: React.FC<Props> = ({ onClick }) => {
     });
 
     return (
-        <div className={wrapperStyle}>
-            <div className={speechButtonStyle} onClick={onClick}>
+        <div className={wrapperStyle} role="button" aria-label="エモート投稿ボタン" onClick={onClick}>
+            <div className={speechButtonStyle}>
                 <Image
                     src="/wordlessIcon.png"
                     alt="emoji"
