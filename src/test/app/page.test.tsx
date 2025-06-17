@@ -385,6 +385,14 @@ describe("初期表示時", () => {
                 });
             });
         });
+
+        test("投稿ボタンを表示する", async () => {
+            rendering();
+
+            await waitFor(() => {
+                expect(screen.getByRole("button", { name: "エモート投稿ボタン" })).toBeTruthy();
+            });
+        });
     });
 
     describe("異常系", () => {
