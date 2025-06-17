@@ -32,6 +32,7 @@ const EmojiComponent = ({ emojiId, size }: Props) => {
                 alt={imageAlt}
                 width={size}
                 height={size}
+                unoptimized={returnedEmoji.url?.includes(".gif") ?? false}
             />
         );
     }
