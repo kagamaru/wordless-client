@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FetchEmotesResponse } from "@/class";
-import { DisplayErrorMessage } from "@/components/atoms";
+import { DisplayErrorMessage, FixedFloatingButton } from "@/components/atoms";
 import { PageHeader } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
 import { fetchNextjsServer } from "@/helpers";
@@ -48,6 +48,12 @@ export default function Home() {
             <PageHeader></PageHeader>
             {isError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
             {emotes && <WordlessEmotes emotes={emotes}></WordlessEmotes>}
+            <FixedFloatingButton
+                onClick={() => {
+                    // TODO: モーダルを表示する
+                    console.log("clicked");
+                }}
+            />
         </>
     );
 }
