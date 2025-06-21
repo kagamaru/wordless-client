@@ -18,7 +18,7 @@ export function PresetEmojis({ onEmojiClick }: Props) {
     const symbols: Array<EmojiInterface> = [];
     const flags: Array<EmojiInterface> = [];
 
-    presetEmojiMap.map((emoji) => {
+    presetEmojiMap.forEach((emoji) => {
         switch (emoji.emojiType) {
             case EmojiType.SmileysEmotion:
                 smileysEmotion.push(emoji);
