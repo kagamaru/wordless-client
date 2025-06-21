@@ -12,7 +12,8 @@ import {
     TotalNumberOfReactionsButton,
     WordlessDivider
 } from "@/components/atoms";
-import { EmojiDialog, ReactionUsersDrawer } from "@/components/molecules";
+import { ReactionUsersDrawer } from "@/components/molecules";
+import { EmojiDialog } from "@/components/organisms";
 import { UserInfoContext, WebSocketContext } from "@/components/template";
 import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";

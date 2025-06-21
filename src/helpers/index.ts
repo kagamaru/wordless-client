@@ -1,4 +1,5 @@
 import { emojiHelper } from "@/helpers/emojiHelper";
+import { emojiSearch } from "@/helpers/emojiSearchHelper";
 import { getErrorMessage } from "@/helpers/errorMessageHelper";
 import { fetchWithTimeout } from "@/helpers/lambdaConnectionHelpers/fetchWithTimeout";
 import { postWithTimeout } from "@/helpers/lambdaConnectionHelpers/postWithTimeout";
@@ -8,6 +9,7 @@ import { postNextjsServer } from "@/helpers/nextjsServerConnectionHelpers/postNe
 
 export {
     emojiHelper,
+    emojiSearch,
     getErrorMessage,
     fetchWithTimeout,
     postWithTimeout,
