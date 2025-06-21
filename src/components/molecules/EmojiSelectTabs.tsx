@@ -1,5 +1,5 @@
 import { Tabs } from "antd";
-import { EmojiString } from "@/@types";
+import { EmojiString, EmojiTab } from "@/@types";
 import { Emoji as EmojiInterface } from "@/@types/Emoji";
 import { EmojiButtonRow, ImageEmojiButtonRow } from "@/components/atoms";
 import { PresetEmojis } from "@/components/molecules";
@@ -7,13 +7,13 @@ import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";
 
 type Props = {
-    activeTab: "preset" | "custom" | "meme";
+    activeTab: EmojiTab;
     isSearching: boolean;
     presetEmojis: Array<EmojiInterface>;
     customEmojis: Array<EmojiInterface>;
     memeEmojis: Array<EmojiInterface>;
     onEmojiClick: (emojiId: EmojiString) => void;
-    onTabClick: (tab: "preset" | "custom" | "meme") => void;
+    onTabClick: (tab: EmojiTab) => void;
 };
 
 export function EmojiSelectTabs({
@@ -70,11 +70,5 @@ export function EmojiSelectTabs({
         }
     ];
 
-    return (
-        <Tabs
-            activeKey={activeTab}
-            items={tabItems}
-            onChange={(key) => onTabClick(key as "preset" | "custom" | "meme")}
-        ></Tabs>
-    );
+    return <Tabs activeKey={activeTab} items={tabItems} onChange={(key) => onTabClick(key as EmojiTab)}></Tabs>;
 }

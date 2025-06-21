@@ -7,7 +7,7 @@ import { EmojiSelectTabs } from "@/components/molecules";
 import { UserInfoContext, WebSocketContext } from "@/components/template";
 import { presetEmojiMap, customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
 import { Emoji as EmojiInterface } from "@/@types/Emoji";
-import { EmojiString } from "@/@types";
+import { EmojiString, EmojiTab } from "@/@types";
 import { emojiSearch } from "@/helpers";
 import { css } from "ss/css";
 
@@ -20,7 +20,7 @@ type Props = {
 
 export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, closeDialogAction }: Props) {
     const [searchTerm, setSearchTerm] = useState("");
-    const [activeTab, setActiveTab] = useState<"preset" | "custom" | "meme">("preset");
+    const [activeTab, setActiveTab] = useState<EmojiTab>("preset");
     const [searchedPresetEmojis, setSearchedPresetEmojis] = useState<Array<EmojiInterface>>(presetEmojiMap);
     const [searchedCustomEmojis, setSearchedCustomEmojis] = useState<Array<EmojiInterface>>(customEmojiMap);
     const [searchedMemeEmojis, setSearchedMemeEmojis] = useState<Array<EmojiInterface>>(memeEmojiMap);
