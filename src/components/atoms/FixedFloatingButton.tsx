@@ -1,14 +1,12 @@
 import React from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";
 
-type Props = {
-    onClick: () => void;
-};
-
-export const FixedFloatingButton: React.FC<Props> = ({ onClick }) => {
+export const FixedFloatingButton: React.FC = () => {
     const isMobile = useIsMobile();
+    const router = useRouter();
 
     const wrapperStyle = css({
         position: "fixed",
@@ -45,6 +43,10 @@ export const FixedFloatingButton: React.FC<Props> = ({ onClick }) => {
     const imageStyle = css({
         marginTop: isMobile ? "2px" : "1px"
     });
+
+    const onClick = () => {
+        router.push("/post");
+    };
 
     return (
         <div className={wrapperStyle} role="button" aria-label="エモート投稿ボタン" onClick={onClick}>
