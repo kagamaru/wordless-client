@@ -1,9 +1,8 @@
 import { Tabs } from "antd";
 import { EmojiString, EmojiTab } from "@/@types";
 import { Emoji as EmojiInterface } from "@/@types/Emoji";
-import { EmojiButtonRow, ImageEmojiButtonRow } from "@/components/atoms";
+import { EmotePostEmojiButtonRow, EmotePostImageEmojiButtonRow } from "@/components/atoms";
 import { PresetEmojis } from "@/components/molecules";
-import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";
 
 type Props = {
@@ -16,7 +15,7 @@ type Props = {
     onTabClick: (tab: EmojiTab) => void;
 };
 
-export function EmojiSelectTabs({
+export function PostEmoteEmojiSelectTabs({
     activeTab,
     isSearching,
     presetEmojis,
@@ -25,26 +24,23 @@ export function EmojiSelectTabs({
     onEmojiClick,
     onTabClick
 }: Props) {
-    const isMobile = useIsMobile();
-
     const emojiDialogScrollBoxStyle = css({
-        height: isMobile ? "300px" : "500px",
         overflowY: "auto",
         overflowX: "hidden"
     });
 
     const renderEmojiTab = (emojiMap: Array<EmojiInterface>) => (
         <div className={emojiDialogScrollBoxStyle}>
-            <ImageEmojiButtonRow emojis={emojiMap} onClickAction={(emojiId) => onEmojiClick(emojiId)} />
+            <EmotePostImageEmojiButtonRow emojis={emojiMap} onClickAction={(emojiId) => onEmojiClick(emojiId)} />
         </div>
     );
 
     const presetTab = (
         <div className={emojiDialogScrollBoxStyle}>
             {isSearching ? (
-                <EmojiButtonRow emojis={presetEmojis} onClickAction={(emojiId) => onEmojiClick(emojiId)} />
+                <EmotePostEmojiButtonRow emojis={presetEmojis} onClickAction={(emojiId) => onEmojiClick(emojiId)} />
             ) : (
-                <PresetEmojis isEmotePost={false} onEmojiClick={(emojiId) => onEmojiClick(emojiId)} />
+                <PresetEmojis isEmotePost={true} onEmojiClick={(emojiId) => onEmojiClick(emojiId)} />
             )}
         </div>
     );

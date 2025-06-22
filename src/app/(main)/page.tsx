@@ -48,12 +48,7 @@ export default function Home() {
             <PageHeader></PageHeader>
             {isError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
             {emotes && <WordlessEmotes emotes={emotes}></WordlessEmotes>}
-            <FixedFloatingButton
-                onClick={() => {
-                    // TODO: モーダルを表示する
-                    console.log("clicked");
-                }}
-            />
+            <FixedFloatingButton />
         </>
     );
 }
