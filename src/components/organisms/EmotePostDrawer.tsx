@@ -123,6 +123,12 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
         }
     }, [isOpen]);
 
+    useEffect(() => {
+        setSearchedPresetEmojis(emojiSearch(searchTerm, "preset"));
+        setSearchedCustomEmojis(emojiSearch(searchTerm, "custom"));
+        setSearchedMemeEmojis(emojiSearch(searchTerm, "meme"));
+    }, [activeTab]);
+
     return (
         <Drawer open={isOpen} closable={true} onClose={onCloseAction} placement="bottom" width={500} height="100%">
             <div className={emojiDialogStyle}>

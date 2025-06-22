@@ -73,6 +73,12 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
         }
     }, [isOpen]);
 
+    useEffect(() => {
+        setSearchedPresetEmojis(emojiSearch(searchTerm, "preset"));
+        setSearchedCustomEmojis(emojiSearch(searchTerm, "custom"));
+        setSearchedMemeEmojis(emojiSearch(searchTerm, "meme"));
+    }, [activeTab]);
+
     return (
         <Modal
             open={isOpen}
