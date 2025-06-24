@@ -49,16 +49,20 @@ export const FixedFloatingButton: React.FC = () => {
     };
 
     return (
-        <div className={wrapperStyle} role="button" aria-label="エモート投稿ボタン" onClick={onClick}>
-            <div className={speechButtonStyle}>
-                <Image
-                    src="/wordlessIcon.png"
-                    alt="emoji"
-                    width={imageSize}
-                    height={imageSize}
-                    className={imageStyle}
-                />
+        <>
+            {/* NOTE: auto-scroll に関する警告の解消のため、直前にブロック要素を配置 */}
+            <div></div>
+            <div className={wrapperStyle} role="button" aria-label="エモート投稿ボタン" onClick={onClick}>
+                <div className={speechButtonStyle}>
+                    <Image
+                        src="/wordlessIcon.png"
+                        alt="emoji"
+                        width={imageSize}
+                        height={imageSize}
+                        className={imageStyle}
+                    />
+                </div>
             </div>
-        </div>
+        </>
     );
 };
