@@ -607,6 +607,30 @@ describe("リアクション追加ボタンをクリックした時", () => {
                 });
             });
 
+            test("絵文字検索テキストボックスに入力後、「カスタム」タブを選択した時、「カスタム」での検索結果が表示される", async () => {
+                await user.type(screen.getByPlaceholderText("絵文字を検索..."), "last");
+                await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
+
+                await waitFor(() => {
+                    // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
+                    const img = screen.getAllByAltText("ラスト").find((img) => img.getAttribute("width") === "32");
+                    expect(img).toBeTruthy();
+                });
+            });
+
+            test("絵文字検索テキストボックスに入力後、「ミーム」タブを選択した時、「ミーム」での検索結果が表示される", async () => {
+                await user.type(screen.getByPlaceholderText("絵文字を検索..."), "驚く猫");
+                await user.click(screen.getByRole("tab", { name: "ミーム", selected: false }));
+
+                await waitFor(() => {
+                    // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
+                    const img = screen
+                        .getAllByAltText("猫ミーム_驚く猫")
+                        .find((img) => img.getAttribute("width") === "32");
+                    expect(img).toBeTruthy();
+                });
+            });
+
             describe("「カスタム」タブ選択時、", () => {
                 beforeEach(async () => {
                     await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
@@ -750,7 +774,13 @@ describe("リアクション追加ボタンをクリックした時", () => {
                     });
                 });
 
-                test.todo("リアクション追加ボタンをクリックした時、リアクション追加モーダーが閉じられる");
+                test("リアクション追加ボタンをクリックした時、リアクション追加モーダルが閉じられる", async () => {
+                    await user.click(within(screen.getByRole("dialog")).getByText("🐅"));
+
+                    await waitFor(() => {
+                        expect(screen.queryByRole("dialog")).toBeFalsy();
+                    });
+                });
             });
 
             test("×ボタンクリック時、モーダルが閉じられる", async () => {
@@ -780,7 +810,7 @@ describe("リアクション追加ボタンをクリックした時", () => {
                     await user.click(screen.getByRole("button", { name: "close" }));
 
                     await user.click(
-                        within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", { name: "+" })
+                        within(screen.getByRole("listitem", { name: "b" })).getByRole("button", { name: "+" })
                     );
 
                     await waitFor(() => {
@@ -788,6 +818,18 @@ describe("リアクション追加ボタンをクリックした時", () => {
                     });
                 });
             });
+        });
+    });
+});
+
+describe("投稿ボタンをクリックした時", () => {
+    test("投稿ボタンをクリックした時、投稿モーダルが表示される", async () => {
+        rendering();
+
+        await user.click(screen.getByRole("button", { name: "エモート投稿ボタン" }));
+
+        await waitFor(() => {
+            expect(mockedUseRouter).toHaveBeenCalledWith("/post");
         });
     });
 });
