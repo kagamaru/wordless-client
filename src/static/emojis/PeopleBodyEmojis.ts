@@ -1168,7 +1168,7 @@ export const peopleBodyEmojis: Array<Emoji> = [
         emojiType: EmojiType.PeopleBody,
         emojiId: ":police_officer:",
         emojiJapaneseId: "警察官",
-        emojiChar: "🧑‍👮"
+        emojiChar: "👮"
     },
     {
         emojiCategory: EmojiCategory.Preset,
