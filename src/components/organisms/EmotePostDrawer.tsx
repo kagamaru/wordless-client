@@ -2,6 +2,7 @@
 
 import { Col, Drawer, Input, Row } from "antd";
 import { SendOutlined } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { EmojiString, EmojiTab } from "@/@types";
 import { Emoji as EmojiInterface } from "@/@types/Emoji";
@@ -32,6 +33,8 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
     const [searchedCustomEmojis, setSearchedCustomEmojis] = useState<Array<EmojiInterface>>(customEmojiMap);
     const [searchedMemeEmojis, setSearchedMemeEmojis] = useState<Array<EmojiInterface>>(memeEmojiMap);
     const isMobile = useIsMobile();
+    const router = useRouter();
+    const hasPostEmojis = postEmojis.some((emoji) => emoji !== undefined);
 
     const onEmojiClick = useCallback((emojiId: EmojiString) => {
         const pushedEmoji = emojiHelper(emojiId);
@@ -112,9 +115,15 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
 
     const sendButtonStyle = css({
         fontSize: isMobile ? "32px" : "56px",
-        color: "primary !important",
-        cursor: "pointer"
+        color: hasPostEmojis ? "primary !important" : "grey !important",
+        cursor: hasPostEmojis ? "pointer" : "not-allowed",
+        opacity: hasPostEmojis ? 1 : 0.5
     });
+
+    // TODO: 送信ボタン押下時のテスト実装
+    const onSendClick = useCallback(() => {
+        router.push("/");
+    }, [router]);
 
     useEffect(() => {
         if (isOpen) {
@@ -135,11 +144,16 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
                 <div className={emojiPostDrawerTitleStyle}>今の気持ちを表そう</div>
                 <Row justify="space-between" align="middle" className="mb-4">
                     <Col span={isMobile ? 21 : 22}>
-                        <Row align="middle" style={{ fontSize: isMobile ? "28px" : "56px" }} role="list">
+                        <Row align="middle" style={{ fontSize: isMobile ? "28px" : "56px" }} role="listbox">
                             {postEmojis.map((emoji, i) => (
-                                <div key={i} role="listitem">
+                                <div key={i}>
                                     {emoji ? (
-                                        <div className={displayEmojiBlockStyle}>
+                                        <div
+                                            className={displayEmojiBlockStyle}
+                                            role="option"
+                                            aria-selected={true}
+                                            aria-label={"入力済絵文字" + (i + 1)}
+                                        >
                                             <EmojiWithDeleteButton
                                                 emojiId={emoji.emojiId}
                                                 size={isMobile ? 40 : 80}
@@ -149,8 +163,9 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
                                     ) : (
                                         <div
                                             className={emojiBlankListItemStyle}
-                                            role="listitem"
-                                            aria-label="絵文字入力エリア"
+                                            role="option"
+                                            aria-label={"未入力絵文字" + (i + 1)}
+                                            aria-selected={false}
                                         ></div>
                                     )}
                                 </div>
@@ -158,10 +173,11 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
                         </Row>
                     </Col>
                     <Col span={isMobile ? 3 : 2}>
-                        <SendOutlined className={sendButtonStyle} role="button" aria-label="エモート送信ボタン" />
+                        <div role="button" aria-label="エモート送信ボタン" aria-disabled={!hasPostEmojis}>
+                            <SendOutlined className={sendButtonStyle} onClick={onSendClick} />
+                        </div>
                     </Col>
                 </Row>
-
                 <div style={{ marginTop: 4, marginBottom: 4 }}>
                     <Input
                         placeholder="絵文字を検索..."

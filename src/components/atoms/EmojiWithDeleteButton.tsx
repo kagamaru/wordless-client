@@ -38,9 +38,14 @@ const EmojiComponent = ({ emojiId, size, onDeleteClick }: Props) => {
 
     if (returnedEmoji.emojiCategory === EmojiCategory.Preset) {
         return (
-            <div className={presetEmojiStyle} aria-label={returnedEmoji.emojiId} title={returnedEmoji.emojiJapaneseId}>
+            <div className={presetEmojiStyle} title={returnedEmoji.emojiJapaneseId}>
                 {returnedEmoji.emojiChar}
-                <CloseOutlined onClick={onDeleteClick} className={emojiDeleteOutlinedStyle} />
+                <CloseOutlined
+                    role="button"
+                    aria-label={returnedEmoji.emojiId + "delete-button"}
+                    onClick={onDeleteClick}
+                    className={emojiDeleteOutlinedStyle}
+                />
             </div>
         );
     } else {
@@ -56,7 +61,12 @@ const EmojiComponent = ({ emojiId, size, onDeleteClick }: Props) => {
                     height={size}
                     unoptimized={returnedEmoji.url?.includes(".gif") ?? false}
                 />
-                <CloseOutlined onClick={onDeleteClick} className={imageEmojiDeleteOutlinedStyle} />
+                <CloseOutlined
+                    role="button"
+                    aria-label={returnedEmoji.emojiId + "delete-button"}
+                    onClick={onDeleteClick}
+                    className={imageEmojiDeleteOutlinedStyle}
+                />
             </div>
         );
     }
