@@ -15,7 +15,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         const url = process.env.NEXT_PUBLIC_WEBSOCKET_URL + "?Authorization=" + localStorage.getItem("IdToken");
         refWebSocketService.current = new WebSocketService(url, handleErrors);
         setIsReady(true);
-    }, []);
+    }, [handleErrors]);
 
     if (!isReady || !refWebSocketService.current) return null;
 

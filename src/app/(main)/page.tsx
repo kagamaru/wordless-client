@@ -35,7 +35,7 @@ export default function Home() {
         if (isError && error) {
             handleErrors(JSON.parse(error.message));
         }
-    }, [isError, error]);
+    }, [isError, error, handleErrors]);
 
     useEffect(() => {
         if (data) {

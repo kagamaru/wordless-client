@@ -116,27 +116,31 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
     const sendButtonStyle = css({
         fontSize: isMobile ? "32px" : "56px",
         color: hasPostEmojis ? "primary !important" : "grey !important",
-        cursor: hasPostEmojis ? "pointer" : "not-allowed",
+        cursor: hasPostEmojis ? "pointer" : "not-allowed !important",
         opacity: hasPostEmojis ? 1 : 0.5
     });
 
     // TODO: 送信ボタン押下時のテスト実装
-    const onSendClick = useCallback(() => {
+    const onSendClick = () => {
+        if (!hasPostEmojis) {
+            return;
+        }
         router.push("/");
-    }, [router]);
+    };
 
     useEffect(() => {
         if (isOpen) {
             setActiveTab("preset");
             setSearchTerm("");
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
 
     useEffect(() => {
         setSearchedPresetEmojis(emojiSearch(searchTerm, "preset"));
         setSearchedCustomEmojis(emojiSearch(searchTerm, "custom"));
         setSearchedMemeEmojis(emojiSearch(searchTerm, "meme"));
-    }, [activeTab]);
+    }, [activeTab, searchTerm]);
 
     return (
         <Drawer open={isOpen} closable={true} onClose={onCloseAction} placement="bottom" width={500} height="100%">
