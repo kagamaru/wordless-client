@@ -28,6 +28,7 @@ const EmojiComponent = ({ emojiId, size }: Props) => {
         return (
             <Image
                 src={returnedEmoji.url ?? ""}
+                aria-label={returnedEmoji.emojiId}
                 title={returnedEmoji.emojiJapaneseId}
                 alt={imageAlt}
                 width={size}

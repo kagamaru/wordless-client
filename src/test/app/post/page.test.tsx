@@ -1,9 +1,11 @@
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "../vitest.setup";
 import PostPage from "@/app/(main)/post/page";
 import { ErrorBoundary, ProviderTemplate, UserInfoTemplate, WebSocketProvider } from "@/components/template";
+import { setupServer } from "msw/node";
+import { http, HttpResponse } from "msw";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -31,6 +33,20 @@ vi.mock("jwt-decode", () => ({
         };
     })
 }));
+
+const server = setupServer(
+    http.get("http://localhost:3000/api/userSub/:userSub", () => {
+        return HttpResponse.json({
+            userId: "@x",
+            userName: "User X",
+            userAvatarUrl: "https://image.test/x.png"
+        });
+    })
+);
+
+beforeAll(() => {
+    server.listen();
+});
 
 beforeEach(() => {
     vi.clearAllMocks();
@@ -94,22 +110,24 @@ describe("初期表示時", () => {
 
 describe("絵文字検索テキストボックス入力時", () => {
     test("絵文字検索テキストボックス入力時に英語入力時、検索結果が表示される", async () => {
-        await user.type(screen.getByPlaceholderText("絵文字を検索..."), "dolphin");
+        await user.type(screen.getByPlaceholderText("絵文字を検索..."), "rat");
 
+        const emojiReactionDialog = screen.getByRole("dialog");
         await waitFor(() => {
-            expect(screen.getByText("🐬")).toBeTruthy();
-            // NOTE: 「dolphin」以外の絵文字が表示されていないことを検証
-            expect(screen.queryByText("🦁")).toBeFalsy();
+            expect(within(emojiReactionDialog).getByText("🐀")).toBeTruthy();
+            // NOTE: 「🐀」以外の絵文字が表示されていないことを検証
+            expect(within(emojiReactionDialog).queryByText("🐄")).toBeFalsy();
         });
     });
 
     test("絵文字検索テキストボックス入力時に日本語入力時、検索結果が表示される", async () => {
-        await user.type(screen.getByPlaceholderText("絵文字を検索..."), "ライオン");
+        await user.type(screen.getByPlaceholderText("絵文字を検索..."), "ラット");
 
+        const emojiReactionDialog = screen.getByRole("dialog");
         await waitFor(() => {
-            expect(screen.getByText("🦁")).toBeTruthy();
-            // NOTE: 「ライオン」以外の絵文字が表示されていないことを検証
-            expect(screen.queryByText("🐬")).toBeFalsy();
+            expect(within(emojiReactionDialog).getByText("🐀")).toBeTruthy();
+            // NOTE: 「🐀」以外の絵文字が表示されていないことを検証
+            expect(within(emojiReactionDialog).queryByText("🐄")).toBeFalsy();
         });
     });
 
@@ -227,20 +245,21 @@ describe("絵文字検索テキストボックス入力時", () => {
         });
 
         test("検索結果がクリアされる", async () => {
-            await user.type(screen.getByPlaceholderText("絵文字を検索..."), "dolphin");
+            await user.type(screen.getByPlaceholderText("絵文字を検索..."), "rat");
+            const emojiReactionDialog = screen.getByRole("dialog");
             await waitFor(() => {
                 // NOTE: 検索結果として表示されていることを検証
-                expect(screen.getByText("🐬")).toBeTruthy();
+                expect(within(emojiReactionDialog).getByText("🐀")).toBeTruthy();
                 // NOTE: 検索結果として表示されていないことを検証
-                expect(screen.queryByText("🐜")).toBeFalsy();
+                expect(within(emojiReactionDialog).queryByText("🐄")).toBeFalsy();
             });
 
             await user.click(screen.getByRole("button", { name: "close-circle" }));
 
             await waitFor(() => {
                 // NOTE: 絵文字の種類に関係なく表示されることを確認
-                expect(screen.getByText("🐬")).toBeTruthy();
-                expect(screen.getByText("🐜")).toBeTruthy();
+                expect(within(emojiReactionDialog).getByText("🐀")).toBeTruthy();
+                expect(within(emojiReactionDialog).getByText("🐄")).toBeTruthy();
             });
         });
     });
@@ -248,7 +267,7 @@ describe("絵文字検索テキストボックス入力時", () => {
 
 describe("絵文字クリック時", () => {
     test.each([1, 2, 3, 4])(`絵文字を%i回クリックした時、絵文字がその数だけ表示される`, async (index) => {
-        const button = screen.getByRole("button", { name: ":grinning_face:" });
+        const button = screen.getByRole("button", { name: ":smiling_face:" });
 
         for (let i = 0; i < index; i++) {
             await user.click(button);
@@ -260,12 +279,12 @@ describe("絵文字クリック時", () => {
     });
 
     test("プリセット絵文字入力時、右上に×ボタンが表示される", async () => {
-        await user.click(screen.getByRole("button", { name: ":grinning_face:" }));
+        await user.click(screen.getByRole("button", { name: ":smiling_face:" }));
 
         await waitFor(async () => {
             expect(
                 within(screen.getByRole("option", { selected: true })).getByRole("button", {
-                    name: ":grinning_face:delete-button"
+                    name: ":smiling_face:delete-button"
                 })
             ).toBeTruthy();
         });
@@ -274,12 +293,12 @@ describe("絵文字クリック時", () => {
     test("カスタム絵文字入力時、右上に×ボタンが表示される", async () => {
         await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
 
-        await user.click(screen.getByRole("button", { name: ":hello:" }));
+        await user.click(screen.getByRole("button", { name: ":last:" }));
 
         await waitFor(() => {
             expect(
                 within(screen.getByRole("option", { selected: true })).getByRole("button", {
-                    name: ":hello:delete-button"
+                    name: ":last:delete-button"
                 })
             ).toBeTruthy();
         });
@@ -288,23 +307,23 @@ describe("絵文字クリック時", () => {
     test("ミーム絵文字入力時、右上に×ボタンが表示される", async () => {
         await user.click(screen.getByRole("tab", { name: "ミーム", selected: false }));
 
-        await user.click(screen.getByRole("button", { name: ":neko_meme_banana_cat:" }));
+        await user.click(screen.getByRole("button", { name: ":party_parrot:" }));
 
         await waitFor(() => {
             expect(
                 within(screen.getByRole("option", { selected: true })).getByRole("button", {
-                    name: ":neko_meme_banana_cat:delete-button"
+                    name: ":party_parrot:delete-button"
                 })
             ).toBeTruthy();
         });
     });
 
     test("絵文字を1つ入力後、1つ目の絵文字の右上の×ボタンを押下した時、入力された絵文字が1つも無くなる", async () => {
-        await user.click(screen.getByRole("button", { name: ":grinning_face:" }));
+        await user.click(screen.getByRole("button", { name: ":smiling_face:" }));
 
         await user.click(
             within(screen.getByRole("option", { selected: true })).getByRole("button", {
-                name: ":grinning_face:delete-button"
+                name: ":smiling_face:delete-button"
             })
         );
 
@@ -348,7 +367,7 @@ describe("絵文字クリック時", () => {
     );
 
     test("絵文字を4つ入力した後さらに絵文字を入力すると、一番先頭の絵文字が消えた上で新しい絵文字が入力される", async () => {
-        const grinningFaceButton = screen.getByRole("button", { name: ":grinning_face:" });
+        const grinningFaceButton = screen.getByRole("button", { name: ":smiling_face:" });
         const ratButton = screen.getByRole("button", { name: ":rat:" });
         const cowButton = screen.getByRole("button", { name: ":cow:" });
         const tigerButton = screen.getByRole("button", { name: ":tiger:" });
@@ -386,7 +405,7 @@ describe("絵文字クリック時", () => {
     });
 
     test("絵文字を1文字以上入力している場合、投稿ボタンが押下できる", async () => {
-        const grinningFaceButton = screen.getByRole("button", { name: ":grinning_face:" });
+        const grinningFaceButton = screen.getByRole("button", { name: ":smiling_face:" });
         const sendEmoteButton = screen.getByRole("button", { name: "エモート送信ボタン" });
         await user.click(grinningFaceButton);
 
