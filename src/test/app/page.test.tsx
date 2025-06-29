@@ -798,22 +798,15 @@ describe("リアクション追加ボタンをクリックした時", () => {
                 });
             });
 
-            // HACK: 実行時間が長いので、timeoutを設定
-            test(
-                "×ボタンクリック時、モーダルが閉じられる",
-                {
-                    timeout: 10000
-                },
-                async () => {
-                    const dialog = screen.getByRole("dialog");
-                    const closeButton = within(dialog).getByRole("button", { name: "close" });
-                    await user.click(closeButton);
+            test("×ボタンクリック時、モーダルが閉じられる", async () => {
+                const dialog = screen.getByRole("dialog");
+                const closeButton = within(dialog).getByRole("button", { name: "close" });
+                await user.click(closeButton);
 
-                    await waitFor(() => {
-                        expect(screen.queryByRole("dialog")).toBeNull();
-                    });
-                }
-            );
+                await waitFor(() => {
+                    expect(screen.queryByRole("dialog")).toBeNull();
+                });
+            });
 
             describe("再表示時", () => {
                 test("検索テキストボックスの内容が初期化される", async () => {
@@ -829,27 +822,20 @@ describe("リアクション追加ボタンをクリックした時", () => {
                     });
                 });
 
-                // HACK: 実行時間が長いので、timeoutを設定
-                test(
-                    "タブが「プリセット」に初期化される",
-                    {
-                        timeout: 10000
-                    },
-                    async () => {
-                        await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
-                        await user.click(screen.getByRole("button", { name: "close" }));
+                test("タブが「プリセット」に初期化される", async () => {
+                    await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
+                    await user.click(screen.getByRole("button", { name: "close" }));
 
-                        await user.click(
-                            within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", {
-                                name: "+"
-                            })
-                        );
+                    await user.click(
+                        within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", {
+                            name: "+"
+                        })
+                    );
 
-                        await waitFor(() => {
-                            expect(screen.getByRole("tab", { name: "プリセット", selected: true })).toBeTruthy();
-                        });
-                    }
-                );
+                    await waitFor(() => {
+                        expect(screen.getByRole("tab", { name: "プリセット", selected: true })).toBeTruthy();
+                    });
+                });
             });
         });
     });
