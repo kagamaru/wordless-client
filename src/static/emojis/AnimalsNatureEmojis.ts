@@ -851,27 +851,6 @@ export const animalsNatureEmojis: Array<Emoji> = [
     {
         emojiCategory: EmojiCategory.Preset,
         emojiType: EmojiType.AnimalsNature,
-        emojiId: ":cricket:",
-        emojiJapaneseId: "コオロギ、動物、虫",
-        emojiChar: "🦗"
-    },
-    {
-        emojiCategory: EmojiCategory.Preset,
-        emojiType: EmojiType.AnimalsNature,
-        emojiId: ":cockroach:",
-        emojiJapaneseId: "ゴキブリ、動物、虫",
-        emojiChar: "🪳"
-    },
-    {
-        emojiCategory: EmojiCategory.Preset,
-        emojiType: EmojiType.AnimalsNature,
-        emojiId: ":spider:",
-        emojiJapaneseId: "クモ、動物、虫",
-        emojiChar: "🕷️"
-    },
-    {
-        emojiCategory: EmojiCategory.Preset,
-        emojiType: EmojiType.AnimalsNature,
         emojiId: ":spider_web:",
         emojiJapaneseId: "クモの巣、動物、虫",
         emojiChar: "🕸️"
@@ -882,20 +861,6 @@ export const animalsNatureEmojis: Array<Emoji> = [
         emojiId: ":scorpion:",
         emojiJapaneseId: "サソリ、動物、虫、蠍座",
         emojiChar: "🦂"
-    },
-    {
-        emojiCategory: EmojiCategory.Preset,
-        emojiType: EmojiType.AnimalsNature,
-        emojiId: ":mosquito:",
-        emojiJapaneseId: "蚊、動物、虫",
-        emojiChar: "🦟"
-    },
-    {
-        emojiCategory: EmojiCategory.Preset,
-        emojiType: EmojiType.AnimalsNature,
-        emojiId: ":fly:",
-        emojiJapaneseId: "ハエ、動物、虫",
-        emojiChar: "🪰"
     },
     {
         emojiCategory: EmojiCategory.Preset,
