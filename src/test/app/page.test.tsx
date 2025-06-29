@@ -576,7 +576,7 @@ describe("リアクション追加ボタンをクリックした時", () => {
         beforeEach(async () => {
             rendering();
 
-            const listItem = await waitFor(() => screen.getByRole("listitem", { name: "b" }));
+            const listItem = screen.getByRole("listitem", { name: "b" });
             const plusButton = within(listItem).getByRole("button", { name: "+" });
             await user.click(plusButton);
 
