@@ -333,26 +333,26 @@ describe("絵文字クリック時", () => {
     });
 
     test.each([
-        [2, 1],
-        [2, 2],
-        [3, 1],
-        [3, 2],
-        [3, 3],
-        [4, 1],
-        [4, 2],
-        [4, 3],
-        [4, 4]
+        [2, 1, 1],
+        [2, 2, 1],
+        [3, 1, 2],
+        [3, 2, 2],
+        [3, 3, 2],
+        [4, 1, 3],
+        [4, 2, 3],
+        [4, 3, 3],
+        [4, 4, 3]
     ])(
-        "絵文字を%dつ入力後、%dつ目の絵文字の右上の×ボタンを押下した時、残りの絵文字数が%iつになる",
-        async (index, count) => {
+        "絵文字を%dつ入力後、%dつ目の絵文字の右上の×ボタンを押下した時、残りの絵文字数が%dつになる",
+        async (pressedEmojiCount, deleteIndex, expectedEmojiCount) => {
             const ratButton = screen.getByRole("button", { name: ":rat:" });
 
-            for (let i = 0; i < index; i++) {
+            for (let i = 0; i < pressedEmojiCount; i++) {
                 await user.click(ratButton);
             }
 
             await user.click(
-                within(screen.getByRole("option", { selected: true, name: `入力済絵文字${count}` })).getByRole(
+                within(screen.getByRole("option", { selected: true, name: `入力済絵文字${deleteIndex}` })).getByRole(
                     "button",
                     {
                         name: ":rat:delete-button"
@@ -361,7 +361,10 @@ describe("絵文字クリック時", () => {
             );
 
             await waitFor(() => {
-                expect(screen.queryAllByRole("option", { selected: true })).toHaveLength(index - 1);
+                expect(screen.queryAllByRole("option", { selected: true })).toHaveLength(expectedEmojiCount);
+                for (let i = 1; i < pressedEmojiCount; i++) {
+                    expect(screen.getByRole("option", { selected: true, name: `入力済絵文字${i}` })).toBeTruthy();
+                }
             });
         }
     );
