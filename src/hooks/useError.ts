@@ -36,7 +36,7 @@ export const useError = () => {
             localStorage.removeItem("IdToken");
             router.push("/auth/login");
         }
-    }, [hasAuthError]);
+    }, [hasAuthError, router]);
 
     return {
         hasAuthError,

@@ -1,13 +1,14 @@
 import { EmojiString } from "@/@types";
 import { Emoji as EmojiInterface, EmojiType } from "@/@types/Emoji";
-import { EmojiButtonBlocksByType } from "@/components/molecules";
+import { EmojiButtonBlocksByType, EmotePostEmojiButtonBlocksByType } from "@/components/molecules";
 import { presetEmojiMap } from "@/static/EmojiMap";
 
 type Props = {
+    isEmotePost: boolean;
     onEmojiClick: (emojiId: EmojiString) => void;
 };
 
-export function PresetEmojis({ onEmojiClick }: Props) {
+export function PresetEmojis({ isEmotePost, onEmojiClick }: Props) {
     const smileysEmotion: Array<EmojiInterface> = [];
     const peopleBody: Array<EmojiInterface> = [];
     const animalsNature: Array<EmojiInterface> = [];
@@ -65,7 +66,14 @@ export function PresetEmojis({ onEmojiClick }: Props) {
             [flags, "国旗"]
         ] as Array<[Array<EmojiInterface>, string]>
     ).map(([emojis, label]) => {
-        return (
+        return isEmotePost ? (
+            <EmotePostEmojiButtonBlocksByType
+                key={label}
+                typeName={label}
+                emojis={emojis}
+                onClickAction={(emojiId) => onEmojiClick(emojiId)}
+            />
+        ) : (
             <EmojiButtonBlocksByType
                 key={label}
                 typeName={label}

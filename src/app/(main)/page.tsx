@@ -35,7 +35,7 @@ export default function Home() {
         if (isError && error) {
             handleErrors(JSON.parse(error.message));
         }
-    }, [isError, error]);
+    }, [isError, error, handleErrors]);
 
     useEffect(() => {
         if (data) {
@@ -48,12 +48,7 @@ export default function Home() {
             <PageHeader></PageHeader>
             {isError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
             {emotes && <WordlessEmotes emotes={emotes}></WordlessEmotes>}
-            <FixedFloatingButton
-                onClick={() => {
-                    // TODO: モーダルを表示する
-                    console.log("clicked");
-                }}
-            />
+            <FixedFloatingButton />
         </>
     );
 }

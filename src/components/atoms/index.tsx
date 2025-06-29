@@ -7,7 +7,10 @@ import { EmailAddressInput } from "@/components/atoms/EmailAddressInput";
 import { Emoji } from "@/components/atoms/Emoji";
 import { EmojiButton } from "@/components/atoms/EmojiButton";
 import { EmojiButtonRow } from "@/components/atoms/EmojiButtonRow";
+import { EmojiWithDeleteButton } from "@/components/atoms/EmojiWithDeleteButton";
 import { EmoteAvatar } from "@/components/atoms/EmoteAvatar";
+import { EmotePostEmojiButtonRow } from "@/components/atoms/EmotePostEmojiButtonRow";
+import { EmotePostImageEmojiButtonRow } from "@/components/atoms/EmotePostImageEmojiButtonRow";
 import { EmoteReactionButton } from "@/components/atoms/EmoteReactionButton";
 import { FixedFloatingButton } from "@/components/atoms/FixedFloatingButton";
 import { LoginButton } from "@/components/atoms/LoginButton";
@@ -30,7 +33,10 @@ export {
     Emoji,
     EmojiButton,
     EmojiButtonRow,
+    EmojiWithDeleteButton,
     EmoteAvatar,
+    EmotePostEmojiButtonRow,
+    EmotePostImageEmojiButtonRow,
     EmoteReactionButton,
     FixedFloatingButton,
     LoginButton,

@@ -41,7 +41,7 @@ export const animalsNatureEmojis: Array<Emoji> = [
         emojiType: EmojiType.AnimalsNature,
         emojiId: ":dog:",
         emojiJapaneseId: "犬、動物、ペット",
-        emojiChar: "🐶"
+        emojiChar: "🐕"
     },
     {
         emojiCategory: EmojiCategory.Preset,
@@ -328,7 +328,7 @@ export const animalsNatureEmojis: Array<Emoji> = [
         emojiType: EmojiType.AnimalsNature,
         emojiId: ":mouse_face:",
         emojiJapaneseId: "ネズミの顔、動物、顔",
-        emojiChar: "🐁"
+        emojiChar: "🐭"
     },
     {
         emojiCategory: EmojiCategory.Preset,
@@ -363,7 +363,7 @@ export const animalsNatureEmojis: Array<Emoji> = [
         emojiType: EmojiType.AnimalsNature,
         emojiId: ":rabbit:",
         emojiJapaneseId: "ウサギ、動物、ペット",
-        emojiChar: "🐰"
+        emojiChar: "🐇"
     },
     {
         emojiCategory: EmojiCategory.Preset,

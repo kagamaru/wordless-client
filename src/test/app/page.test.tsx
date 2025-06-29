@@ -48,16 +48,16 @@ const server = setupServer(
                     emoteReactionId: "reaction-a",
                     emoteEmojis: [
                         {
-                            emojiId: ":panda:"
+                            emojiId: ":rabbit:"
                         },
                         {
-                            emojiId: ":panda:"
+                            emojiId: ":rabbit:"
                         },
                         {
-                            emojiId: ":panda:"
+                            emojiId: ":rabbit:"
                         },
                         {
-                            emojiId: ":panda:"
+                            emojiId: ":rabbit:"
                         }
                     ],
                     userAvatarUrl: "https://image.test/a.png",
@@ -68,7 +68,7 @@ const server = setupServer(
                             reactedUserIds: ["@a", "@b"]
                         },
                         {
-                            emojiId: ":snake:",
+                            emojiId: ":cow:",
                             numberOfReactions: 2,
                             reactedUserIds: ["@c"]
                         }
@@ -96,7 +96,7 @@ const server = setupServer(
                     userAvatarUrl: "https://image.test/b.png",
                     emoteReactionEmojis: [
                         {
-                            emojiId: ":snake:",
+                            emojiId: ":cow:",
                             numberOfReactions: 200,
                             reactedUserIds: ["@a"]
                         },
@@ -117,7 +117,7 @@ const server = setupServer(
                     emoteReactionId: "reaction-c",
                     emoteEmojis: [
                         {
-                            emojiId: ":bear:"
+                            emojiId: ":rabbit:"
                         }
                     ],
                     userAvatarUrl: "https://image.test/c.png",
@@ -277,9 +277,16 @@ describe("初期表示時", () => {
             rendering();
 
             await waitFor(() => {
-                expect(screen.getAllByLabelText(":panda:").length).toBe(4);
-                expect(screen.getAllByLabelText(":smiling_face:").length).toBe(3);
-                expect(screen.getAllByLabelText(":bear:").length).toBe(1);
+                expect(within(screen.getByRole("listitem", { name: "a" })).getAllByLabelText(":rabbit:").length).toBe(
+                    4
+                );
+                expect(
+                    within(screen.getByRole("listitem", { name: "b" })).getAllByLabelText(":smiling_face:").length
+                ).toBe(3);
+                expect(within(screen.getByRole("listitem", { name: "c" })).getAllByLabelText(":rabbit:").length).toBe(
+                    1
+                );
+                expect(within(screen.getByRole("listitem", { name: "d" })).getAllByLabelText(":test:").length).toBe(1);
             });
         });
 
@@ -337,7 +344,7 @@ describe("初期表示時", () => {
 
                 await waitFor(() => {
                     expect(
-                        within(screen.getByRole("button", { name: "reaction-b:snake:" })).getByText("99+")
+                        within(screen.getByRole("button", { name: "reaction-b:cow:" })).getByText("99+")
                     ).toBeTruthy();
                 });
             });
@@ -569,9 +576,14 @@ describe("リアクション追加ボタンをクリックした時", () => {
         beforeEach(async () => {
             rendering();
 
-            await user.click(
-                within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", { name: "+" })
-            );
+            const listItem = await waitFor(() => screen.getByRole("listitem", { name: "b" }));
+            const plusButton = within(listItem).getByRole("button", { name: "+" });
+            await user.click(plusButton);
+
+            // NOTE: モーダル表示確認（失敗を防ぐ）
+            await waitFor(() => {
+                expect(screen.getByRole("dialog")).toBeTruthy();
+            });
         });
 
         test("リアクション追加ボタンをクリックした時、リアクション追加モーダルが表示される", async () => {
@@ -588,22 +600,48 @@ describe("リアクション追加ボタンをクリックした時", () => {
             });
 
             test("絵文字検索テキストボックス入力時に英語入力時、検索結果が表示される", async () => {
-                await user.type(screen.getByPlaceholderText("絵文字を検索..."), "dolphin");
+                await user.type(screen.getByPlaceholderText("絵文字を検索..."), "rat");
 
+                const emojiReactionDialog = screen.getByRole("dialog");
                 await waitFor(() => {
-                    expect(screen.getByText("🐬")).toBeTruthy();
-                    // NOTE: 「dolphin」以外の絵文字が表示されていないことを検証
-                    expect(screen.queryByText("🦁")).toBeFalsy();
+                    expect(within(emojiReactionDialog).getByText("🐀")).toBeTruthy();
+                    // NOTE: 「🐀」以外の絵文字が表示されていないことを検証
+                    expect(within(emojiReactionDialog).queryByText("🐄")).toBeFalsy();
                 });
             });
 
             test("絵文字検索テキストボックス入力時に日本語入力時、検索結果が表示される", async () => {
-                await user.type(screen.getByPlaceholderText("絵文字を検索..."), "ライオン");
+                await user.type(screen.getByPlaceholderText("絵文字を検索..."), "ラット");
+
+                const emojiReactionDialog = screen.getByRole("dialog");
+                await waitFor(() => {
+                    expect(within(emojiReactionDialog).getByText("🐀")).toBeTruthy();
+                    // NOTE: 「🐀」以外の絵文字が表示されていないことを検証
+                    expect(within(emojiReactionDialog).queryByText("🐄")).toBeFalsy();
+                });
+            });
+
+            test("絵文字検索テキストボックスに入力後、「カスタム」タブを選択した時、「カスタム」での検索結果が表示される", async () => {
+                await user.type(screen.getByPlaceholderText("絵文字を検索..."), "last");
+                await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
 
                 await waitFor(() => {
-                    expect(screen.getByText("🦁")).toBeTruthy();
-                    // NOTE: 「ライオン」以外の絵文字が表示されていないことを検証
-                    expect(screen.queryByText("🐬")).toBeFalsy();
+                    // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
+                    const img = screen.getAllByAltText("ラスト").find((img) => img.getAttribute("width") === "32");
+                    expect(img).toBeTruthy();
+                });
+            });
+
+            test("絵文字検索テキストボックスに入力後、「ミーム」タブを選択した時、「ミーム」での検索結果が表示される", async () => {
+                await user.type(screen.getByPlaceholderText("絵文字を検索..."), "驚く猫");
+                await user.click(screen.getByRole("tab", { name: "ミーム", selected: false }));
+
+                await waitFor(() => {
+                    // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
+                    const img = screen
+                        .getAllByAltText("猫ミーム_驚く猫")
+                        .find((img) => img.getAttribute("width") === "32");
+                    expect(img).toBeTruthy();
                 });
             });
 
@@ -703,32 +741,33 @@ describe("リアクション追加ボタンをクリックした時", () => {
                 });
 
                 test("検索結果がクリアされる", async () => {
-                    await user.type(screen.getByPlaceholderText("絵文字を検索..."), "dolphin");
+                    await user.type(screen.getByPlaceholderText("絵文字を検索..."), "rat");
+                    const emojiReactionDialog = screen.getByRole("dialog");
                     await waitFor(() => {
                         // NOTE: 検索結果として表示されていることを検証
-                        expect(screen.getByText("🐬")).toBeTruthy();
+                        expect(within(emojiReactionDialog).getByText("🐀")).toBeTruthy();
                         // NOTE: 検索結果として表示されていないことを検証
-                        expect(screen.queryByText("🐜")).toBeFalsy();
+                        expect(within(emojiReactionDialog).queryByText("🐄")).toBeFalsy();
                     });
 
                     await user.click(screen.getByRole("button", { name: "close-circle" }));
 
                     await waitFor(() => {
                         // NOTE: 絵文字の種類に関係なく表示されることを確認
-                        expect(screen.getByText("🐬")).toBeTruthy();
-                        expect(screen.getByText("🐜")).toBeTruthy();
+                        expect(within(emojiReactionDialog).getByText("🐀")).toBeTruthy();
+                        expect(within(emojiReactionDialog).getByText("🐄")).toBeTruthy();
                     });
                 });
             });
 
             describe("リアクション追加ボタンをクリックした時", () => {
                 test("未リアクションの絵文字をクリックした時、絵文字リアクションAPIがincrement操作で呼び出される", async () => {
-                    await user.click(within(screen.getByRole("dialog")).getByText("🐬"));
+                    await user.click(within(screen.getByRole("dialog")).getByText("🐀"));
 
                     await waitFor(() => {
                         expect(mockOnReact).toHaveBeenCalledWith({
                             emoteReactionId: "reaction-b",
-                            reactedEmojiId: ":dolphin:",
+                            reactedEmojiId: ":rat:",
                             reactedUserId: "@x",
                             operation: "increment",
                             Authorization: "mocked_id_token"
@@ -750,14 +789,22 @@ describe("リアクション追加ボタンをクリックした時", () => {
                     });
                 });
 
-                test.todo("リアクション追加ボタンをクリックした時、リアクション追加モーダーが閉じられる");
+                test("リアクション追加ボタンをクリックした時、リアクション追加モーダルが閉じられる", async () => {
+                    await user.click(within(screen.getByRole("dialog")).getByText("🐅"));
+
+                    await waitFor(() => {
+                        expect(screen.queryByRole("dialog")).toBeFalsy();
+                    });
+                });
             });
 
             test("×ボタンクリック時、モーダルが閉じられる", async () => {
-                await user.click(await screen.findByRole("button", { name: "close" }));
+                const dialog = screen.getByRole("dialog");
+                const closeButton = within(dialog).getByRole("button", { name: "close" });
+                await user.click(closeButton);
 
                 await waitFor(() => {
-                    expect(screen.queryByRole("dialog")).toBeFalsy();
+                    expect(screen.queryByRole("dialog")).toBeNull();
                 });
             });
 
@@ -780,7 +827,9 @@ describe("リアクション追加ボタンをクリックした時", () => {
                     await user.click(screen.getByRole("button", { name: "close" }));
 
                     await user.click(
-                        within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", { name: "+" })
+                        within(await screen.findByRole("listitem", { name: "b" })).getByRole("button", {
+                            name: "+"
+                        })
                     );
 
                     await waitFor(() => {
@@ -788,6 +837,18 @@ describe("リアクション追加ボタンをクリックした時", () => {
                     });
                 });
             });
+        });
+    });
+});
+
+describe("投稿ボタンをクリックした時", () => {
+    test("投稿ボタンをクリックした時、投稿モーダルが表示される", async () => {
+        rendering();
+
+        await user.click(screen.getByRole("button", { name: "エモート投稿ボタン" }));
+
+        await waitFor(() => {
+            expect(mockedUseRouter).toHaveBeenCalledWith("/post");
         });
     });
 });

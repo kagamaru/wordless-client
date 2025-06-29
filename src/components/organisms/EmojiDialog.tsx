@@ -42,7 +42,7 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
             });
             closeDialogAction();
         },
-        [webSocketService, emoteReactionId, alreadyReactedEmojiIds, closeDialogAction]
+        [webSocketService, emoteReactionId, alreadyReactedEmojiIds, closeDialogAction, userInfo]
     );
 
     const onEmojiSearch = (searchTerm: string) => {
@@ -71,7 +71,14 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
             setActiveTab("preset");
             setSearchTerm("");
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
+
+    useEffect(() => {
+        setSearchedPresetEmojis(emojiSearch(searchTerm, "preset"));
+        setSearchedCustomEmojis(emojiSearch(searchTerm, "custom"));
+        setSearchedMemeEmojis(emojiSearch(searchTerm, "meme"));
+    }, [searchTerm]);
 
     return (
         <Modal
