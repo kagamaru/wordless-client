@@ -140,7 +140,7 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
         setSearchedPresetEmojis(emojiSearch(searchTerm, "preset"));
         setSearchedCustomEmojis(emojiSearch(searchTerm, "custom"));
         setSearchedMemeEmojis(emojiSearch(searchTerm, "meme"));
-    }, [activeTab, searchTerm]);
+    }, [searchTerm]);
 
     return (
         <Drawer open={isOpen} closable={true} onClose={onCloseAction} placement="bottom" width={500} height="100%">

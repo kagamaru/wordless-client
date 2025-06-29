@@ -78,7 +78,7 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
         setSearchedPresetEmojis(emojiSearch(searchTerm, "preset"));
         setSearchedCustomEmojis(emojiSearch(searchTerm, "custom"));
         setSearchedMemeEmojis(emojiSearch(searchTerm, "meme"));
-    }, [activeTab, searchTerm]);
+    }, [searchTerm]);
 
     return (
         <Modal
