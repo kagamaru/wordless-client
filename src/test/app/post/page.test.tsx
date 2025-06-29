@@ -1,11 +1,11 @@
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "../vitest.setup";
 import PostPage from "@/app/(main)/post/page";
 import { ErrorBoundary, ProviderTemplate, UserInfoTemplate, WebSocketProvider } from "@/components/template";
-import { setupServer } from "msw/node";
-import { http, HttpResponse } from "msw";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -136,9 +136,8 @@ describe("絵文字検索テキストボックス入力時", () => {
         await user.click(screen.getByRole("tab", { name: "カスタム", selected: false }));
 
         await waitFor(() => {
-            // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
-            const img = screen.getAllByAltText("ラスト").find((img) => img.getAttribute("width") === "32");
-            expect(img).toBeTruthy();
+            const lastEmojiImage = screen.getByRole("button", { name: ":last:" });
+            expect(lastEmojiImage).toBeTruthy();
         });
     });
 
@@ -147,9 +146,10 @@ describe("絵文字検索テキストボックス入力時", () => {
         await user.click(screen.getByRole("tab", { name: "ミーム", selected: false }));
 
         await waitFor(() => {
-            // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
-            const img = screen.getAllByAltText("猫ミーム_驚く猫").find((img) => img.getAttribute("width") === "32");
-            expect(img).toBeTruthy();
+            const nekoMemeSurprisingCatImage = screen.getByRole("button", {
+                name: ":neko_meme_surprising_cat:"
+            });
+            expect(nekoMemeSurprisingCatImage).toBeTruthy();
         });
     });
 
@@ -168,11 +168,10 @@ describe("絵文字検索テキストボックス入力時", () => {
             await user.type(screen.getByPlaceholderText("絵文字を検索..."), "last");
 
             await waitFor(() => {
-                // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
-                const img = screen.getAllByAltText("ラスト").find((img) => img.getAttribute("width") === "32");
-                expect(img).toBeTruthy();
+                const lastEmojiImage = screen.getByRole("button", { name: ":last:" });
+                expect(lastEmojiImage).toBeTruthy();
                 // NOTE: 「ラスト」以外の絵文字が表示されていないことを検証
-                expect(screen.queryByAltText("こんにちは")).toBeFalsy();
+                expect(screen.queryByRole("button", { name: ":hello:" })).toBeFalsy();
             });
         });
 
@@ -180,11 +179,10 @@ describe("絵文字検索テキストボックス入力時", () => {
             await user.type(screen.getByPlaceholderText("絵文字を検索..."), "ラスト");
 
             await waitFor(() => {
-                // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
-                const img = screen.getAllByAltText("ラスト").find((img) => img.getAttribute("width") === "32");
-                expect(img).toBeTruthy();
+                const lastEmojiImage = screen.getByRole("button", { name: ":last:" });
+                expect(lastEmojiImage).toBeTruthy();
                 // NOTE: 「ラスト」以外の絵文字が表示されていないことを検証
-                expect(screen.queryByAltText("こんにちは")).toBeFalsy();
+                expect(screen.queryByRole("button", { name: ":hello:" })).toBeFalsy();
             });
         });
     });
@@ -204,11 +202,12 @@ describe("絵文字検索テキストボックス入力時", () => {
             await user.type(screen.getByPlaceholderText("絵文字を検索..."), "surprising");
 
             await waitFor(() => {
-                // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
-                const img = screen.getAllByAltText("猫ミーム_驚く猫").find((img) => img.getAttribute("width") === "32");
-                expect(img).toBeTruthy();
+                const nekoMemeSurprisingCatImage = screen.getByRole("button", {
+                    name: ":neko_meme_surprising_cat:"
+                });
+                expect(nekoMemeSurprisingCatImage).toBeTruthy();
                 // NOTE: 「猫ミーム_驚く猫」以外の絵文字が表示されていないことを検証
-                expect(screen.queryByAltText("猫ミーム_叫ぶ猫")).toBeFalsy();
+                expect(screen.queryByRole("button", { name: ":neko_meme_scared_cat:" })).toBeFalsy();
             });
         });
 
@@ -216,11 +215,12 @@ describe("絵文字検索テキストボックス入力時", () => {
             await user.type(screen.getByPlaceholderText("絵文字を検索..."), "驚く猫");
 
             await waitFor(() => {
-                // HACK: next/image の仕様?により二重描画される。絵文字の幅が32pxのものを検証
-                const img = screen.getAllByAltText("猫ミーム_驚く猫").find((img) => img.getAttribute("width") === "32");
-                expect(img).toBeTruthy();
+                const nekoMemeSurprisingCatImage = screen.getByRole("button", {
+                    name: ":neko_meme_surprising_cat:"
+                });
+                expect(nekoMemeSurprisingCatImage).toBeTruthy();
                 // NOTE: 「猫ミーム_驚く猫」以外の絵文字が表示されていないことを検証
-                expect(screen.queryByAltText("猫ミーム_叫ぶ猫")).toBeFalsy();
+                expect(screen.queryByRole("button", { name: ":neko_meme_scared_cat:" })).toBeFalsy();
             });
         });
     });
