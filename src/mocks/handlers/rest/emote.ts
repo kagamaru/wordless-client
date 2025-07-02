@@ -21,8 +21,9 @@ export const emoteHandlers = [
                 {
                     sequenceNumber: 10,
                     emoteId: "dac2faad-0372-4295-9096-532e70b25c94",
-                    userName: "Fuga Fuga",
-                    userId: "@fuga_fuga",
+                    userName:
+                        "Fuga Fuga あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん",
+                    userId: "@fuga_fugaf",
                     emoteDatetime: "2025-01-19T09:05:25.000Z",
                     emoteReactionId: "f027ab3c-c422-4f98-8446-071f3d9eb78d",
                     emoteEmojis: [

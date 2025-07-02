@@ -31,6 +31,7 @@ export default defineConfig({
                     lightPrimary: { value: "#c59cf2" },
                     grey: { value: "#00000073" },
                     lightGrey: { value: "#c0c0c0" },
+                    superLightGrey: { value: "#e6e3e3" },
                     darkGrey: { value: "#757575" },
                     lightPurple: { value: "#ffeeff" },
                     loginPageBackground: {

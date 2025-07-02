@@ -1,6 +1,6 @@
 "use client";
 
-import { Col, ConfigProvider, Row } from "antd";
+import { Col, ConfigProvider, Divider, Row } from "antd";
 import dayjs from "dayjs";
 import { useCallback, useContext, useMemo, useState } from "react";
 import { EmoteReactionEmojiWithNumber, EmoteEmojis, EmojiString } from "@/@types";
@@ -53,7 +53,7 @@ export function WordlessEmote({ emote }: Props) {
     const wordlessEmoteStyle = css({
         paddingLeft: { base: "16px", lg: "140px" },
         paddingRight: { base: "16px", lg: "140px" },
-        marginTop: "20px"
+        marginTop: isMobile ? "10px" : "16px"
     });
 
     const textBlockStyle = css({
@@ -67,14 +67,15 @@ export function WordlessEmote({ emote }: Props) {
         overflow: { base: "hidden", lg: undefined },
         textOverflow: "ellipsis",
         whiteSpace: { base: "nowrap", lg: undefined },
-        maxWidth: { base: undefined, lg: "770px" },
-        marginRight: { base: "0px", lg: "8px" }
+        maxWidth: { base: "56%", lg: "770px" },
+        marginRight: { base: "4px", lg: "8px" }
     });
 
     const userIdTextStyle = css({
         marginLeft: { base: "8px", lg: "0px" },
-        fontSize: "16px",
+        fontSize: { base: "14px", lg: "16px" },
         color: "grey",
+        maxWidth: { base: "16%" },
         marginBottom: { base: "2px", lg: "0px" }
     });
 
@@ -82,7 +83,7 @@ export function WordlessEmote({ emote }: Props) {
         fontSize: "12px",
         color: "grey",
         marginLeft: { base: "8px", lg: "0px" },
-        marginBottom: { base: "2px", lg: "4px" }
+        marginBottom: "4px"
     });
 
     const alreadyReactedEmojiIds: Array<EmojiString> = [];
@@ -136,11 +137,20 @@ export function WordlessEmote({ emote }: Props) {
         if (isMobile) {
             return (
                 <div className={textBlockStyle}>
-                    <div className={userNameTextStyle}>{emote.userName}</div>
-                    <div className={userIdTextStyle}>{emote.userId}</div>
-                    <div className={emoteDatetimeTextStyle}>
-                        {dayjs(emote.emoteDatetime).format(emoteDatetimeFormatStyle)}
-                    </div>
+                    <Row align="middle">
+                        <Col span={3}>
+                            <EmoteAvatar url={emote.userAvatarUrl} userName={emote.userName}></EmoteAvatar>
+                        </Col>
+                        <Col span={21}>
+                            <Row align="bottom">
+                                <div className={userNameTextStyle}>{emote.userName}</div>
+                                <div className={userIdTextStyle}>{emote.userId}</div>
+                            </Row>
+                            <div className={emoteDatetimeTextStyle}>
+                                {dayjs(emote.emoteDatetime).format(emoteDatetimeFormatStyle)}
+                            </div>
+                        </Col>
+                    </Row>
                 </div>
             );
         } else {
@@ -166,12 +176,18 @@ export function WordlessEmote({ emote }: Props) {
         <>
             <div className={wordlessEmoteStyle}>
                 <Row>
-                    <Col span={2} className="m-auto">
-                        <EmoteAvatar url={emote.userAvatarUrl} userName={emote.userName}></EmoteAvatar>
-                    </Col>
-                    <Col span={22}>
+                    {!isMobile && (
+                        <Col span={2} className="m-auto">
+                            <EmoteAvatar url={emote.userAvatarUrl} userName={emote.userName}></EmoteAvatar>
+                        </Col>
+                    )}
+                    <Col span={isMobile ? 24 : 22}>
                         {emoteInfo()}
-                        <WordlessDivider />
+                        <Row>
+                            <Col span={isMobile ? 22 : 24}>
+                                <WordlessDivider dashed={isMobile} />
+                            </Col>
+                        </Row>
                         <DisplayEmoteEmoji emojis={emoteEmojis}></DisplayEmoteEmoji>
                         {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
                         <ConfigProvider wave={{ disabled: true }}>
@@ -195,7 +211,7 @@ export function WordlessEmote({ emote }: Props) {
                         </Row>
                     </Col>
                 </Row>
-                <WordlessDivider />
+                <WordlessDivider dashed={false} />
                 <ReactionUsersDrawer
                     isOpen={isDrawerOpen}
                     emoteReactionEmojis={emote.emoteReactionEmojis}
