@@ -3,6 +3,7 @@
 import { Avatar } from "antd";
 import { memo } from "react";
 import { css } from "ss/css";
+import { useIsMobile } from "@/hooks";
 
 type Props = {
     userName: string;
@@ -10,9 +11,11 @@ type Props = {
 };
 
 function EmoteAvatarComponent({ userName, url }: Props) {
+    const isMobile = useIsMobile();
+
     const avatarStyle = css({
-        height: { base: "32px", lg: "50px !important" },
-        width: { base: "32px", lg: "50px !important" }
+        height: isMobile ? "32px" : "50px !important",
+        width: isMobile ? "32px" : "50px !important"
     });
 
     return (

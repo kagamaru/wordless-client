@@ -61,28 +61,28 @@ export function WordlessEmote({ emote }: Props) {
     });
 
     const userNameTextStyle = css({
-        fontSize: { base: "20px", lg: "24px" },
+        fontSize: isMobile ? "20px" : "24px",
         color: "black !important",
-        marginLeft: { base: "8px", lg: "0px" },
-        overflow: { base: "hidden", lg: undefined },
+        marginLeft: isMobile ? "8px" : "0px",
+        overflow: isMobile ? "hidden" : undefined,
         textOverflow: "ellipsis",
-        whiteSpace: { base: "nowrap", lg: undefined },
-        maxWidth: { base: "56%", lg: "770px" },
-        marginRight: { base: "4px", lg: "8px" }
+        whiteSpace: isMobile ? "nowrap" : undefined,
+        maxWidth: isMobile ? "56%" : "770px",
+        marginRight: isMobile ? "4px" : "8px"
     });
 
     const userIdTextStyle = css({
-        marginLeft: { base: "8px", lg: "0px" },
-        fontSize: { base: "14px", lg: "16px" },
+        marginLeft: isMobile ? "8px" : "0px",
+        fontSize: isMobile ? "14px" : "16px",
         color: "grey",
-        maxWidth: { base: "16%" },
-        marginBottom: { base: "2px", lg: "0px" }
+        maxWidth: isMobile ? "16%" : undefined,
+        marginBottom: isMobile ? "2px" : "0px"
     });
 
     const emoteDatetimeTextStyle = css({
         fontSize: "12px",
         color: "grey",
-        marginLeft: { base: "8px", lg: "0px" },
+        marginLeft: isMobile ? "8px" : "0px",
         marginBottom: "4px"
     });
 
