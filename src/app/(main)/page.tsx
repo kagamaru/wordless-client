@@ -35,7 +35,8 @@ export default function Home() {
         if (isError && error) {
             handleErrors(JSON.parse(error.message));
         }
-    }, [isError, error, handleErrors]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isError, error]);
 
     useEffect(() => {
         if (data) {
