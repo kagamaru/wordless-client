@@ -3,11 +3,12 @@
 import { Col, Drawer, Input, Row } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { EmojiString, EmojiTab } from "@/@types";
 import { Emoji as EmojiInterface } from "@/@types/Emoji";
 import { EmojiWithDeleteButton } from "@/components/atoms";
 import { PostEmoteEmojiSelectTabs } from "@/components/molecules";
+import { WebSocketContext, UserInfoContext } from "@/components/template";
 import { emojiHelper, emojiSearch } from "@/helpers";
 import { useIsMobile } from "@/hooks";
 import { presetEmojiMap, customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
@@ -32,27 +33,37 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
     const [searchedPresetEmojis, setSearchedPresetEmojis] = useState<Array<EmojiInterface>>(presetEmojiMap);
     const [searchedCustomEmojis, setSearchedCustomEmojis] = useState<Array<EmojiInterface>>(customEmojiMap);
     const [searchedMemeEmojis, setSearchedMemeEmojis] = useState<Array<EmojiInterface>>(memeEmojiMap);
+    const userInfo = useContext(UserInfoContext)?.userInfo;
+    const webSocketService = useContext(WebSocketContext);
     const isMobile = useIsMobile();
     const router = useRouter();
     const hasPostEmojis = postEmojis.some((emoji) => emoji !== undefined);
 
-    const onEmojiClick = useCallback((emojiId: EmojiString) => {
-        const pushedEmoji = emojiHelper(emojiId);
-        if (!pushedEmoji) {
-            return;
-        }
+    const onEmojiClick = (emojiId: EmojiString) => {
+        const pushedEmoji = emojiId ? emojiHelper(emojiId) : undefined;
+        if (!pushedEmoji) return;
+
         setPostEmojis((prev) => {
-            const newEmojis: PostEmojis = [...prev];
-            const firstUndefinedIndex = newEmojis.findIndex((emoji) => emoji === undefined);
+            const firstUndefinedIndex = prev.findIndex((emoji) => emoji === undefined);
+            let newEmojis: PostEmojis = [undefined, undefined, undefined, undefined];
+
             if (firstUndefinedIndex !== -1) {
-                newEmojis[firstUndefinedIndex] = pushedEmoji;
+                // NOTE: MAX(4つ)入力されていない時
+                // NOTE: 空き(undefined)があれば、その位置に入れる
+                newEmojis = prev.map((emoji, index) => {
+                    if (index === firstUndefinedIndex) {
+                        return pushedEmoji;
+                    }
+                    return emoji;
+                }) as PostEmojis;
             } else {
-                newEmojis.shift();
-                newEmojis.push(pushedEmoji);
+                // NOTE: MAX(4つ)入力されている時
+                // NOTE: 空きがないため、最初の要素を削除し、新しい絵文字を末尾に入れる
+                newEmojis = [...prev.slice(1), pushedEmoji] as PostEmojis;
             }
             return newEmojis;
         });
-    }, []);
+    };
 
     const onEmojiDeleteClick = useCallback((index: number) => {
         setPostEmojis((prev) => {
@@ -120,11 +131,20 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
         opacity: hasPostEmojis ? 1 : 0.5
     });
 
-    // TODO: 送信ボタン押下時のテスト実装
     const onSendClick = () => {
-        if (!hasPostEmojis) {
+        if (!hasPostEmojis || !userInfo || !postEmojis[0]?.emojiId) {
             return;
         }
+
+        webSocketService?.onPostEmote({
+            userId: userInfo.userId,
+            emoteEmoji1: postEmojis[0].emojiId,
+            emoteEmoji2: postEmojis[1]?.emojiId ?? undefined,
+            emoteEmoji3: postEmojis[2]?.emojiId ?? undefined,
+            emoteEmoji4: postEmojis[3]?.emojiId ?? undefined,
+            Authorization: localStorage.getItem("IdToken") ?? ""
+        });
+        onCloseAction();
         router.push("/");
     };
 
@@ -177,8 +197,13 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
                         </Row>
                     </Col>
                     <Col span={isMobile ? 3 : 2}>
-                        <div role="button" aria-label="エモート送信ボタン" aria-disabled={!hasPostEmojis}>
-                            <SendOutlined className={sendButtonStyle} onClick={onSendClick} />
+                        <div
+                            role="button"
+                            aria-label="エモート送信ボタン"
+                            aria-disabled={!hasPostEmojis}
+                            onClick={onSendClick}
+                        >
+                            <SendOutlined className={sendButtonStyle} />
                         </div>
                     </Col>
                 </Row>

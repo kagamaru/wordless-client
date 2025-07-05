@@ -1,3 +1,4 @@
+import { PostEmoteRequest } from "@/@types/request/PostEmoteRequest";
 import { ReactRequest } from "@/@types/request/ReactRequest";
 import { RestApiRequestOption } from "@/@types/request/RestApiRequestOption";
 import { APIResponse } from "@/@types/response/APIResponse";
@@ -13,6 +14,7 @@ import { ErrorCode } from "@/@types/ErrorCode";
 import { User } from "./User";
 
 export type {
+    PostEmoteRequest,
     ReactRequest,
     RestApiRequestOption,
     OnReactIncomingMessage,
