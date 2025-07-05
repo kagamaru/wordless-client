@@ -15,7 +15,9 @@ type Props = {
 
 const EmojiComponent = ({ emojiId, size, onDeleteClick }: Props) => {
     const isMobile = useIsMobile();
-    const returnedEmoji = emojiHelper(emojiId);
+    const returnedEmoji = emojiId ? emojiHelper(emojiId) : undefined;
+    if (!returnedEmoji) return null;
+
     const presetEmojiStyle = css({
         fontSize: `${size.toString()}px !important`
     });
