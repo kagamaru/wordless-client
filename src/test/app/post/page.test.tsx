@@ -4,16 +4,19 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "../vitest.setup";
+import { PostEmoteRequest } from "@/@types";
 import PostPage from "@/app/(main)/post/page";
 import { ErrorBoundary, ProviderTemplate, UserInfoTemplate, WebSocketProvider } from "@/components/template";
 
 vitestSetup();
 const user = userEvent.setup();
 
+const mockOnPostEmote = vi.fn((_request: PostEmoteRequest) => {});
 vi.mock("@/app/api/_WebSocketService", async () => {
     return {
         WebSocketService: class {
             onReact = vi.fn(() => {});
+            onPostEmote = mockOnPostEmote;
         }
     };
 });
@@ -51,11 +54,18 @@ beforeAll(() => {
 beforeEach(() => {
     vi.clearAllMocks();
     vi.resetAllMocks();
+    vi.stubGlobal("localStorage", {
+        getItem: vi.fn().mockReturnValue("mocked_id_token"),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn()
+    });
     rendering();
 });
 
 afterEach(() => {
     cleanup();
+    server.resetHandlers();
 });
 
 const rendering = (): void => {
@@ -71,11 +81,6 @@ const rendering = (): void => {
         </ProviderTemplate>
     );
 };
-
-beforeEach(() => {
-    vi.clearAllMocks();
-    vi.resetAllMocks();
-});
 
 describe("初期表示時", () => {
     test("投稿ドロワーが表示される", () => {
@@ -414,6 +419,45 @@ describe("絵文字クリック時", () => {
 
         await waitFor(() => {
             expect(sendEmoteButton.ariaDisabled).toBe("false");
+        });
+    });
+});
+
+describe("送信ボタン押下時", () => {
+    beforeEach(async () => {
+        const ratButton = screen.getByRole("button", { name: ":rat:" });
+        const cowButton = screen.getByRole("button", { name: ":cow:" });
+        const tigerButton = screen.getByRole("button", { name: ":tiger:" });
+        const rabbitButton = screen.getByRole("button", { name: ":rabbit:" });
+        await Promise.all([
+            user.click(ratButton),
+            user.click(cowButton),
+            user.click(tigerButton),
+            user.click(rabbitButton)
+        ]);
+    });
+
+    test("エモート-登録APIが呼び出される", async () => {
+        await user.click(screen.getByRole("button", { name: "エモート送信ボタン" }));
+
+        await waitFor(() => {
+            expect(mockOnPostEmote).toHaveBeenCalled();
+        });
+    });
+
+    test("モーダルが閉じられる", async () => {
+        await user.click(screen.getByRole("button", { name: "エモート送信ボタン" }));
+
+        await waitFor(() => {
+            expect(screen.queryByRole("dialog")).toBeFalsy();
+        });
+    });
+
+    test("ダッシュボード画面に遷移する", async () => {
+        await user.click(screen.getByRole("button", { name: "エモート送信ボタン" }));
+
+        await waitFor(() => {
+            expect(mockedUseRouterPush).toHaveBeenCalledWith("/");
         });
     });
 });
