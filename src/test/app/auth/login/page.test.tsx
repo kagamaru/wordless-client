@@ -142,7 +142,7 @@ describe("ログインボタン押下時", () => {
 
     describe("Eメールとパスワードが両方正しいものである時、", () => {
         beforeEach(async () => {
-            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@example.com");
             await user.type(await screen.findByLabelText("パスワード"), "example01");
 
             await user.click(await screen.findByRole("button", { name: "ログイン" }));
@@ -180,7 +180,7 @@ describe("ログインボタン押下時", () => {
         });
 
         test("正しいEメールを入力した時、「Eメールを入力してください」表示を消す", async () => {
-            await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(screen.getByRole("textbox", { name: "Eメール" }), "example@example.com");
 
             await waitFor(() => {
                 expect(screen.queryByRole("alert")).toBeFalsy();
@@ -212,7 +212,7 @@ describe("ログインボタン押下時", () => {
             const emailInput = screen.getByRole("textbox", { name: "Eメール" });
             await user.clear(emailInput);
 
-            await user.type(emailInput, "example@gmail.com");
+            await user.type(emailInput, "example@example.com");
 
             await waitFor(() => {
                 expect(screen.queryByRole("alert")).toBeNull();
@@ -222,7 +222,7 @@ describe("ログインボタン押下時", () => {
 
     describe("パスワードが入力されていない時、", () => {
         beforeEach(async () => {
-            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@example.com");
 
             await user.click(await screen.findByRole("button", { name: "ログイン" }));
         });
@@ -253,7 +253,7 @@ describe("ログインボタン押下時", () => {
 
     describe("パスワードが6文字以下の時、", () => {
         beforeEach(async () => {
-            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@example.com");
             await user.type(await screen.findByLabelText("パスワード"), "ex01");
 
             await user.click(await screen.findByRole("button", { name: "ログイン" }));
@@ -287,7 +287,7 @@ describe("ログインボタン押下時", () => {
 
     describe("パスワードに数字が含まれていない時", () => {
         beforeEach(async () => {
-            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@gmail.com");
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@example.com");
             await user.type(await screen.findByLabelText("パスワード"), "wordless");
 
             await user.click(await screen.findByRole("button", { name: "ログイン" }));
@@ -326,7 +326,7 @@ describe("ログインボタン押下時", () => {
             })
         );
 
-        await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "incorrect@gmail.com");
+        await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "incorrect@example.com");
         await user.type(await screen.findByLabelText("パスワード"), "incorrect01");
 
         await user.click(await screen.findByRole("button", { name: "ログイン" }));

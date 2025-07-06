@@ -1,4 +1,4 @@
-import { APIResponse, ErrorCode, OnReactIncomingMessage, ReactRequest } from "@/@types";
+import { APIResponse, ErrorCode, OnReactIncomingMessage, PostEmoteRequest, ReactRequest } from "@/@types";
 import { useEmoteStore } from "@/store";
 
 export class WebSocketService {
@@ -41,6 +41,14 @@ export class WebSocketService {
     public onReact(request: ReactRequest): void {
         if (this.socket.readyState === WebSocket.OPEN) {
             this.socket.send(JSON.stringify({ action: "onReact", ...request }));
+        } else {
+            console.warn("WebSocket is not open. Message not sent.");
+        }
+    }
+
+    public onPostEmote(request: PostEmoteRequest): void {
+        if (this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify({ action: "onPostEmote", ...request }));
         } else {
             console.warn("WebSocket is not open. Message not sent.");
         }

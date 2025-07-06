@@ -1,15 +1,18 @@
 import { Row } from "antd";
 import { memo } from "react";
-import { Emoji } from "@/components/atoms";
-import { customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
-import { EmojiIdObject, EmoteEmojis } from "@/@types";
 import { css } from "ss/css";
+import { EmojiIdObject, EmoteEmojis } from "@/@types";
+import { Emoji } from "@/components/atoms";
+import { useIsMobile } from "@/hooks";
+import { customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
 
 type Props = {
     emojis: EmoteEmojis;
 };
 
 function DisplayEmoteEmojiComponent({ emojis }: Props) {
+    const isMobile = useIsMobile();
+
     // NOTE: 本来keyにindexを設定するのは望ましくないが、ここでは差し替えや入れ替えを伴わないためindexにする
     const displayEmojis = emojis.map((emoji: EmojiIdObject, index: number) => {
         return <Emoji key={index} emojiId={emoji.emojiId} size={62} />;
@@ -25,7 +28,7 @@ function DisplayEmoteEmojiComponent({ emojis }: Props) {
     const emojiRowStyle = css({
         marginTop: "4px",
         marginBottom: isAllEmojisCustomOrMeme ? "8px" : "0px",
-        marginLeft: { base: "8px", lg: "0px" },
+        marginLeft: isMobile ? "8px" : "0px",
         fontSize: "62px !important"
     });
 
