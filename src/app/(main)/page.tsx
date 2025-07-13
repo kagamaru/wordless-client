@@ -13,6 +13,7 @@ import { useEmoteStore } from "@/store";
 export default function Home() {
     const { handledError, handleErrors } = useError();
     const emotes = useEmoteStore((state) => state.emotes);
+    const setEmotes = useEmoteStore((state) => state.setEmotes);
     const hasEmoteSet = useEmoteStore((state) => state.hasEmoteSet);
 
     const { data, isError, error } = useQuery({
@@ -29,7 +30,8 @@ export default function Home() {
             );
             return response.data;
         },
-        retry: 0
+        retry: 0,
+        enabled: !hasEmoteSet
     });
 
     useEffect(() => {
@@ -41,7 +43,7 @@ export default function Home() {
 
     useEffect(() => {
         if (data && !hasEmoteSet) {
-            useEmoteStore.setState({ emotes: data.emotes });
+            setEmotes(data.emotes);
         }
     }, [data, hasEmoteSet]);
 
