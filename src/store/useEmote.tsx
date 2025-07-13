@@ -5,12 +5,19 @@ import { create } from "zustand";
 type EmoteStore = {
     emotes: Emote[];
     setEmotes: (emotes: Emote[]) => void;
+    hasEmoteSet: boolean;
+    addEmote: (emote: Emote) => void;
     updateEmoteReactionEmojis: (data: OnReactIncomingMessage) => void;
 };
 
 export const useEmoteStore = create<EmoteStore>((set) => ({
     emotes: [],
-    setEmotes: (emotes: Emote[]) => set({ emotes }),
+    setEmotes: (emotes: Emote[]) => {
+        set({ emotes });
+        set({ hasEmoteSet: true });
+    },
+    hasEmoteSet: false,
+    addEmote: (emote: Emote) => set((state: EmoteStore) => ({ emotes: [...state.emotes, emote] })),
     updateEmoteReactionEmojis: (data: OnReactIncomingMessage) => {
         set((state: EmoteStore) => {
             const updatedEmotes = state.emotes.map((emote: Emote) => {
