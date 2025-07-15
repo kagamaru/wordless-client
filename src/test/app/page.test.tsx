@@ -7,6 +7,7 @@ import { vitestSetup } from "./vitest.setup";
 import Home from "@/app/(main)/page";
 import { ErrorBoundary, ProviderTemplate, UserInfoTemplate, WebSocketProvider } from "@/components/template";
 import { ReactRequest } from "@/@types";
+import { useEmoteStore } from "@/store";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -213,6 +214,7 @@ beforeEach(() => {
 afterEach(() => {
     cleanup();
     server.resetHandlers();
+    useEmoteStore.getState().cleanAllData();
 });
 
 afterAll(() => {
@@ -410,6 +412,7 @@ describe("初期表示時", () => {
             ["EMT-04", "接続できません。もう一度やり直してください。"],
             ["EMT-05", "接続できません。もう一度やり直してください。"]
         ])("サーバから%sエラーが返却された時、エラーメッセージ「%s」を表示する", async ([errorCode, errorMessage]) => {
+            useEmoteStore.getState().cleanAllData();
             server.use(
                 http.get("http://localhost:3000/api/emote", () => {
                     return HttpResponse.json({ data: errorCode }, { status: 400 });
@@ -576,7 +579,7 @@ describe("リアクション追加ボタンをクリックした時", () => {
         beforeEach(async () => {
             rendering();
 
-            const listItem = screen.getByRole("listitem", { name: "b" });
+            const listItem = await screen.findByRole("listitem", { name: "b" });
             const plusButton = within(listItem).getByRole("button", { name: "+" });
             await user.click(plusButton);
 

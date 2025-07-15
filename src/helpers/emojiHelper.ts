@@ -1,4 +1,4 @@
-import { Emoji, EmojiCategory, EmojiType } from "@/@types/Emoji";
+import { Emoji } from "@/@types/Emoji";
 import { EmojiString } from "@/@types/EmojiString";
 import { customEmojiMap, memeEmojiMap, presetEmojiMap } from "@/static/EmojiMap";
 

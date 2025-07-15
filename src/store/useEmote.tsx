@@ -5,12 +5,27 @@ import { create } from "zustand";
 type EmoteStore = {
     emotes: Emote[];
     setEmotes: (emotes: Emote[]) => void;
+    hasEmoteSet: boolean;
+    addEmote: (emote: Emote) => void;
     updateEmoteReactionEmojis: (data: OnReactIncomingMessage) => void;
+    cleanAllData: () => void;
 };
 
 export const useEmoteStore = create<EmoteStore>((set) => ({
     emotes: [],
-    setEmotes: (emotes: Emote[]) => set({ emotes }),
+    setEmotes: (emotes: Emote[]) => {
+        set({ emotes });
+        set({ hasEmoteSet: true });
+    },
+    hasEmoteSet: false,
+    addEmote: (emote: Emote) => {
+        set((state: EmoteStore) => {
+            if (state.emotes.some((emoteInstance: Emote) => emoteInstance.emoteId === emote.emoteId)) {
+                return { emotes: state.emotes };
+            }
+            return { emotes: [emote, ...state.emotes] };
+        });
+    },
     updateEmoteReactionEmojis: (data: OnReactIncomingMessage) => {
         set((state: EmoteStore) => {
             const updatedEmotes = state.emotes.map((emote: Emote) => {
@@ -25,5 +40,8 @@ export const useEmoteStore = create<EmoteStore>((set) => ({
             });
             return { emotes: updatedEmotes };
         });
+    },
+    cleanAllData: () => {
+        set({ emotes: [], hasEmoteSet: false });
     }
 }));
