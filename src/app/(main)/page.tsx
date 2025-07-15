@@ -13,8 +13,10 @@ import { useEmoteStore } from "@/store";
 export default function Home() {
     const { handledError, handleErrors } = useError();
     const emotes = useEmoteStore((state) => state.emotes);
-    const setEmotes = useEmoteStore((state) => state.setEmotes);
-    const hasEmoteSet = useEmoteStore((state) => state.hasEmoteSet);
+    const { setEmotes, hasEmoteSet } = useEmoteStore((state) => ({
+        setEmotes: state.setEmotes,
+        hasEmoteSet: state.hasEmoteSet
+    }));
 
     const { data, isError, error } = useQuery({
         queryKey: ["emotes"],
