@@ -1,6 +1,6 @@
 "use client";
 
-import { Col, ConfigProvider, Divider, Row } from "antd";
+import { Col, ConfigProvider, Row } from "antd";
 import dayjs from "dayjs";
 import { useCallback, useContext, useMemo, useState } from "react";
 import { EmoteReactionEmojiWithNumber, EmoteEmojis, EmojiString } from "@/@types";
