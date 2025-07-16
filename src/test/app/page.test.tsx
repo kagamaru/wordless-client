@@ -395,6 +395,14 @@ describe("初期表示時", () => {
             });
         });
 
+        test("もっと見るボタンを表示する", async () => {
+            rendering();
+
+            await waitFor(() => {
+                expect(screen.getByRole("button", { name: "search もっと見る" })).toBeTruthy();
+            });
+        });
+
         test("投稿ボタンを表示する", async () => {
             rendering();
 

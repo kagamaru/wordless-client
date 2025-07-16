@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Col, Row } from "antd";
+import { useEffect } from "react";
 import { FetchEmotesResponse } from "@/class";
 import { DisplayErrorMessage, FixedFloatingButton } from "@/components/atoms";
 import { PageHeader } from "@/components/molecules";
@@ -9,6 +10,7 @@ import { WordlessEmotes } from "@/components/organisms";
 import { fetchNextjsServer } from "@/helpers";
 import { useError } from "@/hooks";
 import { useEmoteStore } from "@/store";
+import { LoadMoreButton } from "@/components/atoms/LoadMoreButton";
 
 export default function Home() {
     const { handledError, handleErrors } = useError();
@@ -52,6 +54,9 @@ export default function Home() {
             <PageHeader></PageHeader>
             {isError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
             {emotes && <WordlessEmotes emotes={emotes}></WordlessEmotes>}
+            <Row justify="center" align="middle" className="mt-4 mb-8">
+                <LoadMoreButton isLoading={false} onClickAction={() => {}} />
+            </Row>
             <FixedFloatingButton />
         </>
     );
