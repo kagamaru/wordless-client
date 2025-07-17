@@ -14,6 +14,7 @@ import { EmotePostImageEmojiButtonRow } from "@/components/atoms/EmotePostImageE
 import { EmoteReactionButton } from "@/components/atoms/EmoteReactionButton";
 import { FixedFloatingButton } from "@/components/atoms/FixedFloatingButton";
 import { LoadingSpin } from "@/components/atoms/LoadingSpin";
+import { LastEmoteFetchedText } from "@/components/atoms/LastEmoteFetchedText";
 import { LoadMoreButton } from "@/components/atoms/LoadMoreButton";
 import { LoginButton } from "@/components/atoms/LoginButton";
 import { PasswordInput } from "@/components/atoms/PasswordInput";
@@ -42,6 +43,7 @@ export {
     EmoteReactionButton,
     FixedFloatingButton,
     LoadingSpin,
+    LastEmoteFetchedText,
     LoadMoreButton,
     LoginButton,
     PasswordInput,

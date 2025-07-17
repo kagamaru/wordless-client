@@ -2,9 +2,15 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Row } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FetchEmotesResponse } from "@/class";
-import { DisplayErrorMessage, FixedFloatingButton, LoadingSpin, LoadMoreButton } from "@/components/atoms";
+import {
+    DisplayErrorMessage,
+    FixedFloatingButton,
+    LastEmoteFetchedText,
+    LoadingSpin,
+    LoadMoreButton
+} from "@/components/atoms";
 import { PageHeader } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
 import { fetchNextjsServer } from "@/helpers";
@@ -16,6 +22,7 @@ export default function Home() {
     const emotes = useEmoteStore((state) => state.emotes);
     const setEmotes = useEmoteStore((state) => state.setEmotes);
     const hasEmoteSet = useEmoteStore((state) => state.hasEmoteSet);
+    const [hasLastEmoteFetched, setHasLastEmoteFetched] = useState(false);
 
     const { data, isError, error, isPending } = useQuery({
         queryKey: ["emotes"],
@@ -62,7 +69,11 @@ export default function Home() {
     });
 
     const loadMoreEmotes = async () => {
-        await fetchMoreEmotes();
+        try {
+            await fetchMoreEmotes();
+        } catch (error) {
+            console.error("loadMoreEmotesError");
+        }
     };
 
     useEffect(() => {
@@ -87,8 +98,10 @@ export default function Home() {
     }, [data, hasEmoteSet]);
 
     useEffect(() => {
-        if (moreEmotes && moreEmotes.data && moreEmotes.data.emotes) {
+        if (moreEmotes && moreEmotes.data && moreEmotes.data.emotes.length > 0) {
             setEmotes([...emotes, ...moreEmotes.data.emotes]);
+        } else if (moreEmotes && moreEmotes.data && moreEmotes.data.emotes.length === 0) {
+            setHasLastEmoteFetched(true);
         }
     }, [moreEmotes]);
 
@@ -99,7 +112,11 @@ export default function Home() {
             {isPending && <LoadingSpin />}
             {emotes && <WordlessEmotes emotes={emotes}></WordlessEmotes>}
             <Row justify="center" align="middle" className="mt-4 mb-8">
-                <LoadMoreButton isLoading={isFetchingMoreEmotes} onClickAction={loadMoreEmotes} />
+                {hasLastEmoteFetched ? (
+                    <LastEmoteFetchedText />
+                ) : (
+                    <LoadMoreButton isLoading={isFetchingMoreEmotes} onClickAction={loadMoreEmotes} />
+                )}
             </Row>
             <FixedFloatingButton />
         </>
