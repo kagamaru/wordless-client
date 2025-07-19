@@ -3,6 +3,8 @@ import { EmotePostEmojiButtonBlocksByType } from "@/components/molecules/EmotePo
 import { EmojiSelectTabs } from "@/components/molecules/EmojiSelectTabs";
 import { PostEmoteEmojiSelectTabs } from "@/components/molecules/PostEmoteEmojiSelectTabs";
 import { PageHeader } from "@/components/molecules/PageHeader";
+import { PageHeaderWithoutMenu } from "@/components/molecules/PageHeaderWithoutMenu";
+import { MenuDrawer } from "@/components/molecules/MenuDrawer";
 import { PresetEmojis } from "@/components/molecules/PresetEmojis";
 import { ReactionUsersDrawer } from "@/components/molecules/ReactionUsersDrawer";
 import { WordlessEmote } from "@/components/molecules/WordlessEmote";
@@ -12,6 +14,8 @@ export {
     EmotePostEmojiButtonBlocksByType,
     EmojiSelectTabs,
     PageHeader,
+    PageHeaderWithoutMenu,
+    MenuDrawer,
     PresetEmojis,
     PostEmoteEmojiSelectTabs,
     ReactionUsersDrawer,

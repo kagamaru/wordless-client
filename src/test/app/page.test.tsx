@@ -1083,3 +1083,15 @@ describe("もっと見るボタンをクリックした時", () => {
         });
     });
 });
+
+describe("メニューボタンをクリックした時", () => {
+    test("メニューボタンをクリックした時、メニューモーダルが表示される", async () => {
+        rendering();
+
+        await user.click(await screen.findByRole("img", { name: "menu" }));
+
+        await waitFor(() => {
+            expect(screen.getByRole("dialog")).toBeTruthy();
+        });
+    });
+});
