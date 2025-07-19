@@ -51,8 +51,6 @@ export function WordlessEmote({ emote }: Props) {
     const userId = userInfo?.userId;
 
     const wordlessEmoteStyle = css({
-        paddingLeft: { base: "16px", lg: "140px" },
-        paddingRight: { base: "16px", lg: "140px" },
         marginTop: isMobile ? "10px" : "16px"
     });
 
