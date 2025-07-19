@@ -32,6 +32,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
         const errorCode = /^[A-Z]{3}/.test(rawMessage) ? (rawMessage as ErrorCode) : "ERR-01";
         const errorMessage = getErrorMessage(errorCode);
 
+        if (errorCode.includes("AUN")) {
+            window.location.href = "/auth/login";
+        }
+
         if (this.state.hasError) {
             return (
                 <div>

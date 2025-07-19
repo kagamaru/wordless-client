@@ -20,6 +20,8 @@ export const vitestSetup = (): void => {
 
     window.getComputedStyle = (elt) => getComputedStyle(elt);
 
+    window.scrollTo = () => {};
+
     vi.mock("@/static/EmojiMap", () => ({
         presetEmojiMap: [
             {
