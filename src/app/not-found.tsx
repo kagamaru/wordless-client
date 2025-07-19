@@ -2,12 +2,12 @@
 
 import { Row } from "antd";
 import { RedirectTopButton } from "@/components/atoms";
-import { PageHeader } from "@/components/molecules";
+import { PageHeaderWithoutMenu } from "@/components/molecules";
 
 export default function NotFound() {
     return (
         <div>
-            <PageHeader />
+            <PageHeaderWithoutMenu />
             <Row justify="center" align="middle" className="text-3xl mt-5">
                 <div>😶‍🌫️</div>
                 <div className="m-5">ページが見つかりません。トップ画面から操作してください。</div>
