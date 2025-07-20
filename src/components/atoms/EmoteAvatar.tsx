@@ -8,19 +8,21 @@ import { useIsMobile } from "@/hooks";
 type Props = {
     userName: string;
     url: string;
+    onClickAction: () => void;
 };
 
-function EmoteAvatarComponent({ userName, url }: Props) {
+function EmoteAvatarComponent({ userName, url, onClickAction }: Props) {
     const isMobile = useIsMobile();
 
     const avatarStyle = css({
         height: isMobile ? "32px" : "50px !important",
-        width: isMobile ? "32px" : "50px !important"
+        width: isMobile ? "32px" : "50px !important",
+        cursor: "pointer"
     });
 
     return (
         <>
-            <Avatar className={avatarStyle} src={url} alt={userName + "ProfileImage"}></Avatar>
+            <Avatar className={avatarStyle} src={url} alt={userName + "ProfileImage"} onClick={onClickAction}></Avatar>
         </>
     );
 }

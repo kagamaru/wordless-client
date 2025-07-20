@@ -2,6 +2,7 @@
 
 import { Col, ConfigProvider, Row } from "antd";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import { useCallback, useContext, useMemo, useState } from "react";
 import { EmoteReactionEmojiWithNumber, EmoteEmojis, EmojiString } from "@/@types";
 import {
@@ -35,6 +36,7 @@ dayjs.locale("ja");
 
 export function WordlessEmote({ emote }: Props) {
     const isMobile = useIsMobile();
+    const router = useRouter();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isEmojiDialogOpen, setIsEmojiDialogOpen] = useState(false);
     const webSocketService = useContext(WebSocketContext);
@@ -66,7 +68,8 @@ export function WordlessEmote({ emote }: Props) {
         textOverflow: "ellipsis",
         whiteSpace: isMobile ? "nowrap" : undefined,
         maxWidth: isMobile ? "56%" : "770px",
-        marginRight: isMobile ? "4px" : "8px"
+        marginRight: isMobile ? "4px" : "8px",
+        cursor: "pointer"
     });
 
     const userIdTextStyle = css({
@@ -74,7 +77,8 @@ export function WordlessEmote({ emote }: Props) {
         fontSize: isMobile ? "14px" : "16px",
         color: "grey",
         maxWidth: isMobile ? "16%" : undefined,
-        marginBottom: isMobile ? "2px" : "0px"
+        marginBottom: isMobile ? "2px" : "0px",
+        cursor: "pointer"
     });
 
     const emoteDatetimeTextStyle = css({
@@ -137,12 +141,20 @@ export function WordlessEmote({ emote }: Props) {
                 <div className={textBlockStyle}>
                     <Row align="middle">
                         <Col span={3}>
-                            <EmoteAvatar url={emote.userAvatarUrl} userName={emote.userName}></EmoteAvatar>
+                            <EmoteAvatar
+                                url={emote.userAvatarUrl}
+                                userName={emote.userName}
+                                onClickAction={navigateToUserPage}
+                            ></EmoteAvatar>
                         </Col>
                         <Col span={21}>
                             <Row align="bottom">
-                                <div className={userNameTextStyle}>{emote.userName}</div>
-                                <div className={userIdTextStyle}>{emote.userId}</div>
+                                <div className={userNameTextStyle} onClick={navigateToUserPage}>
+                                    {emote.userName}
+                                </div>
+                                <div className={userIdTextStyle} onClick={navigateToUserPage}>
+                                    {emote.userId}
+                                </div>
                             </Row>
                             <div className={emoteDatetimeTextStyle}>
                                 {dayjs(emote.emoteDatetime).format(emoteDatetimeFormatStyle)}
@@ -155,8 +167,12 @@ export function WordlessEmote({ emote }: Props) {
             return (
                 <div>
                     <Row align="bottom" className={textBlockStyle}>
-                        <div className={userNameTextStyle}>{emote.userName}</div>
-                        <div className={userIdTextStyle}>{emote.userId}</div>
+                        <div className={userNameTextStyle} onClick={navigateToUserPage}>
+                            {emote.userName}
+                        </div>
+                        <div className={userIdTextStyle} onClick={navigateToUserPage}>
+                            {emote.userId}
+                        </div>
                     </Row>
                     <div className={emoteDatetimeTextStyle}>
                         {dayjs(emote.emoteDatetime).format(emoteDatetimeFormatStyle)}
@@ -170,13 +186,21 @@ export function WordlessEmote({ emote }: Props) {
         setIsDrawerOpen(true);
     };
 
+    const navigateToUserPage = () => {
+        router.push(`/user/${emote.userId}`);
+    };
+
     return (
         <>
             <div className={wordlessEmoteStyle}>
                 <Row>
                     {!isMobile && (
                         <Col span={2} className="m-auto">
-                            <EmoteAvatar url={emote.userAvatarUrl} userName={emote.userName}></EmoteAvatar>
+                            <EmoteAvatar
+                                url={emote.userAvatarUrl}
+                                userName={emote.userName}
+                                onClickAction={navigateToUserPage}
+                            ></EmoteAvatar>
                         </Col>
                     )}
                     <Col span={isMobile ? 24 : 22}>
