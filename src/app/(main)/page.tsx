@@ -107,7 +107,6 @@ export default function Home() {
 
     return (
         <>
-            <PageHeader></PageHeader>
             {(isError || isFetchingMoreEmotesError) && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
             {isPending && <LoadingSpin />}
             {emotes && <WordlessEmotes emotes={emotes}></WordlessEmotes>}

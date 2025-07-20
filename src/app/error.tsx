@@ -2,7 +2,7 @@
 
 import { Row } from "antd";
 import { DisplayErrorMessage, RedirectLoginButton } from "@/components/atoms";
-import { PageHeader } from "@/components/molecules";
+import { PageHeaderWithoutMenu } from "@/components/molecules";
 import { getErrorMessage } from "@/helpers";
 
 export default function Error() {
@@ -10,7 +10,7 @@ export default function Error() {
 
     return (
         <div>
-            <PageHeader />
+            <PageHeaderWithoutMenu />
             <Row justify="center" align="middle" className="text-3xl mt-5">
                 <div>😢</div>
                 <div className="m-5">エラーが発生しました</div>

@@ -36,7 +36,8 @@ export default defineConfig({
                     lightPurple: { value: "#ffeeff" },
                     loginPageBackground: {
                         value: "linear-gradient(135deg, rgba(220, 198, 224, 0.8), rgba(165, 180, 252, 0.8))"
-                    }
+                    },
+                    followBlue: { value: "#1677FF" }
                 }
             }
         }

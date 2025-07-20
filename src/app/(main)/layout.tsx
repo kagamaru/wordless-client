@@ -1,4 +1,5 @@
 import { ErrorBoundary, UserInfoTemplate, WebSocketProvider } from "@/components/template";
+import { PageTemplate } from "@/components/template/PageTemplate";
 
 export default function MainLayout({
     children
@@ -8,7 +9,9 @@ export default function MainLayout({
     return (
         <ErrorBoundary>
             <UserInfoTemplate>
-                <WebSocketProvider>{children}</WebSocketProvider>
+                <WebSocketProvider>
+                    <PageTemplate>{children}</PageTemplate>
+                </WebSocketProvider>
             </UserInfoTemplate>
         </ErrorBoundary>
     );

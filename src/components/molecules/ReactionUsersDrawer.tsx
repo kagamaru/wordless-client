@@ -163,7 +163,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
                                                     {users.map((user) => (
                                                         <a
                                                             key={user.userId}
-                                                            href={`/users/${user.userId}`}
+                                                            href={`/user/${user.userId}`}
                                                             className={userItemStyle}
                                                         >
                                                             <Avatar src={user.userAvatarUrl} size={48} />
