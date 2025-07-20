@@ -13,6 +13,7 @@ import { EmotePostEmojiButtonRow } from "@/components/atoms/EmotePostEmojiButton
 import { EmotePostImageEmojiButtonRow } from "@/components/atoms/EmotePostImageEmojiButtonRow";
 import { EmoteReactionButton } from "@/components/atoms/EmoteReactionButton";
 import { FixedFloatingButton } from "@/components/atoms/FixedFloatingButton";
+import { FixedFloatingFollowButton } from "@/components/atoms/FixedFloatingFollowButton";
 import { LoadingSpin } from "@/components/atoms/LoadingSpin";
 import { LastEmoteFetchedText } from "@/components/atoms/LastEmoteFetchedText";
 import { LoadMoreButton } from "@/components/atoms/LoadMoreButton";
@@ -22,7 +23,10 @@ import { RedirectLoginButton } from "@/components/atoms/RedirectLoginButton";
 import { RedirectTopButton } from "@/components/atoms/RedirectTopButton";
 import { PlusButton } from "@/components/atoms/PlusButton";
 import { ResetPasswordLink } from "@/components/atoms/ResetPasswordLink";
+import { ShadowDivider } from "@/components/atoms/ShadowDivider";
 import { SignupButton } from "@/components/atoms/SignupButton";
+import { TotalNumberOfFollowers } from "@/components/atoms/TotalNumberOfFollowers";
+import { TotalNumberOfFollowing } from "@/components/atoms/TotalNumberOfFollowing";
 import { TotalNumberOfReactionsButton } from "@/components/atoms/TotalNumberOfReactionsButton";
 import { WordlessDivider } from "@/components/atoms/WordlessDivider";
 
@@ -42,6 +46,7 @@ export {
     EmotePostImageEmojiButtonRow,
     EmoteReactionButton,
     FixedFloatingButton,
+    FixedFloatingFollowButton,
     LoadingSpin,
     LastEmoteFetchedText,
     LoadMoreButton,
@@ -51,7 +56,10 @@ export {
     RedirectTopButton,
     PlusButton,
     ResetPasswordLink,
+    ShadowDivider,
     SignupButton,
+    TotalNumberOfFollowers,
+    TotalNumberOfFollowing,
     TotalNumberOfReactionsButton,
     WordlessDivider
 };
