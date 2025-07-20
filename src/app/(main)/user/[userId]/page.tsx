@@ -1,12 +1,26 @@
 "use client";
 
+import { useState } from "react";
 import { User } from "@/@types";
 import { Emote } from "@/class";
 import { FixedFloatingFollowButton, ShadowDivider } from "@/components/atoms";
-import { FollowButtonSection, UserProfile, UserSukiSection } from "@/components/molecules";
+import { FollowButtonSection, FollowUsersDrawer, UserProfile, UserSukiSection } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
 
 export default function UserPage() {
+    const [isFollowersDrawerOpen, setIsFollowersDrawerOpen] = useState(false);
+    const [isFollowingDrawerOpen, setIsFollowingDrawerOpen] = useState(false);
+    const followerUserIds = ["@fuga_fuga", "@hoge_hoge", "@apple"];
+    const followingUserIds = ["@hoge_hoge", "@apple", "@orange"];
+
+    const onFollowersButtonClick = () => {
+        setIsFollowersDrawerOpen(true);
+    };
+
+    const onFollowingButtonClick = () => {
+        setIsFollowingDrawerOpen(true);
+    };
+
     const userInfo: User = {
         userName: "ユーザー名",
         userId: "@xxxxxxx",
@@ -284,12 +298,33 @@ export default function UserPage() {
         <>
             <div className="p-4 mt-1">
                 <UserProfile userInfo={userInfo} />
-                <FollowButtonSection />
+                <FollowButtonSection
+                    totalNumberOfFollowers={100}
+                    onFollowersClickAction={onFollowersButtonClick}
+                    totalNumberOfFollowing={200}
+                    onFollowingClickAction={onFollowingButtonClick}
+                />
                 <UserSukiSection userSukiEmojis={[":tiger:", ":snake:", ":hello:", ":ishikawa:"]} />
                 <ShadowDivider />
             </div>
             <WordlessEmotes emotes={emotes}></WordlessEmotes>
             <FixedFloatingFollowButton isFollowing={false} />
+            {isFollowersDrawerOpen && (
+                <FollowUsersDrawer
+                    isOpen={isFollowersDrawerOpen}
+                    setIsOpenAction={setIsFollowersDrawerOpen}
+                    userIds={followerUserIds}
+                    isFollowers={true}
+                />
+            )}
+            {isFollowingDrawerOpen && (
+                <FollowUsersDrawer
+                    isOpen={isFollowingDrawerOpen}
+                    setIsOpenAction={setIsFollowingDrawerOpen}
+                    userIds={followingUserIds}
+                    isFollowers={false}
+                />
+            )}
         </>
     );
 }
