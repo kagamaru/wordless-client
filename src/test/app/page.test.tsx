@@ -5,7 +5,13 @@ import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "./vitest.setup";
 import Home from "@/app/(main)/page";
-import { ErrorBoundary, ProviderTemplate, UserInfoTemplate, WebSocketProvider } from "@/components/template";
+import {
+    ErrorBoundary,
+    PageTemplate,
+    ProviderTemplate,
+    UserInfoTemplate,
+    WebSocketProvider
+} from "@/components/template";
 import { ReactRequest } from "@/@types";
 import { useEmoteStore } from "@/store";
 
@@ -315,7 +321,9 @@ const rendering = (): void => {
             <ErrorBoundary>
                 <UserInfoTemplate>
                     <WebSocketProvider>
-                        <Home />
+                        <PageTemplate>
+                            <Home />
+                        </PageTemplate>
                     </WebSocketProvider>
                 </UserInfoTemplate>
             </ErrorBoundary>
@@ -673,6 +681,36 @@ describe("リアクションボタンをクリックした時", () => {
             // NOTE: WebSocketの内部ロジックのmock化が困難
             test.todo("リアクションボタンをクリックした時、リアクションボタンの表示が更新される");
         });
+    });
+});
+
+test("ユーザー名をクリックした時、ユーザーページに遷移する", async () => {
+    rendering();
+
+    await user.click(await screen.findByText("A"));
+
+    await waitFor(() => {
+        expect(mockedUseRouter).toHaveBeenCalledWith("/user/@a");
+    });
+});
+
+test("ユーザーIDをクリックした時、ユーザーページに遷移する", async () => {
+    rendering();
+
+    await user.click(await screen.findByText("@a"));
+
+    await waitFor(() => {
+        expect(mockedUseRouter).toHaveBeenCalledWith("/user/@a");
+    });
+});
+
+test("ユーザーアバターをクリックした時、ユーザーページに遷移する", async () => {
+    rendering();
+
+    await user.click(await screen.findByAltText("AProfileImage"));
+
+    await waitFor(() => {
+        expect(mockedUseRouter).toHaveBeenCalledWith("/user/@a");
     });
 });
 
