@@ -18,6 +18,7 @@ import { LoadingSpin } from "@/components/atoms/LoadingSpin";
 import { LastEmoteFetchedText } from "@/components/atoms/LastEmoteFetchedText";
 import { LoadMoreButton } from "@/components/atoms/LoadMoreButton";
 import { LoginButton } from "@/components/atoms/LoginButton";
+import { NoEmoteText } from "@/components/atoms/NoEmoteText";
 import { PasswordInput } from "@/components/atoms/PasswordInput";
 import { RedirectLoginButton } from "@/components/atoms/RedirectLoginButton";
 import { RedirectTopButton } from "@/components/atoms/RedirectTopButton";
@@ -51,6 +52,7 @@ export {
     LastEmoteFetchedText,
     LoadMoreButton,
     LoginButton,
+    NoEmoteText,
     PasswordInput,
     RedirectLoginButton,
     RedirectTopButton,

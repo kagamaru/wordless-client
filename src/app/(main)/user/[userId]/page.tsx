@@ -1,15 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { User } from "@/@types";
-import { Emote } from "@/class";
-import { FixedFloatingFollowButton, ShadowDivider } from "@/components/atoms";
-import { FollowButtonSection, FollowUsersDrawer, UserProfile, UserSukiSection } from "@/components/molecules";
+import { Emote, FetchEmotesResponse } from "@/class";
+import {
+    DisplayErrorMessage,
+    FixedFloatingFollowButton,
+    LoadingSpin,
+    NoEmoteText,
+    ShadowDivider
+} from "@/components/atoms";
+import {
+    EndOfEmotes,
+    FollowButtonSection,
+    FollowUsersDrawer,
+    UserProfile,
+    UserSukiSection
+} from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
+import { fetchNextjsServer, getHeader } from "@/helpers";
+import { useError } from "@/hooks";
+import { useEmoteStore } from "@/store";
 
 export default function UserPage() {
+    const { userId } = useParams();
+    const { handledError, handleErrors } = useError();
+    const [emotes, setEmotes] = useState<Emote[]>([]);
     const [isFollowersDrawerOpen, setIsFollowersDrawerOpen] = useState(false);
     const [isFollowingDrawerOpen, setIsFollowingDrawerOpen] = useState(false);
+    const [hasLastEmoteFetched, setHasLastEmoteFetched] = useState(false);
     const followerUserIds = ["@fuga_fuga", "@hoge_hoge", "@apple"];
     const followingUserIds = ["@hoge_hoge", "@apple", "@orange"];
 
@@ -21,293 +42,123 @@ export default function UserPage() {
         setIsFollowingDrawerOpen(true);
     };
 
-    const userInfo: User = {
-        userName: "ユーザー名",
-        userId: "@xxxxxxx",
-        userAvatarUrl: "/userProfile/user.png"
+    const { data, isError, error, isPending } = useQuery({
+        queryKey: ["emotes"],
+        queryFn: async () => {
+            const response = await fetchNextjsServer<FetchEmotesResponse>(
+                `/api/emote?userId=${userId}&numberOfCompletedAcquisitionsCompleted=${"10"}`,
+                getHeader()
+            );
+            return response.data;
+        },
+        retry: 0
+    });
+
+    const {
+        data: userInfo,
+        isError: isUserInfoError,
+        error: userInfoError
+    } = useQuery({
+        queryKey: ["userInfo"],
+        queryFn: async () => {
+            const response = await fetchNextjsServer<User>(`/api/user/${userId}`, getHeader());
+            return response.data;
+        },
+        retry: 0
+    });
+
+    const {
+        data: moreEmotes,
+        mutateAsync: fetchMoreEmotes,
+        isPending: isFetchingMoreEmotes,
+        isError: isFetchingMoreEmotesError,
+        error: fetchingMoreEmotesError
+    } = useMutation({
+        mutationFn: async () => {
+            if (emotes && emotes.length > 0) {
+                const response = await fetchNextjsServer<FetchEmotesResponse>(
+                    `/api/emote?userId=${userId}&numberOfCompletedAcquisitionsCompleted=${"10"}&sequenceNumberStartOfSearch=${emotes[emotes.length - 1]?.sequenceNumber ?? ""}`,
+                    getHeader()
+                );
+                return response;
+            } else {
+                return null;
+            }
+        },
+        retry: 0
+    });
+
+    const loadMoreEmotes = async () => {
+        try {
+            await fetchMoreEmotes();
+        } catch (error) {
+            console.error("loadMoreEmotesError");
+        }
     };
 
-    const emotes: Emote[] = [
-        {
-            sequenceNumber: 11,
-            emoteId: "dac2faad-0372-4295-9096-532e70b25c94",
-            userName:
-                "Fuga Fuga あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん",
-            userId: "@fuga_fugaf",
-            emoteDatetime: "2025-01-19T09:05:25.000Z",
-            emoteReactionId: "f027ab3c-c422-4f98-8446-071f3d9eb78d",
-            emoteEmojis: [
-                {
-                    emojiId: ":neko_meme_banana_cat:"
-                },
-                {
-                    emojiId: ":bear:"
-                },
-                {
-                    emojiId: ":monkey:"
-                }
-            ],
-            userAvatarUrl: "/userProfile/fuga_fuga.png",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":neko_meme_scream_baby_cat:",
-                    numberOfReactions: 100,
-                    reactedUserIds: ["@fuga_fuga"]
-                }
-            ],
-            totalNumberOfReactions: 100
-        },
-        {
-            sequenceNumber: 10,
-            emoteId: "d9ffafc3-1d0c-4024-8eeb-91ffc723ff0e",
-            userName: "Hoge",
-            userId: "@hoge_hoge",
-            emoteDatetime: "2025-01-19T09:00:48.000Z",
-            emoteReactionId: "7c312fe0-1f2e-4b1f-87a1-09eeb3968d74",
-            emoteEmojis: [
-                {
-                    emojiId: ":snake:"
-                },
-                {
-                    emojiId: ":dog:"
-                },
-                {
-                    emojiId: ":dog:"
-                },
-                {
-                    emojiId: ":dog:"
-                }
-            ],
-            userAvatarUrl: "/userProfile/hoge_hoge.png",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":snake:",
-                    numberOfReactions: 200,
-                    reactedUserIds: ["@hoge_hoge"]
-                },
-                {
-                    emojiId: ":party_parrot:",
-                    numberOfReactions: 100,
-                    reactedUserIds: ["@fuga_fuga"]
-                },
-                {
-                    emojiId: ":monkey:",
-                    numberOfReactions: 1,
-                    reactedUserIds: ["@hoge_hoge"]
-                },
-                {
-                    emojiId: ":dolphin:",
-                    numberOfReactions: 1,
-                    reactedUserIds: ["@hoge_hoge"]
-                },
-                {
-                    emojiId: ":dog:",
-                    numberOfReactions: 1,
-                    reactedUserIds: ["@hoge_hoge"]
-                },
-                {
-                    emojiId: ":thank_you:",
-                    numberOfReactions: 1,
-                    reactedUserIds: ["@hoge_hoge"]
-                }
-            ],
-            totalNumberOfReactions: 300
-        },
-        {
-            sequenceNumber: 9,
-            emoteId: "h",
-            userName: "りんご",
-            userId: "@apple",
-            emoteDatetime: "2025-01-08T09:00:48.000Z",
-            emoteReactionId: "h",
-            emoteEmojis: [
-                {
-                    emojiId: ":test:"
-                },
-                {
-                    emojiId: ":neko_meme_scream_baby_cat:"
-                }
-            ],
-            userAvatarUrl: "/userProfile/apple.png",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":melting_face:",
-                    numberOfReactions: 8,
-                    reactedUserIds: ["@apple"]
-                }
-            ],
-            totalNumberOfReactions: 8
-        },
-        {
-            sequenceNumber: 8,
-            emoteId: "g",
-            userName: "りんご",
-            userId: "@apple",
-            emoteDatetime: "2025-01-07T09:00:48.000Z",
-            emoteReactionId: "g",
-            emoteEmojis: [
-                {
-                    emojiId: ":dolphin:"
-                },
-                {
-                    emojiId: ":neko_meme_scream_baby_cat:"
-                }
-            ],
-            userAvatarUrl: "/userProfile/apple.png",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":lion:",
-                    numberOfReactions: 7,
-                    reactedUserIds: ["@apple"]
-                }
-            ],
-            totalNumberOfReactions: 7
-        },
-        {
-            sequenceNumber: 7,
-            emoteId: "f",
-            userName: "りんご",
-            userId: "@apple",
-            emoteDatetime: "2025-01-06T09:00:48.000Z",
-            emoteReactionId: "f",
-            emoteEmojis: [
-                {
-                    emojiId: ":bus:"
-                }
-            ],
-            userAvatarUrl: "/userProfile/apple.png",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":train:",
-                    numberOfReactions: 6,
-                    reactedUserIds: ["@apple"]
-                }
-            ],
-            totalNumberOfReactions: 6
-        },
-        {
-            sequenceNumber: 6,
-            emoteId: "e",
-            userName: "りんご",
-            userId: "@apple",
-            emoteDatetime: "2025-01-05T09:00:48.000Z",
-            emoteReactionId: "e",
-            emoteEmojis: [
-                {
-                    emojiId: ":frog:"
-                }
-            ],
-            userAvatarUrl: "/userProfile/apple.png",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":frog:",
-                    numberOfReactions: 5,
-                    reactedUserIds: ["@banana"]
-                }
-            ],
-            totalNumberOfReactions: 5
-        },
-        {
-            sequenceNumber: 5,
-            emoteId: "d",
-            userName: "りんご",
-            userId: "@apple",
-            emoteDatetime: "2025-01-04T09:00:48.000Z",
-            emoteReactionId: "d",
-            emoteEmojis: [
-                {
-                    emojiId: ":you_are_welcome:"
-                }
-            ],
-            userAvatarUrl: "/userProfile/apple.png",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":you_are_welcome:",
-                    numberOfReactions: 4,
-                    reactedUserIds: ["@banana"]
-                }
-            ],
-            totalNumberOfReactions: 4
-        },
-        {
-            sequenceNumber: 4,
-            emoteId: "c",
-            userName: "みかん",
-            userId: "@orange",
-            emoteDatetime: "2025-01-03T09:00:48.000Z",
-            emoteReactionId: "c",
-            emoteEmojis: [
-                {
-                    emojiId: ":ant:"
-                }
-            ],
-            userAvatarUrl: "/userProfile/orange.png",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":ant:",
-                    numberOfReactions: 3,
-                    reactedUserIds: ["@banana"]
-                }
-            ],
-            totalNumberOfReactions: 3
-        },
-        {
-            sequenceNumber: 3,
-            emoteId: "b",
-            userName: "みかん",
-            userId: "@orange",
-            emoteDatetime: "2025-01-02T09:00:48.000Z",
-            emoteReactionId: "b",
-            emoteEmojis: [
-                {
-                    emojiId: ":bear:"
-                }
-            ],
-            userAvatarUrl: "/userProfile/orange.png",
-            emoteReactionEmojis: [
-                {
-                    emojiId: ":happyhappyhappy:",
-                    numberOfReactions: 2,
-                    reactedUserIds: ["@banana"]
-                }
-            ],
-            totalNumberOfReactions: 2
-        },
-        {
-            sequenceNumber: 2,
-            emoteId: "a",
-            userName: "みかん",
-            userId: "@orange",
-            emoteDatetime: "2025-01-01T09:00:48.000Z",
-            emoteReactionId: "a",
-            emoteEmojis: [
-                {
-                    emojiId: ":snake:"
-                },
-                {
-                    emojiId: ":dog:"
-                }
-            ],
-            userAvatarUrl: "/userProfile/orange.png",
-            emoteReactionEmojis: [],
-            totalNumberOfReactions: 0
+    useEffect(() => {
+        if (isError && error) {
+            handleErrors(JSON.parse(error.message));
         }
-    ];
+        if (isUserInfoError && userInfoError) {
+            handleErrors(JSON.parse(userInfoError.message));
+        }
+        if (isFetchingMoreEmotesError && fetchingMoreEmotesError) {
+            handleErrors(JSON.parse(fetchingMoreEmotesError.message));
+            window.scrollTo(0, 0);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isError, error, isUserInfoError, userInfoError, isFetchingMoreEmotesError, fetchingMoreEmotesError]);
+
+    useEffect(() => {
+        if (data) {
+            setEmotes(data.emotes);
+        }
+    }, [data]);
+
+    useEffect(() => {
+        if (moreEmotes && moreEmotes.data && moreEmotes.data.emotes.length > 0) {
+            setEmotes([...emotes, ...moreEmotes.data.emotes]);
+        } else if (moreEmotes && moreEmotes.data && moreEmotes.data.emotes.length === 0) {
+            setHasLastEmoteFetched(true);
+        }
+    }, [moreEmotes]);
+
+    useEffect(() => {
+        useEmoteStore.getState().cleanAllData();
+    }, []);
 
     return (
         <>
             <div className="p-4 mt-1">
-                <UserProfile userInfo={userInfo} />
+                {(isError || isUserInfoError || isFetchingMoreEmotesError) && (
+                    <DisplayErrorMessage error={handledError}></DisplayErrorMessage>
+                )}
+                {userInfo && <UserProfile userInfo={userInfo} />}
                 <FollowButtonSection
                     totalNumberOfFollowers={100}
                     onFollowersClickAction={onFollowersButtonClick}
                     totalNumberOfFollowing={200}
                     onFollowingClickAction={onFollowingButtonClick}
                 />
-                <UserSukiSection userSukiEmojis={[":tiger:", ":snake:", ":hello:", ":ishikawa:"]} />
+                <UserSukiSection userSukiEmojis={[":rat:", ":cow:", ":tiger:", ":rabbit:"]} />
                 <ShadowDivider />
             </div>
-            <WordlessEmotes emotes={emotes}></WordlessEmotes>
+            {isPending && <LoadingSpin />}
+            {!isError &&
+                !isPending &&
+                (emotes.length > 0 ? (
+                    <>
+                        <WordlessEmotes emotes={emotes}></WordlessEmotes>
+                        <EndOfEmotes
+                            hasLastEmoteFetched={hasLastEmoteFetched}
+                            isFetchingMoreEmotes={isFetchingMoreEmotes}
+                            loadMoreEmotesAction={loadMoreEmotes}
+                        />
+                    </>
+                ) : (
+                    <NoEmoteText />
+                ))}
             <FixedFloatingFollowButton isFollowing={false} />
             {isFollowersDrawerOpen && (
                 <FollowUsersDrawer

@@ -1,12 +1,13 @@
 // NOTE: vitestSetupは他のimportよりも先に呼び出す必要がある
 // NOTE: import順が変わるとモックが効かなくなるため、必ずこの位置に記述する
-import { vitestSetup } from "./vitest.setup";
+import { vitestSetup } from "../../vitest.setup";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
-import Home from "@/app/(main)/page";
+import { ReactRequest } from "@/@types";
+import UserPage from "@/app/(main)/user/[userId]/page";
 import {
     ErrorBoundary,
     PageTemplate,
@@ -14,7 +15,6 @@ import {
     UserInfoTemplate,
     WebSocketProvider
 } from "@/components/template";
-import { ReactRequest } from "@/@types";
 import { useEmoteStore } from "@/store";
 
 vitestSetup();
@@ -33,6 +33,9 @@ const mockedUseRouter = vi.fn();
 vi.mock("next/navigation", () => ({
     useRouter: () => ({
         push: mockedUseRouter
+    }),
+    useParams: () => ({
+        userId: "@a"
     })
 }));
 vi.mock("jwt-decode", () => ({
@@ -55,7 +58,7 @@ const server = setupServer(
                       {
                           sequenceNumber: 16,
                           emoteId: "e",
-                          userName: "A",
+                          userName: "User A",
                           userId: "@a",
                           emoteDatetime: "2021-01-01T09:00:00.000Z",
                           emoteReactionId: "reaction-e",
@@ -77,8 +80,8 @@ const server = setupServer(
                       {
                           sequenceNumber: 15,
                           emoteId: "f",
-                          userName: "B",
-                          userId: "@b",
+                          userName: "User A",
+                          userId: "@a",
                           emoteDatetime: "2020-01-01T09:12:30.000Z",
                           emoteReactionId: "reaction-f",
                           emoteEmojis: [
@@ -99,8 +102,8 @@ const server = setupServer(
                       {
                           sequenceNumber: 14,
                           emoteId: "g",
-                          userName: "C",
-                          userId: "@c",
+                          userName: "User A",
+                          userId: "@a",
                           emoteDatetime: "2019-01-01T09:00:00.000Z",
                           emoteReactionId: "reaction-g",
                           emoteEmojis: [
@@ -115,8 +118,8 @@ const server = setupServer(
                       {
                           sequenceNumber: 13,
                           emoteId: "h",
-                          userName: "D",
-                          userId: "@d",
+                          userName: "User A",
+                          userId: "@a",
                           emoteDatetime: "2018-01-01T09:00:00.000Z",
                           emoteReactionId: "reaction-h",
                           emoteEmojis: [
@@ -139,7 +142,7 @@ const server = setupServer(
                       {
                           sequenceNumber: 20,
                           emoteId: "a",
-                          userName: "A",
+                          userName: "User A",
                           userId: "@a",
                           emoteDatetime: "2025-01-01T09:00:00.000Z",
                           emoteReactionId: "reaction-a",
@@ -175,8 +178,8 @@ const server = setupServer(
                       {
                           sequenceNumber: 19,
                           emoteId: "b",
-                          userName: "B",
-                          userId: "@b",
+                          userName: "User A",
+                          userId: "@a",
                           emoteDatetime: "2024-01-01T09:12:30.000Z",
                           emoteReactionId: "reaction-b",
                           emoteEmojis: [
@@ -208,8 +211,8 @@ const server = setupServer(
                       {
                           sequenceNumber: 18,
                           emoteId: "c",
-                          userName: "C",
-                          userId: "@c",
+                          userName: "User A",
+                          userId: "@a",
                           emoteDatetime: "2023-01-01T09:00:00.000Z",
                           emoteReactionId: "reaction-c",
                           emoteEmojis: [
@@ -224,8 +227,8 @@ const server = setupServer(
                       {
                           sequenceNumber: 17,
                           emoteId: "d",
-                          userName: "D",
-                          userId: "@d",
+                          userName: "User A",
+                          userId: "@a",
                           emoteDatetime: "2022-01-01T09:00:00.000Z",
                           emoteReactionId: "reaction-d",
                           emoteEmojis: [
@@ -324,7 +327,7 @@ const rendering = (): void => {
                 <UserInfoTemplate>
                     <WebSocketProvider>
                         <PageTemplate>
-                            <Home />
+                            <UserPage />
                         </PageTemplate>
                     </WebSocketProvider>
                 </UserInfoTemplate>
@@ -334,209 +337,251 @@ const rendering = (): void => {
 };
 describe("初期表示時", () => {
     describe("正常系", () => {
-        test("エモートをサーバから受け取った数表示する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(screen.getAllByRole("listitem").length).toBe(4);
-            });
-        });
-
-        test("投稿者の名前を表示する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(screen.getByText("A")).toBeTruthy();
-                expect(screen.getByText("B")).toBeTruthy();
-                expect(screen.getByText("C")).toBeTruthy();
-            });
-        });
-
-        test("投稿者のアカウント名を表示する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(screen.getByText("@a")).toBeTruthy();
-                expect(screen.getByText("@b")).toBeTruthy();
-                expect(screen.getByText("@c")).toBeTruthy();
-            });
-        });
-
-        test("投稿日時を表示する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(screen.getByText("2025-01-01 18:00:00")).toBeTruthy();
-                expect(screen.getByText("2024-01-01 18:12:30")).toBeTruthy();
-                expect(screen.getByText("2023-01-01 18:00:00")).toBeTruthy();
-            });
-        });
-
-        test("絵文字を表示する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(within(screen.getByRole("listitem", { name: "a" })).getAllByLabelText(":rabbit:").length).toBe(
-                    4
-                );
-                expect(
-                    within(screen.getByRole("listitem", { name: "b" })).getAllByLabelText(":smiling_face:").length
-                ).toBe(3);
-                expect(within(screen.getByRole("listitem", { name: "c" })).getAllByLabelText(":rabbit:").length).toBe(
-                    1
-                );
-                expect(within(screen.getByRole("listitem", { name: "d" })).getAllByLabelText(":test:").length).toBe(1);
-            });
-        });
-
-        test("投稿者のプロフィール画像を表示する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(screen.getByAltText("AProfileImage")).toBeTruthy();
-                expect(screen.getByAltText("BProfileImage")).toBeTruthy();
-                expect(screen.getByAltText("BProfileImage")).toBeTruthy();
-            });
-        });
-
-        test("ユーザー情報を取得する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(mockFetchUserInfo).toHaveBeenCalled();
-            });
-        });
-
-        describe("リアクションの総件数を表示する時", () => {
-            test("リアクションの総件数が0件の時、何も表示しない", async () => {
+        describe("ユーザー情報表示部分", () => {
+            test("ユーザーのプロフィール画像を表示する", async () => {
                 rendering();
+                const userProfileImage = await screen.findByAltText("User Aのトッププロフィール画像");
 
-                // NOTE: ＋ボタンが1つだけ表示される
                 await waitFor(() => {
-                    expect(within(screen.getByRole("listitem", { name: "c" })).getAllByRole("button").length).toBe(1);
+                    expect(userProfileImage).toBeTruthy();
                 });
             });
 
-            test("リアクションの総件数が1件以上の時、リアクション総件数ボタンを表示する", async () => {
+            test("ユーザーの名前を表示する", async () => {
+                rendering();
+                const userName = await screen.findByText("User A");
+
+                await waitFor(() => {
+                    expect(userName).toBeTruthy();
+                });
+            });
+
+            test("ユーザーのIDを表示する", async () => {
+                rendering();
+                const userId = await screen.findByText("@a");
+
+                await waitFor(() => {
+                    expect(userId).toBeTruthy();
+                });
+            });
+
+            test.todo("ユーザーのフォロー数を表示する");
+            test.todo("ユーザーのフォロワー数を表示する");
+            test.todo("ユーザースキ（絵文字）を表示する");
+        });
+
+        describe("エモート表示部分", () => {
+            test("エモートをサーバから受け取った数表示する", async () => {
                 rendering();
 
                 await waitFor(() => {
-                    expect(screen.getByRole("button", { name: "10 Reactions" })).toBeTruthy();
-                    expect(screen.getByRole("button", { name: "200 Reactions" })).toBeTruthy();
+                    expect(screen.getAllByRole("listitem").length).toBe(4);
                 });
             });
-        });
 
-        describe("リアクションボタンを表示する時", () => {
-            test("リアクションの件数が99件以下の時、そのまま件数を表示する", async () => {
+            test("投稿者の名前を表示する", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(screen.getByText("User A")).toBeTruthy();
+                });
+            });
+
+            test("投稿者のアカウント名を表示する", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(screen.getByText("@a")).toBeTruthy();
+                });
+            });
+
+            test("投稿日時を表示する", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(screen.getByText("2025-01-01 18:00:00")).toBeTruthy();
+                    expect(screen.getByText("2024-01-01 18:12:30")).toBeTruthy();
+                    expect(screen.getByText("2023-01-01 18:00:00")).toBeTruthy();
+                });
+            });
+
+            test("絵文字を表示する", async () => {
                 rendering();
 
                 await waitFor(() => {
                     expect(
-                        within(screen.getByRole("button", { name: "reaction-a:party_parrot:" })).getByText("10")
-                    ).toBeTruthy();
-                });
-            });
-
-            test("リアクションの件数が99件以上の時、99+を表示する", async () => {
-                rendering();
-
-                await waitFor(() => {
+                        within(screen.getByRole("listitem", { name: "a" })).getAllByLabelText(":rabbit:").length
+                    ).toBe(4);
                     expect(
-                        within(screen.getByRole("button", { name: "reaction-b:cow:" })).getByText("99+")
-                    ).toBeTruthy();
-                });
-            });
-
-            test("リアクションが0件の時、リアクションボタンを表示しない", async () => {
-                rendering();
-
-                await waitFor(() => {
-                    expect(screen.queryByRole("button", { name: "reaction-d:test:" })).toBeFalsy();
-                });
-            });
-
-            test("リアクションがないとき、何も表示しない", async () => {
-                rendering();
-
-                await waitFor(() => {
-                    // NOTE: プラスボタンがあるため個数は1になる
-                    expect(within(screen.getByRole("listitem", { name: "c" })).getAllByRole("button").length).toBe(1);
-                });
-            });
-
-            test("ユーザーが既にリアクション済の時、リアクションボタンを「押下済み」の状態にする", async () => {
-                rendering();
-
-                await waitFor(() => {
+                        within(screen.getByRole("listitem", { name: "b" })).getAllByLabelText(":smiling_face:").length
+                    ).toBe(3);
                     expect(
-                        within(screen.getByRole("listitem", { name: "b" })).getByRole("button", {
-                            name: "reaction-b:tiger:",
-                            pressed: true
-                        })
-                    ).toBeTruthy();
+                        within(screen.getByRole("listitem", { name: "c" })).getAllByLabelText(":rabbit:").length
+                    ).toBe(1);
+                    expect(within(screen.getByRole("listitem", { name: "d" })).getAllByLabelText(":test:").length).toBe(
+                        1
+                    );
                 });
             });
 
-            test("ユーザーがリアクション済みでない時、リアクションボタンを「押下済み」の状態にしない", async () => {
+            test("投稿者のプロフィール画像を表示する", async () => {
                 rendering();
 
                 await waitFor(() => {
-                    expect(
-                        within(screen.getByRole("listitem", { name: "a" })).getByRole("button", {
-                            name: "reaction-a:party_parrot:",
-                            pressed: false
-                        })
-                    ).toBeTruthy();
+                    expect(screen.getAllByAltText("User AProfileImage").length).toBe(4);
                 });
             });
-        });
 
-        test("もっと見るボタンを表示する", async () => {
-            rendering();
+            test("ユーザー情報を取得する", async () => {
+                rendering();
 
-            await waitFor(() => {
-                expect(screen.getByRole("button", { name: "search もっと見る" })).toBeTruthy();
+                await waitFor(() => {
+                    expect(mockFetchUserInfo).toHaveBeenCalled();
+                });
             });
-        });
 
-        test("投稿ボタンを表示する", async () => {
-            rendering();
+            describe("リアクションの総件数を表示する時", () => {
+                test("リアクションの総件数が0件の時、何も表示しない", async () => {
+                    rendering();
 
-            await waitFor(() => {
-                expect(screen.getByRole("button", { name: "エモート投稿ボタン" })).toBeTruthy();
+                    // NOTE: ＋ボタンが1つだけ表示される
+                    await waitFor(() => {
+                        expect(within(screen.getByRole("listitem", { name: "c" })).getAllByRole("button").length).toBe(
+                            1
+                        );
+                    });
+                });
+
+                test("リアクションの総件数が1件以上の時、リアクション総件数ボタンを表示する", async () => {
+                    rendering();
+
+                    await waitFor(() => {
+                        expect(screen.getByRole("button", { name: "10 Reactions" })).toBeTruthy();
+                        expect(screen.getByRole("button", { name: "200 Reactions" })).toBeTruthy();
+                    });
+                });
             });
-        });
 
-        test("ローディングスピナーを表示する", async () => {
-            rendering();
+            describe("リアクションボタンを表示する時", () => {
+                test("リアクションの件数が99件以下の時、そのまま件数を表示する", async () => {
+                    rendering();
 
-            await waitFor(() => {
-                expect(screen.getByRole("img", { name: "loading" })).toBeTruthy();
+                    await waitFor(() => {
+                        expect(
+                            within(screen.getByRole("button", { name: "reaction-a:party_parrot:" })).getByText("10")
+                        ).toBeTruthy();
+                    });
+                });
+
+                test("リアクションの件数が99件以上の時、99+を表示する", async () => {
+                    rendering();
+
+                    await waitFor(() => {
+                        expect(
+                            within(screen.getByRole("button", { name: "reaction-b:cow:" })).getByText("99+")
+                        ).toBeTruthy();
+                    });
+                });
+
+                test("リアクションが0件の時、リアクションボタンを表示しない", async () => {
+                    rendering();
+
+                    await waitFor(() => {
+                        expect(screen.queryByRole("button", { name: "reaction-d:test:" })).toBeFalsy();
+                    });
+                });
+
+                test("リアクションがないとき、何も表示しない", async () => {
+                    rendering();
+
+                    await waitFor(() => {
+                        // NOTE: プラスボタンがあるため個数は1になる
+                        expect(within(screen.getByRole("listitem", { name: "c" })).getAllByRole("button").length).toBe(
+                            1
+                        );
+                    });
+                });
+
+                test("ユーザーが既にリアクション済の時、リアクションボタンを「押下済み」の状態にする", async () => {
+                    rendering();
+
+                    await waitFor(() => {
+                        expect(
+                            within(screen.getByRole("listitem", { name: "b" })).getByRole("button", {
+                                name: "reaction-b:tiger:",
+                                pressed: true
+                            })
+                        ).toBeTruthy();
+                    });
+                });
+
+                test("ユーザーがリアクション済みでない時、リアクションボタンを「押下済み」の状態にしない", async () => {
+                    rendering();
+
+                    await waitFor(() => {
+                        expect(
+                            within(screen.getByRole("listitem", { name: "a" })).getByRole("button", {
+                                name: "reaction-a:party_parrot:",
+                                pressed: false
+                            })
+                        ).toBeTruthy();
+                    });
+                });
+            });
+
+            test("もっと見るボタンを表示する", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(screen.getByRole("button", { name: "search もっと見る" })).toBeTruthy();
+                });
+            });
+
+            test("ローディングスピナーを表示する", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(screen.getByRole("img", { name: "loading" })).toBeTruthy();
+                });
             });
         });
     });
 
     describe("異常系", () => {
-        test.for([
+        describe.each([
             ["EMT-01", "不正なリクエストです。もう一度やり直してください。"],
             ["EMT-02", "不正なリクエストです。もう一度やり直してください。"],
             ["EMT-03", "接続できません。もう一度やり直してください。"],
             ["EMT-04", "接続できません。もう一度やり直してください。"],
             ["EMT-05", "接続できません。もう一度やり直してください。"]
-        ])("サーバから%sエラーが返却された時、エラーメッセージ「%s」を表示する", async ([errorCode, errorMessage]) => {
-            server.use(
-                http.get("http://localhost:3000/api/emote", () => {
-                    return HttpResponse.json({ data: errorCode }, { status: 400 });
-                })
-            );
+        ])("サーバから%sエラーが返却された時", (errorCode, errorMessage) => {
+            beforeEach(() => {
+                server.use(
+                    http.get("http://localhost:3000/api/emote", () => {
+                        return HttpResponse.json({ data: errorCode }, { status: 400 });
+                    })
+                );
+                rendering();
+            });
 
-            rendering();
+            test(`エラーメッセージ「${errorMessage}」を表示する`, async () => {
+                await waitFor(() => {
+                    const alertComponent = screen.getByRole("alert");
+                    expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                    expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                });
+            });
 
-            await waitFor(() => {
-                const alertComponent = screen.getByRole("alert");
-                expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
-                expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+            test("もっと見るボタンを表示しない", async () => {
+                await waitFor(() => {
+                    expect(screen.queryByRole("button", { name: "search もっと見る" })).toBeFalsy();
+                });
+            });
+
+            test("「最後のエモートです」を表示しない", async () => {
+                await waitFor(() => {
+                    expect(screen.queryByText("最後のエモートです")).toBeFalsy();
+                });
             });
         });
 
@@ -551,6 +596,29 @@ describe("初期表示時", () => {
                 expect(mockedUseRouter).toHaveBeenCalledWith("/auth/login");
             });
         });
+
+        test.each([
+            ["USE-01", "不正なリクエストです。もう一度やり直してください。"],
+            ["USE-02", "不正なリクエストです。もう一度やり直してください。"],
+            ["USE-03", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+        ])(
+            "ユーザー情報取得APIに%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+            async (errorCode, errorMessage) => {
+                server.use(
+                    http.get("http://localhost:3000/api/user/:userId", () => {
+                        return HttpResponse.json({ data: errorCode }, { status: 400 });
+                    })
+                );
+
+                rendering();
+
+                await waitFor(() => {
+                    const alertComponent = screen.getByRole("alert");
+                    expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                    expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                });
+            }
+        );
     });
 });
 
@@ -689,7 +757,7 @@ describe("リアクションボタンをクリックした時", () => {
 test("ユーザー名をクリックした時、ユーザーページに遷移する", async () => {
     rendering();
 
-    await user.click(await screen.findByText("A"));
+    await user.click(within(await screen.findByRole("listitem", { name: "a" })).getByText("User A"));
 
     await waitFor(() => {
         expect(mockedUseRouter).toHaveBeenCalledWith("/user/@a");
@@ -699,7 +767,7 @@ test("ユーザー名をクリックした時、ユーザーページに遷移�
 test("ユーザーIDをクリックした時、ユーザーページに遷移する", async () => {
     rendering();
 
-    await user.click(await screen.findByText("@a"));
+    await user.click(within(await screen.findByRole("listitem", { name: "a" })).getByText("@a"));
 
     await waitFor(() => {
         expect(mockedUseRouter).toHaveBeenCalledWith("/user/@a");
@@ -709,7 +777,7 @@ test("ユーザーIDをクリックした時、ユーザーページに遷移す
 test("ユーザーアバターをクリックした時、ユーザーページに遷移する", async () => {
     rendering();
 
-    await user.click(await screen.findByAltText("AProfileImage"));
+    await user.click(within(await screen.findByRole("listitem", { name: "a" })).getByAltText("User AProfileImage"));
 
     await waitFor(() => {
         expect(mockedUseRouter).toHaveBeenCalledWith("/user/@a");
@@ -978,18 +1046,6 @@ describe("リアクション追加ボタンをクリックした時", () => {
     });
 });
 
-describe("投稿ボタンをクリックした時", () => {
-    test("投稿ボタンをクリックした時、投稿モーダルが表示される", async () => {
-        rendering();
-
-        await user.click(screen.getByRole("button", { name: "エモート投稿ボタン" }));
-
-        await waitFor(() => {
-            expect(mockedUseRouter).toHaveBeenCalledWith("/post");
-        });
-    });
-});
-
 describe("もっと見るボタンをクリックした時", () => {
     test("エモートを取得中、ボタンにローディングが表示される", async () => {
         rendering();
@@ -999,7 +1055,7 @@ describe("もっと見るボタンをクリックした時", () => {
             })
         );
 
-        await user.click(screen.getByRole("button", { name: "search もっと見る" }));
+        await user.click(await screen.findByRole("button", { name: "search もっと見る" }));
 
         await waitFor(() => {
             expect(screen.getByRole("button", { name: "loading もっと見る" })).toBeTruthy();
@@ -1010,7 +1066,7 @@ describe("もっと見るボタンをクリックした時", () => {
         describe("取得したエモートが1件以上だった時", () => {
             beforeEach(async () => {
                 rendering();
-                await user.click(screen.getByRole("button", { name: "search もっと見る" }));
+                await user.click(await screen.findByRole("button", { name: "search もっと見る" }));
             });
 
             test("取得したエモートを表示する", async () => {
@@ -1037,7 +1093,7 @@ describe("もっと見るボタンをクリックした時", () => {
                     })
                 );
 
-                await user.click(screen.getByRole("button", { name: "search もっと見る" }));
+                await user.click(await screen.findByRole("button", { name: "search もっと見る" }));
             });
 
             test("「最後のエモートです」を表示する", async () => {
@@ -1055,70 +1111,87 @@ describe("もっと見るボタンをクリックした時", () => {
     });
 
     describe("エモート取得失敗時", () => {
-        test.for([
+        describe.each([
             ["EMT-01", "不正なリクエストです。もう一度やり直してください。"],
             ["EMT-02", "不正なリクエストです。もう一度やり直してください。"],
             ["EMT-03", "接続できません。もう一度やり直してください。"],
             ["EMT-04", "接続できません。もう一度やり直してください。"],
             ["EMT-05", "接続できません。もう一度やり直してください。"]
-        ])("サーバから%sエラーが返却された時、エラーメッセージ「%s」を表示する", async ([errorCode, errorMessage]) => {
-            rendering();
-            server.use(
-                http.get("http://localhost:3000/api/emote", ({ request }) => {
-                    const url = new URL(request.url);
-                    const hasSequence = url.searchParams.has("sequenceNumberStartOfSearch");
-                    if (hasSequence) {
-                        return HttpResponse.json({ data: errorCode }, { status: 400 });
-                    }
-                    return HttpResponse.json({
-                        emotes: [
-                            {
-                                sequenceNumber: 20,
-                                emoteId: "a",
-                                userName: "A",
-                                userId: "@a",
-                                emoteDatetime: "2025-01-01T09:00:00.000Z",
-                                emoteReactionId: "reaction-a",
-                                emoteEmojis: [
-                                    {
-                                        emojiId: ":rabbit:"
-                                    },
-                                    {
-                                        emojiId: ":rabbit:"
-                                    },
-                                    {
-                                        emojiId: ":rabbit:"
-                                    },
-                                    {
-                                        emojiId: ":rabbit:"
-                                    }
-                                ],
-                                userAvatarUrl: "https://image.test/a.png",
-                                emoteReactionEmojis: [
-                                    {
-                                        emojiId: ":party_parrot:",
-                                        numberOfReactions: 10,
-                                        reactedUserIds: ["@a", "@b"]
-                                    },
-                                    {
-                                        emojiId: ":cow:",
-                                        numberOfReactions: 2,
-                                        reactedUserIds: ["@c"]
-                                    }
-                                ],
-                                totalNumberOfReactions: 10
-                            }
-                        ]
-                    });
-                })
-            );
+        ])("サーバから%sエラーが返却された時", (errorCode, errorMessage) => {
+            beforeEach(() => {
+                rendering();
+            });
 
-            await user.click(screen.getByRole("button", { name: "search もっと見る" }));
+            test(`エラーメッセージ「${errorMessage}」を表示する`, async () => {
+                server.use(
+                    http.get("http://localhost:3000/api/emote", ({ request }) => {
+                        const url = new URL(request.url);
+                        const hasSequence = url.searchParams.has("sequenceNumberStartOfSearch");
+                        if (hasSequence) {
+                            return HttpResponse.json({ data: errorCode }, { status: 400 });
+                        }
+                        return HttpResponse.json({
+                            emotes: [
+                                {
+                                    sequenceNumber: 20,
+                                    emoteId: "a",
+                                    userName: "User A",
+                                    userId: "@a",
+                                    emoteDatetime: "2025-01-01T09:00:00.000Z",
+                                    emoteReactionId: "reaction-a",
+                                    emoteEmojis: [
+                                        {
+                                            emojiId: ":rabbit:"
+                                        },
+                                        {
+                                            emojiId: ":rabbit:"
+                                        },
+                                        {
+                                            emojiId: ":rabbit:"
+                                        },
+                                        {
+                                            emojiId: ":rabbit:"
+                                        }
+                                    ],
+                                    userAvatarUrl: "https://image.test/a.png",
+                                    emoteReactionEmojis: [
+                                        {
+                                            emojiId: ":party_parrot:",
+                                            numberOfReactions: 10,
+                                            reactedUserIds: ["@a", "@b"]
+                                        },
+                                        {
+                                            emojiId: ":cow:",
+                                            numberOfReactions: 2,
+                                            reactedUserIds: ["@c"]
+                                        }
+                                    ],
+                                    totalNumberOfReactions: 10
+                                }
+                            ]
+                        });
+                    })
+                );
 
-            await waitFor(() => {
-                const alertComponent = screen.getByRole("alert");
-                expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
-                expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                await user.click(await screen.findByRole("button", { name: "search もっと見る" }));
+
+                await waitFor(() => {
+                    const alertComponent = screen.getByRole("alert");
+                    expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                    expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                });
+            });
+
+            test("もっと見るボタンを表示する", async () => {
+                await waitFor(() => {
+                    expect(screen.getByRole("button", { name: "search もっと見る" })).toBeTruthy();
+                });
+            });
+
+            test("「最後のエモートです」を表示しない", async () => {
+                await waitFor(() => {
+                    expect(screen.queryByText("最後のエモートです")).toBeFalsy();
+                });
             });
         });
     });

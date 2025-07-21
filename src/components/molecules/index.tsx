@@ -1,6 +1,7 @@
 import { EmojiButtonBlocksByType } from "@/components/molecules/EmojiButtonBlocksByType";
 import { EmotePostEmojiButtonBlocksByType } from "@/components/molecules/EmotePostEmojiButtonBlocksByType";
 import { EmojiSelectTabs } from "@/components/molecules/EmojiSelectTabs";
+import { EndOfEmotes } from "@/components/molecules/EndOfEmotes";
 import { FollowButtonSection } from "@/components/molecules/FollowButtonSection";
 import { FollowUsersDrawer } from "@/components/molecules/FollowUsersDrawer";
 import { PostEmoteEmojiSelectTabs } from "@/components/molecules/PostEmoteEmojiSelectTabs";
@@ -17,6 +18,7 @@ export {
     EmojiButtonBlocksByType,
     EmojiSelectTabs,
     EmotePostEmojiButtonBlocksByType,
+    EndOfEmotes,
     FollowButtonSection,
     FollowUsersDrawer,
     PageHeader,
