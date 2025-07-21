@@ -285,6 +285,12 @@ const server = setupServer(
                 });
         }
     }),
+    http.get("http://localhost:3000/api/userSuki/:userId", () => {
+        return HttpResponse.json({
+            userId: "@a",
+            userSuki: [":rat:", ":cow:", ":tiger:", ":rabbit:"]
+        });
+    }),
     http.get("http://localhost:3000/api/userSub/:userSub", () => {
         mockFetchUserInfo();
         return HttpResponse.json({
@@ -367,7 +373,20 @@ describe("初期表示時", () => {
 
             test.todo("ユーザーのフォロー数を表示する");
             test.todo("ユーザーのフォロワー数を表示する");
-            test.todo("ユーザースキ（絵文字）を表示する");
+            test("ユーザースキ（絵文字）を表示する", async () => {
+                rendering();
+                const userSukiEmoji1 = await screen.findByRole("listitem", { name: "ユーザーが好きなもの：:rat:" });
+                const userSukiEmoji2 = await screen.findByRole("listitem", { name: "ユーザーが好きなもの：:cow:" });
+                const userSukiEmoji3 = await screen.findByRole("listitem", { name: "ユーザーが好きなもの：:tiger:" });
+                const userSukiEmoji4 = await screen.findByRole("listitem", { name: "ユーザーが好きなもの：:rabbit:" });
+
+                await waitFor(() => {
+                    expect(userSukiEmoji1).toBeTruthy();
+                    expect(userSukiEmoji2).toBeTruthy();
+                    expect(userSukiEmoji3).toBeTruthy();
+                    expect(userSukiEmoji4).toBeTruthy();
+                });
+            });
         });
 
         describe("エモート表示部分", () => {
@@ -1070,8 +1089,10 @@ describe("もっと見るボタンをクリックした時", () => {
             });
 
             test("取得したエモートを表示する", async () => {
+                const emoteList = await screen.findByRole("list", { name: "エモート一覧" });
+
                 await waitFor(() => {
-                    expect(screen.getAllByRole("listitem").length).toBe(8);
+                    expect(within(emoteList).getAllByRole("listitem").length).toBe(8);
                 });
             });
 
