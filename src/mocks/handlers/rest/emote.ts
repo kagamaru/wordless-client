@@ -5,7 +5,7 @@ const s3Url = process.env.NEXT_PUBLIC_S3_URL ?? "";
 export const emoteHandlers = [
     http.get("http://localhost:3000/api/emote", ({ request }) => {
         const urlSearchParams = new URL(request.url).searchParams;
-        if (!urlSearchParams.get("userId") || !urlSearchParams.get("numberOfCompletedAcquisitionsCompleted")) {
+        if (!urlSearchParams.get("numberOfCompletedAcquisitionsCompleted")) {
             return HttpResponse.json(
                 {
                     data: "EMT-01"
