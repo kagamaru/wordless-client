@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { User } from "@/@types";
+import { User, UserSukiEmojis } from "@/@types";
 import { Emote, FetchEmotesResponse } from "@/class";
 import {
     DisplayErrorMessage,
@@ -55,6 +55,22 @@ export default function UserPage() {
     });
 
     const {
+        data: userSukiResponse,
+        isError: isUserSukiError,
+        error: userSukiError
+    } = useQuery({
+        queryKey: ["userSuki"],
+        queryFn: async () => {
+            const response = await fetchNextjsServer<{ userSuki: UserSukiEmojis }>(
+                `/api/userSuki/${userId}`,
+                getHeader()
+            );
+            return response.data;
+        },
+        retry: 0
+    });
+
+    const {
         data: userInfo,
         isError: isUserInfoError,
         error: userInfoError
@@ -97,18 +113,31 @@ export default function UserPage() {
     };
 
     useEffect(() => {
-        if (isError && error) {
-            handleErrors(JSON.parse(error.message));
-        }
-        if (isUserInfoError && userInfoError) {
-            handleErrors(JSON.parse(userInfoError.message));
-        }
-        if (isFetchingMoreEmotesError && fetchingMoreEmotesError) {
-            handleErrors(JSON.parse(fetchingMoreEmotesError.message));
-            window.scrollTo(0, 0);
-        }
+        const errors = [
+            { isError: isError, error: error },
+            { isError: isUserInfoError, error: userInfoError },
+            { isError: isUserSukiError, error: userSukiError },
+            { isError: isFetchingMoreEmotesError, error: fetchingMoreEmotesError }
+        ];
+
+        errors.forEach(({ isError, error }) => {
+            if (isError && error) {
+                handleErrors(JSON.parse(error.message));
+            }
+        });
+
+        window.scrollTo(0, 0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isError, error, isUserInfoError, userInfoError, isFetchingMoreEmotesError, fetchingMoreEmotesError]);
+    }, [
+        isError,
+        error,
+        isUserInfoError,
+        userInfoError,
+        isUserSukiError,
+        userSukiError,
+        isFetchingMoreEmotesError,
+        fetchingMoreEmotesError
+    ]);
 
     useEffect(() => {
         if (data) {
@@ -131,7 +160,7 @@ export default function UserPage() {
     return (
         <>
             <div className="p-4 mt-1">
-                {(isError || isUserInfoError || isFetchingMoreEmotesError) && (
+                {(isError || isUserInfoError || isUserSukiError || isFetchingMoreEmotesError) && (
                     <DisplayErrorMessage error={handledError}></DisplayErrorMessage>
                 )}
                 {userInfo && <UserProfile userInfo={userInfo} />}
@@ -141,7 +170,7 @@ export default function UserPage() {
                     totalNumberOfFollowing={200}
                     onFollowingClickAction={onFollowingButtonClick}
                 />
-                <UserSukiSection userSukiEmojis={[":rat:", ":cow:", ":tiger:", ":rabbit:"]} />
+                <UserSukiSection userSukiEmojis={userSukiResponse?.userSuki ?? []} />
                 <ShadowDivider />
             </div>
             {isPending && <LoadingSpin />}

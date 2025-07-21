@@ -13,5 +13,9 @@ export function WordlessEmotes({ emotes }: Props) {
             </div>
         );
     });
-    return <div role="list">{emotesElement}</div>;
+    return (
+        <div role="list" aria-label="エモート一覧">
+            {emotesElement}
+        </div>
+    );
 }
