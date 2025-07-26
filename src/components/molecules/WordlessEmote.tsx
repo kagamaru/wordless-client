@@ -30,11 +30,12 @@ type Props = {
         totalNumberOfReactions: number;
         emoteReactionEmojis: EmoteReactionEmojiWithNumber[];
     };
+    onReactionClickAction: (() => Promise<void>) | undefined;
 };
 
 dayjs.locale("ja");
 
-export function WordlessEmote({ emote }: Props) {
+export function WordlessEmote({ emote, onReactionClickAction }: Props) {
     const isMobile = useIsMobile();
     const router = useRouter();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -112,7 +113,7 @@ export function WordlessEmote({ emote }: Props) {
                         emoteReactionEmojiWithNumber={emoteReactionEmoji}
                         emoteReactionId={emote.emoteReactionId}
                         isReacted={isAlreadyReacted}
-                        onClickAction={() => {
+                        onClickAction={async () => {
                             if (!userId) {
                                 return;
                             }
@@ -123,6 +124,9 @@ export function WordlessEmote({ emote }: Props) {
                                 operation: isAlreadyReacted ? "decrement" : "increment",
                                 Authorization: localStorage.getItem("IdToken") ?? ""
                             });
+                            if (onReactionClickAction) {
+                                await onReactionClickAction();
+                            }
                         }}
                     ></EmoteReactionButton>
                 );
@@ -244,6 +248,7 @@ export function WordlessEmote({ emote }: Props) {
                     isOpen={isEmojiDialogOpen}
                     closeDialogAction={onEmojiDialogClose}
                     alreadyReactedEmojiIds={alreadyReactedEmojiIds}
+                    onReactionClickAction={onReactionClickAction}
                 />
             </div>
         </>

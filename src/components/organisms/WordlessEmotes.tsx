@@ -3,13 +3,14 @@ import { WordlessEmote } from "@/components/molecules";
 
 type Props = {
     emotes: Array<Emote>;
+    onReactionClickAction?: () => Promise<void>;
 };
 
-export function WordlessEmotes({ emotes }: Props) {
+export function WordlessEmotes({ emotes, onReactionClickAction }: Props) {
     const emotesElement = emotes?.map((emote) => {
         return (
             <div role="listitem" key={emote.emoteId} aria-label={emote.emoteId}>
-                <WordlessEmote emote={emote}></WordlessEmote>
+                <WordlessEmote emote={emote} onReactionClickAction={onReactionClickAction}></WordlessEmote>
             </div>
         );
     });
