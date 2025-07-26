@@ -33,6 +33,7 @@ export default function UserPage() {
     const [hasLastEmoteFetched, setHasLastEmoteFetched] = useState(false);
     const followerUserIds = ["@fuga_fuga", "@hoge_hoge", "@apple"];
     const followingUserIds = ["@hoge_hoge", "@apple", "@orange"];
+    let numberOfCompletedAcquisitionsCompleted = 10;
 
     const onFollowersButtonClick = () => {
         setIsFollowersDrawerOpen(true);
@@ -42,11 +43,17 @@ export default function UserPage() {
         setIsFollowingDrawerOpen(true);
     };
 
-    const { data, isError, error, isPending } = useQuery({
-        queryKey: ["emotes"],
+    const {
+        data,
+        refetch: refetchEmotes,
+        isError,
+        error,
+        isPending
+    } = useQuery({
+        queryKey: ["emotes", numberOfCompletedAcquisitionsCompleted],
         queryFn: async () => {
             const response = await fetchNextjsServer<FetchEmotesResponse>(
-                `/api/emote?userId=${userId}&numberOfCompletedAcquisitionsCompleted=${"10"}`,
+                `/api/emote?userId=${userId}&numberOfCompletedAcquisitionsCompleted=${numberOfCompletedAcquisitionsCompleted}`,
                 getHeader()
             );
             return response.data;
@@ -103,6 +110,17 @@ export default function UserPage() {
         },
         retry: 0
     });
+
+    const onReactionClickAction = async () => {
+        // TODO: リアクションしたエモートのみを取得し、反映するよう設計変更する
+        // BUG: 現在はユーザーページのユーザーがエモートを新規に投稿した時に、リアクションしたエモートが表示できない可能性がある
+        numberOfCompletedAcquisitionsCompleted = emotes.length;
+        await refetchEmotes();
+        numberOfCompletedAcquisitionsCompleted = 10;
+        if (data) {
+            setEmotes(data.emotes);
+        }
+    };
 
     const loadMoreEmotes = async () => {
         try {
@@ -178,7 +196,7 @@ export default function UserPage() {
                 !isPending &&
                 (emotes.length > 0 ? (
                     <>
-                        <WordlessEmotes emotes={emotes}></WordlessEmotes>
+                        <WordlessEmotes emotes={emotes} onReactionClickAction={onReactionClickAction}></WordlessEmotes>
                         <EndOfEmotes
                             hasLastEmoteFetched={hasLastEmoteFetched}
                             isFetchingMoreEmotes={isFetchingMoreEmotes}

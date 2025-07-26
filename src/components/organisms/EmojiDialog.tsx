@@ -16,9 +16,16 @@ type Props = {
     isOpen: boolean;
     alreadyReactedEmojiIds: Array<EmojiString>;
     closeDialogAction: () => void;
+    onReactionClickAction: (() => Promise<void>) | undefined;
 };
 
-export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, closeDialogAction }: Props) {
+export function EmojiDialog({
+    emoteReactionId,
+    isOpen,
+    alreadyReactedEmojiIds,
+    closeDialogAction,
+    onReactionClickAction
+}: Props) {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState<EmojiTab>("preset");
     const [searchedPresetEmojis, setSearchedPresetEmojis] = useState<Array<EmojiInterface>>(presetEmojiMap);
@@ -28,7 +35,7 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
     const userInfo = useContext(UserInfoContext)?.userInfo;
 
     const onEmojiClick = useCallback(
-        (reactedEmojiId: EmojiString) => {
+        async (reactedEmojiId: EmojiString) => {
             if (!userInfo) {
                 return;
             }
@@ -41,8 +48,11 @@ export function EmojiDialog({ emoteReactionId, isOpen, alreadyReactedEmojiIds, c
                 Authorization: localStorage.getItem("IdToken") ?? ""
             });
             closeDialogAction();
+            if (onReactionClickAction) {
+                await onReactionClickAction();
+            }
         },
-        [webSocketService, emoteReactionId, alreadyReactedEmojiIds, closeDialogAction, userInfo]
+        [webSocketService, emoteReactionId, alreadyReactedEmojiIds, closeDialogAction, userInfo, onReactionClickAction]
     );
 
     const onEmojiSearch = (searchTerm: string) => {
