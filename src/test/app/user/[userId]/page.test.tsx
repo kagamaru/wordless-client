@@ -47,10 +47,14 @@ vi.mock("jwt-decode", () => ({
 }));
 
 const mockFetchUserInfo = vi.fn();
+const mockFetchEmotes = vi.fn();
+let numberOfCompletedAcquisitionsCompleted = "";
 const server = setupServer(
     http.get("http://localhost:3000/api/emote", ({ request }) => {
         const urlSearchParams = new URL(request.url).searchParams;
         const sequenceNumberStartOfSearch = urlSearchParams.get("sequenceNumberStartOfSearch");
+        numberOfCompletedAcquisitionsCompleted = urlSearchParams.get("numberOfCompletedAcquisitionsCompleted") ?? "";
+        mockFetchEmotes();
 
         return HttpResponse.json({
             emotes: sequenceNumberStartOfSearch
@@ -744,6 +748,39 @@ describe("リアクションボタンをクリックした時", () => {
 
             // NOTE: WebSocketの内部ロジックのmock化が困難
             test.todo("リアクションボタンをクリックした時、リアクションボタンの表示が更新される");
+
+            test("「もっと見る」を押下せずにクリックした時、取得件数10件でエモート-取得がよばれる", async () => {
+                rendering();
+                await user.click(
+                    await within(await screen.findByRole("listitem", { name: "a" })).findByRole("button", {
+                        name: "reaction-a:party_parrot:"
+                    })
+                );
+
+                await waitFor(() => {
+                    // NOTE: 初回呼び出し + リアクションボタンクリック時
+                    expect(mockFetchEmotes).toHaveBeenCalledTimes(2);
+                    // NOTE: 初回呼び出し時のエモート数は4件
+                    expect(numberOfCompletedAcquisitionsCompleted).toBe("4");
+                });
+            });
+
+            test("「もっと見る」を押下した上でクリックした時、その時のエモートの取得件数でエモート-取得がよばれる", async () => {
+                rendering();
+                await user.click(await screen.findByRole("button", { name: "search もっと見る" }));
+                await user.click(
+                    await within(await screen.findByRole("listitem", { name: "e" })).findByRole("button", {
+                        name: "reaction-e:tiger:"
+                    })
+                );
+
+                await waitFor(() => {
+                    // NOTE: 初回呼び出し + 「もっと見る」押下時 + リアクションボタンクリック時
+                    expect(mockFetchEmotes).toHaveBeenCalledTimes(3);
+                    // NOTE: 初回呼び出し時のエモート数は4件 + 「もっと見る」押下時のエモート数は4件
+                    expect(numberOfCompletedAcquisitionsCompleted).toBe("8");
+                });
+            });
         });
 
         describe("既にリアクション済のリアクションボタンをクリックした時", () => {
@@ -769,6 +806,39 @@ describe("リアクションボタンをクリックした時", () => {
 
             // NOTE: WebSocketの内部ロジックのmock化が困難
             test.todo("リアクションボタンをクリックした時、リアクションボタンの表示が更新される");
+
+            test("「もっと見る」を押下せずにクリックした時、取得件数10件でエモート-取得がよばれる", async () => {
+                rendering();
+                await user.click(
+                    await within(await screen.findByRole("listitem", { name: "b" })).findByRole("button", {
+                        name: "reaction-b:tiger:"
+                    })
+                );
+
+                await waitFor(() => {
+                    // NOTE: 初回呼び出し + リアクションボタンクリック時
+                    expect(mockFetchEmotes).toHaveBeenCalledTimes(2);
+                    // NOTE: 初回呼び出し時のエモート数は4件
+                    expect(numberOfCompletedAcquisitionsCompleted).toBe("4");
+                });
+            });
+
+            test("「もっと見る」を押下した上でクリックした時、その時のエモートの取得件数でエモート-取得がよばれる", async () => {
+                rendering();
+                await user.click(await screen.findByRole("button", { name: "search もっと見る" }));
+                await user.click(
+                    await within(await screen.findByRole("listitem", { name: "f" })).findByRole("button", {
+                        name: "reaction-f:tiger:"
+                    })
+                );
+
+                await waitFor(() => {
+                    // NOTE: 初回呼び出し + 「もっと見る」押下時 + リアクションボタンクリック時
+                    expect(mockFetchEmotes).toHaveBeenCalledTimes(3);
+                    // NOTE: 初回呼び出し時のエモート数は4件 + 「もっと見る」押下時のエモート数は4件
+                    expect(numberOfCompletedAcquisitionsCompleted).toBe("8");
+                });
+            });
         });
     });
 });
@@ -805,26 +875,32 @@ test("ユーザーアバターをクリックした時、ユーザーページ�
 
 describe("リアクション追加ボタンをクリックした時", () => {
     describe("正常系", () => {
-        beforeEach(async () => {
+        test("リアクション追加ボタンをクリックした時、リアクション追加モーダルが表示される", async () => {
             rendering();
 
             const listItem = await screen.findByRole("listitem", { name: "b" });
             const plusButton = within(listItem).getByRole("button", { name: "+" });
             await user.click(plusButton);
 
-            // NOTE: モーダル表示確認（失敗を防ぐ）
-            await waitFor(() => {
-                expect(screen.getByRole("dialog")).toBeTruthy();
-            });
-        });
-
-        test("リアクション追加ボタンをクリックした時、リアクション追加モーダルが表示される", async () => {
             await waitFor(() => {
                 expect(screen.getByRole("dialog")).toBeTruthy();
             });
         });
 
         describe("リアクション追加モーダル表示時", () => {
+            beforeEach(async () => {
+                rendering();
+
+                const listItem = await screen.findByRole("listitem", { name: "b" });
+                const plusButton = within(listItem).getByRole("button", { name: "+" });
+                await user.click(plusButton);
+
+                // NOTE: モーダル表示確認（失敗を防ぐ）
+                await waitFor(() => {
+                    expect(screen.getByRole("dialog")).toBeTruthy();
+                });
+            });
+
             test("「プリセット」の絵文字が表示される", async () => {
                 await waitFor(() => {
                     expect(screen.getByRole("tab", { name: "プリセット", selected: true })).toBeTruthy();
@@ -1060,6 +1136,35 @@ describe("リアクション追加ボタンをクリックした時", () => {
                         expect(screen.getByRole("tab", { name: "プリセット", selected: true })).toBeTruthy();
                     });
                 });
+            });
+        });
+
+        test("「もっと見る」を押下せずにリアクション追加した時、取得件数10件でエモート-取得がよばれる", async () => {
+            rendering();
+            const listItem = await screen.findByRole("listitem", { name: "b" });
+            const plusButton = within(listItem).getByRole("button", { name: "+" });
+            await user.click(plusButton);
+
+            await user.click(within(screen.getByRole("dialog")).getByText("🐀"));
+
+            await waitFor(() => {
+                expect(mockFetchEmotes).toHaveBeenCalledTimes(2);
+                expect(numberOfCompletedAcquisitionsCompleted).toBe("4");
+            });
+        });
+
+        test("「もっと見る」を押下した上でリアクション追加した時、その時のエモートの取得件数でエモート-取得がよばれる", async () => {
+            rendering();
+            await user.click(await screen.findByRole("button", { name: "search もっと見る" }));
+            const listItem = await screen.findByRole("listitem", { name: "h" });
+            const plusButton = within(listItem).getByRole("button", { name: "+" });
+            await user.click(plusButton);
+
+            await user.click(within(screen.getByRole("dialog")).getByText("🐀"));
+
+            await waitFor(() => {
+                expect(mockFetchEmotes).toHaveBeenCalledTimes(3);
+                expect(numberOfCompletedAcquisitionsCompleted).toBe("8");
             });
         });
     });
