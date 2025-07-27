@@ -289,9 +289,17 @@ const server = setupServer(
                 });
         }
     }),
+    http.get("http://localhost:3000/api/follow/:userId", () => {
+        return HttpResponse.json({
+            totalNumberOfFollowing: 10,
+            followingUserIds: ["@a", "@b", "@c"],
+            totalNumberOfFollowees: 20,
+            followeeUserIds: ["@a", "@b", "@fuga_fuga"]
+        });
+    }),
     http.get("http://localhost:3000/api/userSuki/:userId", () => {
         return HttpResponse.json({
-            userId: "@a",
+            userId: "@x",
             userSuki: [":rat:", ":cow:", ":tiger:", ":rabbit:"]
         });
     }),
@@ -375,8 +383,26 @@ describe("初期表示時", () => {
                 });
             });
 
-            test.todo("ユーザーのフォロー数を表示する");
-            test.todo("ユーザーのフォロワー数を表示する");
+            test("ユーザーのフォロー数を表示する", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(
+                        within(screen.getByRole("button", { name: "フォロー数を表示" })).getByText("10")
+                    ).toBeTruthy();
+                });
+            });
+
+            test("ユーザーのフォロワー数を表示する", async () => {
+                rendering();
+
+                await waitFor(() => {
+                    expect(
+                        within(screen.getByRole("button", { name: "フォロワー数を表示" })).getByText("20")
+                    ).toBeTruthy();
+                });
+            });
+
             test("ユーザースキ（絵文字）を表示する", async () => {
                 rendering();
                 const userSukiEmoji1 = await screen.findByRole("listitem", { name: "ユーザーが好きなもの：:rat:" });
@@ -642,6 +668,52 @@ describe("初期表示時", () => {
                 });
             }
         );
+
+        test.each([
+            ["USK-01", "不正なリクエストです。もう一度やり直してください。"],
+            ["USK-02", "不正なリクエストです。もう一度やり直してください。"],
+            ["USK-03", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+        ])(
+            "ユーザースキ取得APIで%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+            async (errorCode, errorMessage) => {
+                server.use(
+                    http.get("http://localhost:3000/api/userSuki/:userId", () => {
+                        return HttpResponse.json({ data: errorCode }, { status: 400 });
+                    })
+                );
+
+                rendering();
+
+                await waitFor(() => {
+                    const alertComponent = screen.getByRole("alert");
+                    expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                    expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                });
+            }
+        );
+
+        test.each([
+            ["FOL-01", "不正なリクエストです。もう一度やり直してください。"],
+            ["FOL-02", "不正なリクエストです。もう一度やり直してください。"],
+            ["FOL-03", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+        ])(
+            "フォロワー取得APIで%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+            async (errorCode, errorMessage) => {
+                server.use(
+                    http.get("http://localhost:3000/api/follow/:userId", () => {
+                        return HttpResponse.json({ data: errorCode }, { status: 400 });
+                    })
+                );
+
+                rendering();
+
+                await waitFor(() => {
+                    const alertComponent = screen.getByRole("alert");
+                    expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                    expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                });
+            }
+        );
     });
 });
 
@@ -720,6 +792,234 @@ describe("リアクション総数ボタンをクリックした時", () => {
                 ).toBeTruthy();
             });
         });
+    });
+});
+
+describe("フォロー数ボタンをクリックした時", () => {
+    describe("正常系", () => {
+        describe("フォロー数が1人以上の時", () => {
+            beforeEach(async () => {
+                rendering();
+            });
+
+            test("ユーザー一覧Drawerが表示される", async () => {
+                await user.click(await screen.findByRole("button", { name: "フォロー数を表示" }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("dialog")).toBeTruthy();
+                });
+            });
+
+            test("ユーザー一覧Drawer内にユーザー名が表示される", async () => {
+                await user.click(await screen.findByRole("button", { name: "フォロー数を表示" }));
+
+                await waitFor(() => {
+                    const drawer = screen.getByRole("dialog");
+                    expect(within(drawer).getByText("User A")).toBeTruthy();
+                    expect(within(drawer).getByText("User B")).toBeTruthy();
+                    expect(within(drawer).getByText("User C")).toBeTruthy();
+                });
+            });
+
+            test("ユーザー一覧Drawer内にユーザーIDが表示される", async () => {
+                await user.click(await screen.findByRole("button", { name: "フォロー数を表示" }));
+
+                await waitFor(() => {
+                    const drawer = screen.getByRole("dialog");
+                    expect(within(drawer).getByText("@a")).toBeTruthy();
+                    expect(within(drawer).getByText("@b")).toBeTruthy();
+                    expect(within(drawer).getByText("@c")).toBeTruthy();
+                });
+            });
+
+            test("ユーザー一覧Drawer内にユーザーアバターが表示される", async () => {
+                await user.click(await screen.findByRole("button", { name: "フォロー数を表示" }));
+
+                await waitFor(() => {
+                    const drawer = screen.getByRole("dialog");
+                    expect(within(drawer).getByAltText("User Aのプロフィール画像")).toBeTruthy();
+                    expect(within(drawer).getByAltText("User Bのプロフィール画像")).toBeTruthy();
+                    expect(within(drawer).getByAltText("User Cのプロフィール画像")).toBeTruthy();
+                });
+            });
+
+            test("ユーザー一覧Drawer内にローディングアイコンが表示される", async () => {
+                server.use(
+                    http.get("http://localhost:3000/api/user/@a", () => {
+                        return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+                    })
+                );
+
+                await user.click(await screen.findByRole("button", { name: "フォロー数を表示" }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("img", { name: "loading" })).toBeTruthy();
+                });
+            });
+        });
+
+        describe("フォロー数が0人の時", () => {
+            test("ユーザー一覧Drawer内に「フォロー中のユーザーがいません」と表示される", async () => {
+                server.use(
+                    http.get("http://localhost:3000/api/follow/:userId", () => {
+                        return HttpResponse.json({
+                            totalNumberOfFollowing: 0,
+                            followingUserIds: [],
+                            totalNumberOfFollowees: 20,
+                            followeeUserIds: ["@a", "@b", "@fuga_fuga"]
+                        });
+                    })
+                );
+                rendering();
+
+                await user.click(await screen.findByRole("button", { name: "フォロー数を表示" }));
+
+                await waitFor(() => {
+                    expect(screen.getByText("フォロー中のユーザーがいません")).toBeTruthy();
+                });
+            });
+        });
+    });
+
+    describe("異常系", () => {
+        test.each([
+            ["USE-01", "不正なリクエストです。もう一度やり直してください。"],
+            ["USE-02", "不正なリクエストです。もう一度やり直してください。"],
+            ["USE-03", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+        ])(
+            "ユーザー情報取得APIに%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+            async (errorCode, errorMessage) => {
+                rendering();
+                server.use(
+                    http.get("http://localhost:3000/api/user/:userId", () => {
+                        return HttpResponse.json({ data: errorCode }, { status: 400 });
+                    })
+                );
+
+                await user.click(await screen.findByRole("button", { name: "フォロー数を表示" }));
+                const drawer = screen.getByRole("dialog");
+
+                await waitFor(() => {
+                    const alertComponent = within(drawer).getByRole("alert");
+                    expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                    expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                });
+            }
+        );
+    });
+});
+
+describe("フォロワー数ボタンをクリックした時", () => {
+    describe("正常系", () => {
+        describe("フォロワー数が1人以上の時", () => {
+            beforeEach(async () => {
+                rendering();
+            });
+
+            test("ユーザー一覧Drawerが表示される", async () => {
+                await user.click(await screen.findByRole("button", { name: "フォロワー数を表示" }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("dialog")).toBeTruthy();
+                });
+            });
+
+            test("ユーザー一覧Drawer内にユーザー名が表示される", async () => {
+                await user.click(await screen.findByRole("button", { name: "フォロワー数を表示" }));
+
+                await waitFor(() => {
+                    const drawer = screen.getByRole("dialog");
+                    expect(within(drawer).getByText("User A")).toBeTruthy();
+                    expect(within(drawer).getByText("User B")).toBeTruthy();
+                    expect(within(drawer).getByText("User Fuga")).toBeTruthy();
+                });
+            });
+
+            test("ユーザー一覧Drawer内にユーザーIDが表示される", async () => {
+                await user.click(await screen.findByRole("button", { name: "フォロワー数を表示" }));
+
+                await waitFor(() => {
+                    const drawer = screen.getByRole("dialog");
+                    expect(within(drawer).getByText("@a")).toBeTruthy();
+                    expect(within(drawer).getByText("@b")).toBeTruthy();
+                    expect(within(drawer).getByText("@fuga_fuga")).toBeTruthy();
+                });
+            });
+
+            test("ユーザー一覧Drawer内にユーザーアバターが表示される", async () => {
+                await user.click(await screen.findByRole("button", { name: "フォロワー数を表示" }));
+
+                await waitFor(() => {
+                    const drawer = screen.getByRole("dialog");
+                    expect(within(drawer).getByAltText("User Aのプロフィール画像")).toBeTruthy();
+                    expect(within(drawer).getByAltText("User Bのプロフィール画像")).toBeTruthy();
+                    expect(within(drawer).getByAltText("User Fugaのプロフィール画像")).toBeTruthy();
+                });
+            });
+
+            test("ユーザー一覧Drawer内にローディングアイコンが表示される", async () => {
+                server.use(
+                    http.get("http://localhost:3000/api/user/@a", () => {
+                        return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+                    })
+                );
+
+                await user.click(await screen.findByRole("button", { name: "フォロー数を表示" }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("img", { name: "loading" })).toBeTruthy();
+                });
+            });
+        });
+
+        describe("フォロワー数が0人の時", () => {
+            test("ユーザー一覧Drawer内に「フォロワーがいません」と表示する", async () => {
+                server.use(
+                    http.get("http://localhost:3000/api/follow/:userId", () => {
+                        return HttpResponse.json({
+                            totalNumberOfFollowing: 10,
+                            followingUserIds: ["@a", "@b", "@c"],
+                            totalNumberOfFollowees: 0,
+                            followeeUserIds: []
+                        });
+                    })
+                );
+                rendering();
+
+                await user.click(await screen.findByRole("button", { name: "フォロワー数を表示" }));
+
+                await waitFor(() => {
+                    expect(screen.getByText("フォロワーがいません")).toBeTruthy();
+                });
+            });
+        });
+    });
+
+    describe("異常系", () => {
+        test.each([
+            ["USE-01", "不正なリクエストです。もう一度やり直してください。"],
+            ["USE-02", "不正なリクエストです。もう一度やり直してください。"],
+            ["USE-03", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+        ])(
+            "ユーザー情報取得APIに%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+            async (errorCode, errorMessage) => {
+                rendering();
+                server.use(
+                    http.get("http://localhost:3000/api/user/:userId", () => {
+                        return HttpResponse.json({ data: errorCode }, { status: 400 });
+                    })
+                );
+
+                await user.click(await screen.findByRole("button", { name: "フォロワー数を表示" }));
+                const drawer = screen.getByRole("dialog");
+
+                await waitFor(() => {
+                    const alertComponent = within(drawer).getByRole("alert");
+                    expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                    expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                });
+            }
+        );
     });
 });
 
