@@ -1,6 +1,13 @@
 import { emoteHandlers } from "./emote";
+import { followerHandlers } from "./follower";
 import { userHandlers } from "./user";
 import { userSubHandlers } from "./userSub";
 import { userSukiHandlers } from "./userSuki";
 
-export const restHandlers = [...emoteHandlers, ...userHandlers, ...userSubHandlers, ...userSukiHandlers];
+export const restHandlers = [
+    ...emoteHandlers,
+    ...followerHandlers,
+    ...userHandlers,
+    ...userSubHandlers,
+    ...userSukiHandlers
+];

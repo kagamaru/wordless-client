@@ -1,16 +1,16 @@
-import { TotalNumberOfFollowers, TotalNumberOfFollowing } from "@/components/atoms";
+import { TotalNumberOfFollowees, TotalNumberOfFollowing } from "@/components/atoms";
 import { Col, Divider, Row } from "antd";
 
 type Props = {
-    totalNumberOfFollowers: number;
-    onFollowersClickAction: () => void;
+    totalNumberOfFollowees: number;
+    onFolloweesClickAction: () => void;
     totalNumberOfFollowing: number;
     onFollowingClickAction: () => void;
 };
 
 export const FollowButtonSection = ({
-    totalNumberOfFollowers,
-    onFollowersClickAction,
+    totalNumberOfFollowees,
+    onFolloweesClickAction,
     totalNumberOfFollowing,
     onFollowingClickAction
 }: Props) => {
@@ -24,9 +24,9 @@ export const FollowButtonSection = ({
                     />
                 </Col>
                 <Col span={12}>
-                    <TotalNumberOfFollowers
-                        totalNumberOfFollowers={totalNumberOfFollowers}
-                        onClickAction={onFollowersClickAction}
+                    <TotalNumberOfFollowees
+                        totalNumberOfFollowees={totalNumberOfFollowees}
+                        onClickAction={onFolloweesClickAction}
                     />
                 </Col>
             </Row>

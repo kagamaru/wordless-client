@@ -1,6 +1,7 @@
 import { PostEmoteRequest } from "@/@types/request/PostEmoteRequest";
 import { ReactRequest } from "@/@types/request/ReactRequest";
 import { RestApiRequestOption } from "@/@types/request/RestApiRequestOption";
+import { FetchFollowResponse } from "@/@types/response/FetchFollowResponse";
 import { APIResponse } from "@/@types/response/APIResponse";
 import { OnPostEmoteIncomingMessage } from "@/@types/webSocketMessage/OnPostEmoteIncomingMessage";
 import { OnReactIncomingMessage } from "@/@types/webSocketMessage/OnReactIncomingMessage";
@@ -19,6 +20,7 @@ export type {
     PostEmoteRequest,
     ReactRequest,
     RestApiRequestOption,
+    FetchFollowResponse,
     APIResponse,
     OnReactIncomingMessage,
     OnPostEmoteIncomingMessage,

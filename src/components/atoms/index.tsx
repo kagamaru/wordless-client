@@ -26,7 +26,7 @@ import { PlusButton } from "@/components/atoms/PlusButton";
 import { ResetPasswordLink } from "@/components/atoms/ResetPasswordLink";
 import { ShadowDivider } from "@/components/atoms/ShadowDivider";
 import { SignupButton } from "@/components/atoms/SignupButton";
-import { TotalNumberOfFollowers } from "@/components/atoms/TotalNumberOfFollowers";
+import { TotalNumberOfFollowees } from "@/components/atoms/TotalNumberOfFollowees";
 import { TotalNumberOfFollowing } from "@/components/atoms/TotalNumberOfFollowing";
 import { TotalNumberOfReactionsButton } from "@/components/atoms/TotalNumberOfReactionsButton";
 import { WordlessDivider } from "@/components/atoms/WordlessDivider";
@@ -60,7 +60,7 @@ export {
     ResetPasswordLink,
     ShadowDivider,
     SignupButton,
-    TotalNumberOfFollowers,
+    TotalNumberOfFollowees,
     TotalNumberOfFollowing,
     TotalNumberOfReactionsButton,
     WordlessDivider

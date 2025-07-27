@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
+import React, { useCallback, useEffect } from "react";
 import { Drawer, Avatar, Row } from "antd";
 import { User } from "@/@types";
-import { CloseButton } from "@/components/atoms";
+import { CloseButton, DisplayErrorMessage, LoadingSpin } from "@/components/atoms";
+import { fetchNextjsServer, getHeader } from "@/helpers";
 import { css } from "ss/css";
+import { useError } from "@/hooks";
 
 type Props = {
     isOpen: boolean;
@@ -14,7 +17,30 @@ type Props = {
 };
 
 export function FollowUsersDrawer({ isOpen, setIsOpenAction, userIds, isFollowers }: Props) {
+    const { handledError, handleErrors } = useError();
+    const hasUserInfo = userIds.length > 0;
+
     const closeDrawer = useCallback(() => setIsOpenAction(false), [setIsOpenAction]);
+
+    const {
+        data: usersInfo,
+        isError: isUserInfoError,
+        error: userInfoError,
+        isPending: isUserInfoPending
+    } = useQuery({
+        queryKey: ["userInfo", userIds],
+        queryFn: async () => {
+            if (!hasUserInfo) {
+                return [];
+            }
+            const response = await Promise.all(
+                userIds.map((userId) => fetchNextjsServer<User>(`/api/user/${userId}`, getHeader()))
+            );
+            return response.map((response) => response.data);
+        },
+        retry: 0,
+        enabled: hasUserInfo
+    });
 
     const drawerTitleStyle = css({
         fontSize: 16,
@@ -50,25 +76,19 @@ export function FollowUsersDrawer({ isOpen, setIsOpenAction, userIds, isFollower
         color: "grey"
     });
 
-    const usersInfo: User[] = [
-        {
-            userName: "ユーザー名1",
-            userId: "@user1",
-            userAvatarUrl: "user1.jpg"
-        },
-        {
-            userName: "ユーザー名2",
-            userId: "@user2",
-            userAvatarUrl: "user2.jpg"
-        }
-    ];
-
     const UserInfo = ({ userName, userId }: { userName: string; userId: string }) => (
         <div className={userInfoStyle}>
             <div className={`${textWrapperStyle} ${userNameTextStyle}`}>{userName}</div>
             <div className={`${textWrapperStyle} ${userIdTextStyle}`}>{userId}</div>
         </div>
     );
+
+    useEffect(() => {
+        if (isUserInfoError && userInfoError) {
+            handleErrors(JSON.parse(userInfoError.message));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isUserInfoError, userInfoError]);
 
     return (
         <>
@@ -77,23 +97,35 @@ export function FollowUsersDrawer({ isOpen, setIsOpenAction, userIds, isFollower
                 <Row justify="space-between" align="middle">
                     <div className={drawerTitleStyle}>{isFollowers ? "フォロワー" : "フォロー中のユーザー"}</div>
                 </Row>
-                <div style={{ padding: 16 }}>
-                    {usersInfo.map((user) => (
-                        <div key={user.userId}>
-                            <div style={{ padding: 8 }}>
-                                <a
-                                    key={user.userId}
-                                    href={`/user/${user.userId}`}
-                                    className={userItemStyle}
-                                    aria-label={`${user.userName}のページへ移動`}
-                                >
-                                    <Avatar src={user.userAvatarUrl} size={48} />
-                                    <UserInfo userName={user.userName} userId={user.userId} />
-                                </a>
+                {isUserInfoError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
+                {isUserInfoPending && hasUserInfo && <LoadingSpin />}
+                {hasUserInfo ? (
+                    <div style={{ padding: 16 }}>
+                        {usersInfo?.map((user) => (
+                            <div key={user.userId}>
+                                <div style={{ padding: 8 }}>
+                                    <a
+                                        key={user.userId}
+                                        href={`/user/${user.userId}`}
+                                        className={userItemStyle}
+                                        aria-label={`${user.userName}のページへ移動`}
+                                    >
+                                        <Avatar
+                                            src={user.userAvatarUrl}
+                                            size={48}
+                                            alt={user.userName + "のプロフィール画像"}
+                                        />
+                                        <UserInfo userName={user.userName} userId={user.userId} />
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div style={{ padding: 16 }}>
+                        {isFollowers ? "フォロワーがいません" : "フォロー中のユーザーがいません"}
+                    </div>
+                )}
             </Drawer>
         </>
     );

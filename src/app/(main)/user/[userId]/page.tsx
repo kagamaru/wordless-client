@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { User, UserSukiEmojis } from "@/@types";
+import { FetchFollowResponse, User, UserSukiEmojis } from "@/@types";
 import { Emote, FetchEmotesResponse } from "@/class";
 import {
     DisplayErrorMessage,
@@ -26,16 +26,14 @@ import { useEmoteStore } from "@/store";
 
 export default function UserPage() {
     const { userId } = useParams();
-    const { handledError, handleErrors } = useError();
+    const { handledError, handleErrors, hasError: hasErrorOnUserPage } = useError();
     const [emotes, setEmotes] = useState<Emote[]>([]);
     const [isFollowersDrawerOpen, setIsFollowersDrawerOpen] = useState(false);
     const [isFollowingDrawerOpen, setIsFollowingDrawerOpen] = useState(false);
     const [hasLastEmoteFetched, setHasLastEmoteFetched] = useState(false);
-    const followerUserIds = ["@fuga_fuga", "@hoge_hoge", "@apple"];
-    const followingUserIds = ["@hoge_hoge", "@apple", "@orange"];
     let numberOfCompletedAcquisitionsCompleted = 10;
 
-    const onFollowersButtonClick = () => {
+    const onFolloweesButtonClick = () => {
         setIsFollowersDrawerOpen(true);
     };
 
@@ -56,6 +54,19 @@ export default function UserPage() {
                 `/api/emote?userId=${userId}&numberOfCompletedAcquisitionsCompleted=${numberOfCompletedAcquisitionsCompleted}`,
                 getHeader()
             );
+            return response.data;
+        },
+        retry: 0
+    });
+
+    const {
+        data: followResponse,
+        isError: isFollowError,
+        error: followError
+    } = useQuery({
+        queryKey: ["follow"],
+        queryFn: async () => {
+            const response = await fetchNextjsServer<FetchFollowResponse>(`/api/follow/${userId}`, getHeader());
             return response.data;
         },
         retry: 0
@@ -134,6 +145,7 @@ export default function UserPage() {
         const errors = [
             { isError: isError, error: error },
             { isError: isUserInfoError, error: userInfoError },
+            { isError: isFollowError, error: followError },
             { isError: isUserSukiError, error: userSukiError },
             { isError: isFetchingMoreEmotesError, error: fetchingMoreEmotesError }
         ];
@@ -153,6 +165,8 @@ export default function UserPage() {
         userInfoError,
         isUserSukiError,
         userSukiError,
+        isFollowError,
+        followError,
         isFetchingMoreEmotesError,
         fetchingMoreEmotesError
     ]);
@@ -178,14 +192,12 @@ export default function UserPage() {
     return (
         <>
             <div className="p-4 mt-1">
-                {(isError || isUserInfoError || isUserSukiError || isFetchingMoreEmotesError) && (
-                    <DisplayErrorMessage error={handledError}></DisplayErrorMessage>
-                )}
+                {hasErrorOnUserPage && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
                 {userInfo && <UserProfile userInfo={userInfo} />}
                 <FollowButtonSection
-                    totalNumberOfFollowers={100}
-                    onFollowersClickAction={onFollowersButtonClick}
-                    totalNumberOfFollowing={200}
+                    totalNumberOfFollowees={followResponse?.totalNumberOfFollowees ?? 0}
+                    onFolloweesClickAction={onFolloweesButtonClick}
+                    totalNumberOfFollowing={followResponse?.totalNumberOfFollowing ?? 0}
                     onFollowingClickAction={onFollowingButtonClick}
                 />
                 <UserSukiSection userSukiEmojis={userSukiResponse?.userSuki ?? []} />
@@ -211,7 +223,7 @@ export default function UserPage() {
                 <FollowUsersDrawer
                     isOpen={isFollowersDrawerOpen}
                     setIsOpenAction={setIsFollowersDrawerOpen}
-                    userIds={followerUserIds}
+                    userIds={followResponse?.followeeUserIds ?? []}
                     isFollowers={true}
                 />
             )}
@@ -219,7 +231,7 @@ export default function UserPage() {
                 <FollowUsersDrawer
                     isOpen={isFollowingDrawerOpen}
                     setIsOpenAction={setIsFollowingDrawerOpen}
-                    userIds={followingUserIds}
+                    userIds={followResponse?.followingUserIds ?? []}
                     isFollowers={false}
                 />
             )}
