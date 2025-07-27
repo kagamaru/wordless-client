@@ -13,7 +13,7 @@ export const TotalNumberOfFollowing: React.FC<Props> = ({ totalNumberOfFollowing
 
     return (
         <Row align="middle" justify="center">
-            <Button type="link" className="p-0 mr-1" onClick={onClickAction}>
+            <Button type="link" className="p-0 mr-1" aria-label="フォロー数を表示" onClick={onClickAction}>
                 <span className={followButtonTextStyle}>{totalNumberOfFollowing}</span>
             </Button>
             <div>フォロー</div>
