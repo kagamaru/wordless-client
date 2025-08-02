@@ -18,7 +18,11 @@ export const useUserInfo = () => {
         }
     }, [router]);
 
-    const { data, error } = useQuery({
+    const {
+        data,
+        isLoading = true,
+        error
+    } = useQuery({
         queryKey: ["userInfo", token],
         queryFn: async () => {
             if (!token) throw new Error("Token missing");
@@ -37,5 +41,5 @@ export const useUserInfo = () => {
         retry: false
     });
 
-    return { data, error };
+    return { data, isLoading, error };
 };
