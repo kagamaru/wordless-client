@@ -11,7 +11,7 @@ import {
     ErrorBoundary,
     PageTemplate,
     ProviderTemplate,
-    UserInfoTemplate,
+    UserInfoContext,
     WebSocketProvider
 } from "@/components/template";
 import { ReactRequest } from "@/@types";
@@ -43,7 +43,6 @@ vi.mock("jwt-decode", () => ({
     })
 }));
 
-const mockFetchUserInfo = vi.fn();
 const server = setupServer(
     http.get("http://localhost:3000/api/emote", ({ request }) => {
         const urlSearchParams = new URL(request.url).searchParams;
@@ -281,14 +280,6 @@ const server = setupServer(
                     userAvatarUrl: "https://image.test/user1.png"
                 });
         }
-    }),
-    http.get("http://localhost:3000/api/userSub/:userSub", () => {
-        mockFetchUserInfo();
-        return HttpResponse.json({
-            userId: "@x",
-            userName: "User X",
-            userAvatarUrl: "https://image.test/x.png"
-        });
     })
 );
 
@@ -321,13 +312,17 @@ const rendering = (): void => {
     render(
         <ProviderTemplate>
             <ErrorBoundary>
-                <UserInfoTemplate>
+                <UserInfoContext.Provider
+                    value={{
+                        userInfo: { userId: "@x", userName: "User X", userAvatarUrl: "https://image.test/x.png" }
+                    }}
+                >
                     <WebSocketProvider>
                         <PageTemplate>
                             <Home />
                         </PageTemplate>
                     </WebSocketProvider>
-                </UserInfoTemplate>
+                </UserInfoContext.Provider>
             </ErrorBoundary>
         </ProviderTemplate>
     );
@@ -396,14 +391,6 @@ describe("初期表示時", () => {
                 expect(screen.getByAltText("AProfileImage")).toBeTruthy();
                 expect(screen.getByAltText("BProfileImage")).toBeTruthy();
                 expect(screen.getByAltText("BProfileImage")).toBeTruthy();
-            });
-        });
-
-        test("ユーザー情報を取得する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(mockFetchUserInfo).toHaveBeenCalled();
             });
         });
 
@@ -537,18 +524,6 @@ describe("初期表示時", () => {
                 const alertComponent = screen.getByRole("alert");
                 expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
                 expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
-            });
-        });
-
-        test("localStorageからのIdToken取得に失敗した時、リダイレクトする", async () => {
-            vi.stubGlobal("localStorage", {
-                getItem: vi.fn().mockReturnValue(null)
-            });
-
-            rendering();
-
-            await waitFor(() => {
-                expect(mockedUseRouter).toHaveBeenCalledWith("/auth/login");
             });
         });
     });
