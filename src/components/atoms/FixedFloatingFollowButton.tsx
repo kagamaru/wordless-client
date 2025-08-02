@@ -1,13 +1,17 @@
 import { CheckCircleOutlined, UserAddOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button, ConfigProvider } from "antd";
 import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";
 
 type Props = {
     isFollowing: boolean;
+    onPostFollowButtonClickAction: () => void;
 };
 
-export const FixedFloatingFollowButton: React.FC<Props> = ({ isFollowing }) => {
+export const FixedFloatingFollowButton: React.FC<Props> = ({
+    isFollowing,
+    onPostFollowButtonClickAction: onFollowButtonClickAction
+}) => {
     const isMobile = useIsMobile();
     const wrapperStyle = css({
         position: "fixed",
@@ -42,15 +46,23 @@ export const FixedFloatingFollowButton: React.FC<Props> = ({ isFollowing }) => {
             {/* NOTE: auto-scroll に関する警告の解消のため、直前にブロック要素を配置 */}
             <div></div>
             <div className={wrapperStyle}>
-                {isFollowing ? (
-                    <Button shape="round" icon={<CheckCircleOutlined />} className={followingButtonStyle}>
-                        フォロー中
-                    </Button>
-                ) : (
-                    <Button shape="round" icon={<UserAddOutlined />} className={followButtonStyle}>
-                        フォロー
-                    </Button>
-                )}
+                {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
+                <ConfigProvider wave={{ disabled: true }}>
+                    {isFollowing ? (
+                        <Button shape="round" icon={<CheckCircleOutlined />} className={followingButtonStyle}>
+                            フォロー中
+                        </Button>
+                    ) : (
+                        <Button
+                            shape="round"
+                            icon={<UserAddOutlined />}
+                            className={followButtonStyle}
+                            onClick={onFollowButtonClickAction}
+                        >
+                            フォロー
+                        </Button>
+                    )}
+                </ConfigProvider>
             </div>
         </>
     );

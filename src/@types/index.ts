@@ -1,4 +1,5 @@
 import { PostEmoteRequest } from "@/@types/request/PostEmoteRequest";
+import { PostFollowRequest } from "@/@types/request/PostFollowRequest";
 import { ReactRequest } from "@/@types/request/ReactRequest";
 import { RestApiRequestOption } from "@/@types/request/RestApiRequestOption";
 import { FetchFollowResponse } from "@/@types/response/FetchFollowResponse";
@@ -18,6 +19,7 @@ import { UserSukiEmojis } from "@/@types/UserSukiEmojis";
 
 export type {
     PostEmoteRequest,
+    PostFollowRequest,
     ReactRequest,
     RestApiRequestOption,
     FetchFollowResponse,
