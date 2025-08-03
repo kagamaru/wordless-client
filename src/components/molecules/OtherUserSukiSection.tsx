@@ -7,7 +7,7 @@ type Props = {
     userSukiEmojis: UserSukiEmojis | [];
 };
 
-export const UserSukiSection = ({ userSukiEmojis }: Props) => {
+export const OtherUserSukiSection = ({ userSukiEmojis }: Props) => {
     const emojiSizeStyle = css({
         fontSize: "32px !important",
         marginTop: "12px"

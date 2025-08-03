@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FetchFollowResponse, User, UserSukiEmojis } from "@/@types";
 import { ShadowDivider } from "@/components/atoms";
-import { FollowButtonSection, FollowUsersDrawer, UserProfile, UserSukiSection } from "@/components/molecules";
+import { FollowButtonSection, FollowUsersDrawer, OtherUserProfile, OtherUserSukiSection } from "@/components/molecules";
 
 type DisplayOtherUserInfoProps = {
     profileUserInfo: User;
@@ -17,7 +17,7 @@ export const DisplayOtherUserInfo = ({ profileUserInfo, followInfo, userSukiEmoj
     return (
         <>
             <div role="group" aria-label="ユーザー情報">
-                <UserProfile userInfo={profileUserInfo} />
+                <OtherUserProfile userInfo={profileUserInfo} />
                 <FollowButtonSection
                     totalNumberOfFollowees={followInfo.totalNumberOfFollowees}
                     onFolloweesClickAction={() => {
@@ -28,7 +28,7 @@ export const DisplayOtherUserInfo = ({ profileUserInfo, followInfo, userSukiEmoj
                         setActiveDrawer("following");
                     }}
                 />
-                <UserSukiSection userSukiEmojis={userSukiEmojis} />
+                <OtherUserSukiSection userSukiEmojis={userSukiEmojis} />
                 <ShadowDivider />
             </div>
             {activeDrawer === "followees" && (

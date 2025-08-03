@@ -10,8 +10,8 @@ import { PageHeaderWithoutMenu } from "@/components/molecules/PageHeaderWithoutM
 import { MenuDrawer } from "@/components/molecules/MenuDrawer";
 import { PresetEmojis } from "@/components/molecules/PresetEmojis";
 import { ReactionUsersDrawer } from "@/components/molecules/ReactionUsersDrawer";
-import { UserProfile } from "@/components/molecules/UserProfile";
-import { UserSukiSection } from "@/components/molecules/UserSukiSection";
+import { OtherUserProfile } from "@/components/molecules/OtherUserProfile";
+import { OtherUserSukiSection } from "@/components/molecules/OtherUserSukiSection";
 import { WordlessEmote } from "@/components/molecules/WordlessEmote";
 
 export {
@@ -27,7 +27,7 @@ export {
     PresetEmojis,
     PostEmoteEmojiSelectTabs,
     ReactionUsersDrawer,
-    UserProfile,
-    UserSukiSection,
+    OtherUserProfile,
+    OtherUserSukiSection,
     WordlessEmote
 };
