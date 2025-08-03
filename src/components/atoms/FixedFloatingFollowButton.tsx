@@ -11,7 +11,7 @@ type Props = {
 
 export const FixedFloatingFollowButton: React.FC<Props> = ({
     isFollowing,
-    onPostFollowButtonClickAction: onFollowButtonClickAction,
+    onPostFollowButtonClickAction,
     onUnFollowButtonClickAction
 }) => {
     const isMobile = useIsMobile();
@@ -30,7 +30,8 @@ export const FixedFloatingFollowButton: React.FC<Props> = ({
         backgroundColor: "white !important",
         color: "followBlue !important",
         fontWeight: "bold !important",
-        border: "2px solid followBlue !important"
+        // HACK: カラーコードでないと上書きできない
+        border: "2px solid #1677FF !important"
     });
 
     const followingButtonStyle = css({
@@ -64,7 +65,7 @@ export const FixedFloatingFollowButton: React.FC<Props> = ({
                             shape="round"
                             icon={<UserAddOutlined />}
                             className={followButtonStyle}
-                            onClick={onFollowButtonClickAction}
+                            onClick={onPostFollowButtonClickAction}
                         >
                             フォロー
                         </Button>

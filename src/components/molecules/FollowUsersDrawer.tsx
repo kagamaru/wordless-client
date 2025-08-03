@@ -11,16 +11,16 @@ import { useError } from "@/hooks";
 
 type Props = {
     isOpen: boolean;
-    setIsOpenAction: (isOpen: boolean) => void;
+    closeDrawerAction: () => void;
     userIds: string[];
     isFollowers: boolean;
 };
 
-export function FollowUsersDrawer({ isOpen, setIsOpenAction, userIds, isFollowers }: Props) {
+export function FollowUsersDrawer({ isOpen, closeDrawerAction, userIds, isFollowers }: Props) {
     const { handledError, handleErrors } = useError();
     const hasUserInfo = userIds.length > 0;
 
-    const closeDrawer = useCallback(() => setIsOpenAction(false), [setIsOpenAction]);
+    const closeDrawer = useCallback(() => closeDrawerAction(), [closeDrawerAction]);
 
     const {
         data: usersInfo,
