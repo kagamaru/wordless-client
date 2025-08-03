@@ -12,7 +12,7 @@ import {
     ErrorBoundary,
     PageTemplate,
     ProviderTemplate,
-    UserInfoTemplate,
+    UserInfoContext,
     WebSocketProvider
 } from "@/components/template";
 import { useEmoteStore } from "@/store";
@@ -46,7 +46,6 @@ vi.mock("jwt-decode", () => ({
     })
 }));
 
-const mockFetchUserInfo = vi.fn();
 const mockFetchEmotes = vi.fn();
 let numberOfCompletedAcquisitionsCompleted = "";
 const server = setupServer(
@@ -297,18 +296,18 @@ const server = setupServer(
             followeeUserIds: ["@a", "@b", "@fuga_fuga"]
         });
     }),
+    http.post("http://localhost:3000/api/follow/:userId", () => {
+        return HttpResponse.json({
+            totalNumberOfFollowing: 10,
+            followingUserIds: ["@a", "@b", "@c"],
+            totalNumberOfFollowees: 21,
+            followeeUserIds: ["@a", "@b", "@fuga_fuga", "@x"]
+        });
+    }),
     http.get("http://localhost:3000/api/userSuki/:userId", () => {
         return HttpResponse.json({
             userId: "@x",
             userSuki: [":rat:", ":cow:", ":tiger:", ":rabbit:"]
-        });
-    }),
-    http.get("http://localhost:3000/api/userSub/:userSub", () => {
-        mockFetchUserInfo();
-        return HttpResponse.json({
-            userId: "@x",
-            userName: "User X",
-            userAvatarUrl: "https://image.test/x.png"
         });
     })
 );
@@ -342,13 +341,17 @@ const rendering = (): void => {
     render(
         <ProviderTemplate>
             <ErrorBoundary>
-                <UserInfoTemplate>
+                <UserInfoContext.Provider
+                    value={{
+                        userInfo: { userId: "@x", userName: "User X", userAvatarUrl: "https://image.test/x.png" }
+                    }}
+                >
                     <WebSocketProvider>
                         <PageTemplate>
                             <UserPage />
                         </PageTemplate>
                     </WebSocketProvider>
-                </UserInfoTemplate>
+                </UserInfoContext.Provider>
             </ErrorBoundary>
         </ProviderTemplate>
     );
@@ -481,14 +484,6 @@ describe("初期表示時", () => {
                 });
             });
 
-            test("ユーザー情報を取得する", async () => {
-                rendering();
-
-                await waitFor(() => {
-                    expect(mockFetchUserInfo).toHaveBeenCalled();
-                });
-            });
-
             describe("リアクションの総件数を表示する時", () => {
                 test("リアクションの総件数が0件の時、何も表示しない", async () => {
                     rendering();
@@ -594,6 +589,32 @@ describe("初期表示時", () => {
                 });
             });
         });
+
+        test("フォローしていないユーザーの時、フォローボタンを表示する", async () => {
+            rendering();
+
+            await waitFor(() => {
+                expect(screen.getByRole("button", { name: "user-add フォロー" })).toBeTruthy();
+            });
+        });
+
+        test("フォローしているユーザーの時、フォロー中ボタンを表示する", async () => {
+            server.use(
+                http.get("http://localhost:3000/api/follow/:userId", () => {
+                    return HttpResponse.json({
+                        totalNumberOfFollowing: 10,
+                        followingUserIds: ["@a", "@b", "@c"],
+                        totalNumberOfFollowees: 20,
+                        followeeUserIds: ["@a", "@b", "@fuga_fuga", "@x"]
+                    });
+                })
+            );
+            rendering();
+
+            await waitFor(() => {
+                expect(screen.getByRole("button", { name: "check-circle フォロー中" })).toBeTruthy();
+            });
+        });
     });
 
     describe("異常系", () => {
@@ -631,18 +652,6 @@ describe("初期表示時", () => {
                 await waitFor(() => {
                     expect(screen.queryByText("最後のエモートです")).toBeFalsy();
                 });
-            });
-        });
-
-        test("localStorageからのIdToken取得に失敗した時、リダイレクトする", async () => {
-            vi.stubGlobal("localStorage", {
-                getItem: vi.fn().mockReturnValue(null)
-            });
-
-            rendering();
-
-            await waitFor(() => {
-                expect(mockedUseRouter).toHaveBeenCalledWith("/auth/login");
             });
         });
 
@@ -1632,5 +1641,47 @@ describe("メニューボタンをクリックした時", () => {
         await waitFor(() => {
             expect(screen.getByRole("dialog")).toBeTruthy();
         });
+    });
+});
+
+describe("フォローボタンをクリックした時", () => {
+    describe("正常系", () => {
+        test("フォロワー数を更新する", async () => {
+            rendering();
+
+            await user.click(await screen.findByRole("button", { name: "user-add フォロー" }));
+
+            await waitFor(() => {
+                expect(within(screen.getByRole("button", { name: "フォロワー数を表示" })).getByText("21")).toBeTruthy();
+            });
+        });
+    });
+
+    describe("異常系", () => {
+        test.each([
+            ["FOL-11", "不正なリクエストです。もう一度やり直してください。"],
+            ["FOL-12", "不正なリクエストです。もう一度やり直してください。"],
+            ["FOL-13", "不正なリクエストです。もう一度やり直してください。"],
+            ["FOL-14", "エラーが発生しています。しばらくの間使用できない可能性があります。"],
+            ["FOL-15", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+        ])(
+            "フォロー登録APIに%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+            async (errorCode, errorMessage) => {
+                rendering();
+                server.use(
+                    http.post("http://localhost:3000/api/follow/:userId", () => {
+                        return HttpResponse.json({ data: errorCode }, { status: 400 });
+                    })
+                );
+
+                await user.click(await screen.findByRole("button", { name: "user-add フォロー" }));
+
+                await waitFor(() => {
+                    const alertComponent = screen.getByRole("alert");
+                    expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                    expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                });
+            }
+        );
     });
 });

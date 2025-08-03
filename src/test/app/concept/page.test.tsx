@@ -3,15 +3,13 @@
 import { vitestSetup } from "../vitest.setup";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, beforeEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import ConceptPage from "@/app/(main)/concept/page";
 import {
     ErrorBoundary,
     PageTemplate,
     ProviderTemplate,
-    UserInfoTemplate,
+    UserInfoContext,
     WebSocketProvider
 } from "@/components/template";
 import { useEmoteStore } from "@/store";
@@ -42,20 +40,6 @@ vi.mock("jwt-decode", () => ({
 const mockWindowOpen = vi.fn();
 window.open = mockWindowOpen;
 
-const server = setupServer(
-    http.get("http://localhost:3000/api/userSub/:userSub", () => {
-        return HttpResponse.json({
-            userId: "@x",
-            userName: "User X",
-            userAvatarUrl: "https://image.test/x.png"
-        });
-    })
-);
-
-beforeAll(() => {
-    server.listen();
-});
-
 beforeEach(() => {
     vi.clearAllMocks();
     vi.resetAllMocks();
@@ -72,21 +56,21 @@ afterEach(() => {
     useEmoteStore.getState().cleanAllData();
 });
 
-afterAll(() => {
-    server.close();
-});
-
 const rendering = (): void => {
     render(
         <ProviderTemplate>
             <ErrorBoundary>
-                <UserInfoTemplate>
+                <UserInfoContext.Provider
+                    value={{
+                        userInfo: { userId: "@x", userName: "User X", userAvatarUrl: "https://image.test/x.png" }
+                    }}
+                >
                     <WebSocketProvider>
                         <PageTemplate>
                             <ConceptPage />
                         </PageTemplate>
                     </WebSocketProvider>
-                </UserInfoTemplate>
+                </UserInfoContext.Provider>
             </ErrorBoundary>
         </ProviderTemplate>
     );

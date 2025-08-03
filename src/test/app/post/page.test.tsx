@@ -1,12 +1,10 @@
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
-import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { vitestSetup } from "../vitest.setup";
 import { PostEmoteRequest } from "@/@types";
 import PostPage from "@/app/(main)/post/page";
-import { ErrorBoundary, ProviderTemplate, UserInfoTemplate, WebSocketProvider } from "@/components/template";
+import { ErrorBoundary, ProviderTemplate, UserInfoContext, WebSocketProvider } from "@/components/template";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -37,20 +35,6 @@ vi.mock("jwt-decode", () => ({
     })
 }));
 
-const server = setupServer(
-    http.get("http://localhost:3000/api/userSub/:userSub", () => {
-        return HttpResponse.json({
-            userId: "@x",
-            userName: "User X",
-            userAvatarUrl: "https://image.test/x.png"
-        });
-    })
-);
-
-beforeAll(() => {
-    server.listen();
-});
-
 beforeEach(() => {
     vi.clearAllMocks();
     vi.resetAllMocks();
@@ -65,18 +49,21 @@ beforeEach(() => {
 
 afterEach(() => {
     cleanup();
-    server.resetHandlers();
 });
 
 const rendering = (): void => {
     render(
         <ProviderTemplate>
             <ErrorBoundary>
-                <UserInfoTemplate>
+                <UserInfoContext.Provider
+                    value={{
+                        userInfo: { userId: "@x", userName: "User X", userAvatarUrl: "https://image.test/x.png" }
+                    }}
+                >
                     <WebSocketProvider>
                         <PostPage />
                     </WebSocketProvider>
-                </UserInfoTemplate>
+                </UserInfoContext.Provider>
             </ErrorBoundary>
         </ProviderTemplate>
     );
