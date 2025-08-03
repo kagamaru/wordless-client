@@ -17,7 +17,13 @@ export function ProviderTemplate({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const queryClient = new QueryClient();
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: {
+                retry: false
+            }
+        }
+    });
     const [token, setToken] = useState("");
     const isMockReady = useMock();
     const isMockEnabled = process.env.NEXT_PUBLIC_API_MOCKING === "enabled";
