@@ -6,11 +6,13 @@ import { css } from "ss/css";
 type Props = {
     isFollowing: boolean;
     onPostFollowButtonClickAction: () => void;
+    onUnFollowButtonClickAction: () => void;
 };
 
 export const FixedFloatingFollowButton: React.FC<Props> = ({
     isFollowing,
-    onPostFollowButtonClickAction: onFollowButtonClickAction
+    onPostFollowButtonClickAction: onFollowButtonClickAction,
+    onUnFollowButtonClickAction
 }) => {
     const isMobile = useIsMobile();
     const wrapperStyle = css({
@@ -28,7 +30,7 @@ export const FixedFloatingFollowButton: React.FC<Props> = ({
         backgroundColor: "white !important",
         color: "followBlue !important",
         fontWeight: "bold !important",
-        border: "2px solid #1677FF !important"
+        border: "2px solid followBlue !important"
     });
 
     const followingButtonStyle = css({
@@ -49,7 +51,12 @@ export const FixedFloatingFollowButton: React.FC<Props> = ({
                 {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
                 <ConfigProvider wave={{ disabled: true }}>
                     {isFollowing ? (
-                        <Button shape="round" icon={<CheckCircleOutlined />} className={followingButtonStyle}>
+                        <Button
+                            shape="round"
+                            icon={<CheckCircleOutlined />}
+                            className={followingButtonStyle}
+                            onClick={onUnFollowButtonClickAction}
+                        >
                             フォロー中
                         </Button>
                     ) : (

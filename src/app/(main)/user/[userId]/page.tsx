@@ -20,10 +20,10 @@ import {
     UserSukiSection
 } from "@/components/molecules";
 import { WordlessEmotes } from "@/components/organisms";
-import { fetchNextjsServer, getHeader, postNextjsServer } from "@/helpers";
+import { UserInfoContext } from "@/components/template";
+import { deleteNextjsServer, fetchNextjsServer, getHeader, postNextjsServer } from "@/helpers";
 import { useError } from "@/hooks";
 import { useEmoteStore } from "@/store";
-import { UserInfoContext } from "@/components/template";
 
 export default function UserPage() {
     const { userId } = useParams();
@@ -43,10 +43,10 @@ export default function UserPage() {
     let numberOfCompletedAcquisitionsCompleted = 10;
 
     const {
-        data,
+        data: fetchedEmotes,
         refetch: refetchEmotes,
-        isError,
-        error,
+        isError: isFetchedEmotesError,
+        error: fetchedEmotesError,
         isPending
     } = useQuery({
         queryKey: ["emotes", numberOfCompletedAcquisitionsCompleted],
@@ -115,7 +115,7 @@ export default function UserPage() {
                     `/api/emote?userId=${userId}&numberOfCompletedAcquisitionsCompleted=${"10"}&sequenceNumberStartOfSearch=${emotes[emotes.length - 1]?.sequenceNumber ?? ""}`,
                     getHeader()
                 );
-                return response;
+                return response.data;
             } else {
                 return null;
             }
@@ -142,23 +142,34 @@ export default function UserPage() {
         retry: 0
     });
 
+    const {
+        data: unFollowResponse,
+        mutateAsync: unFollow,
+        isError: isUnFollowError,
+        error: unFollowError
+    } = useMutation({
+        mutationFn: async () => {
+            const response = await deleteNextjsServer<FetchFollowResponse>(
+                `/api/follow/${userId}`,
+                {
+                    followerId: currentUserInfo?.userId
+                },
+                getHeader()
+            );
+            return response.data;
+        },
+        retry: 0
+    });
+
     const onReactionClickAction = async () => {
         // TODO: リアクションしたエモートのみを取得し、反映するよう設計変更する
         // BUG: 現在はユーザーページのユーザーがエモートを新規に投稿した時に、リアクションしたエモートが表示できない可能性がある
         numberOfCompletedAcquisitionsCompleted = emotes.length;
         await refetchEmotes();
         numberOfCompletedAcquisitionsCompleted = 10;
-        if (data) {
-            setEmotes(data.emotes);
+        if (fetchedEmotes) {
+            setEmotes(fetchedEmotes.emotes);
         }
-    };
-
-    const onFolloweesButtonClick = () => {
-        setIsFollowersDrawerOpen(true);
-    };
-
-    const onFollowingButtonClick = () => {
-        setIsFollowingDrawerOpen(true);
     };
 
     const loadMoreEmotes = async () => {
@@ -177,14 +188,23 @@ export default function UserPage() {
         }
     };
 
+    const onUnFollowButtonClickAction = async () => {
+        try {
+            await unFollow();
+        } catch (error) {
+            console.error("onUnFollowButtonClickActionError");
+        }
+    };
+
     useEffect(() => {
         const errors = [
-            { isError: isError, error: error },
+            { isError: isFetchedEmotesError, error: fetchedEmotesError },
             { isError: isProfileUserInfoError, error: profileUserInfoError },
             { isError: isFollowError, error: followError },
             { isError: isUserSukiError, error: userSukiError },
             { isError: isFetchingMoreEmotesError, error: fetchingMoreEmotesError },
-            { isError: isPostFollowError, error: postFollowError }
+            { isError: isPostFollowError, error: postFollowError },
+            { isError: isUnFollowError, error: unFollowError }
         ];
 
         errors.forEach(({ isError, error }) => {
@@ -196,8 +216,8 @@ export default function UserPage() {
         window.scrollTo(0, 0);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
-        isError,
-        error,
+        isFetchedEmotesError,
+        fetchedEmotesError,
         isProfileUserInfoError,
         profileUserInfoError,
         isUserSukiError,
@@ -207,36 +227,43 @@ export default function UserPage() {
         isFetchingMoreEmotesError,
         fetchingMoreEmotesError,
         isPostFollowError,
-        postFollowError
+        postFollowError,
+        isUnFollowError,
+        unFollowError
     ]);
 
     useEffect(() => {
-        if (data) {
-            setEmotes(data.emotes);
+        if (fetchedEmotes) {
+            setEmotes(fetchedEmotes.emotes);
         }
-    }, [data]);
+    }, [fetchedEmotes]);
 
     useEffect(() => {
-        if (moreEmotes && moreEmotes.data && moreEmotes.data.emotes.length > 0) {
-            setEmotes([...emotes, ...moreEmotes.data.emotes]);
-        } else if (moreEmotes && moreEmotes.data && moreEmotes.data.emotes.length === 0) {
+        if (moreEmotes && moreEmotes.emotes.length > 0) {
+            setEmotes([...emotes, ...moreEmotes.emotes]);
+        } else if (moreEmotes && moreEmotes.emotes.length === 0) {
             setHasLastEmoteFetched(true);
         }
     }, [moreEmotes]);
 
-    useEffect(() => {
-        if (followResponse) {
-            setIsFollowing(followResponse.followeeUserIds.includes(currentUserInfo?.userId ?? ""));
-            setFollowResponseState(followResponse);
+    const updateFollowState = (response: FetchFollowResponse | undefined) => {
+        if (response) {
+            setIsFollowing(response.followeeUserIds.includes(currentUserInfo?.userId ?? ""));
+            setFollowResponseState(response);
         }
+    };
+
+    useEffect(() => {
+        updateFollowState(followResponse);
     }, [followResponse]);
 
     useEffect(() => {
-        if (postFollowResponse) {
-            setIsFollowing(postFollowResponse.followeeUserIds.includes(currentUserInfo?.userId ?? ""));
-            setFollowResponseState(postFollowResponse);
-        }
+        updateFollowState(postFollowResponse);
     }, [postFollowResponse]);
+
+    useEffect(() => {
+        updateFollowState(unFollowResponse);
+    }, [unFollowResponse]);
 
     useEffect(() => {
         useEmoteStore.getState().cleanAllData();
@@ -249,15 +276,19 @@ export default function UserPage() {
                 {profileUserInfo && <UserProfile userInfo={profileUserInfo} />}
                 <FollowButtonSection
                     totalNumberOfFollowees={followResponseState?.totalNumberOfFollowees ?? 0}
-                    onFolloweesClickAction={onFolloweesButtonClick}
+                    onFolloweesClickAction={() => {
+                        setIsFollowersDrawerOpen(true);
+                    }}
                     totalNumberOfFollowing={followResponseState?.totalNumberOfFollowing ?? 0}
-                    onFollowingClickAction={onFollowingButtonClick}
+                    onFollowingClickAction={() => {
+                        setIsFollowingDrawerOpen(true);
+                    }}
                 />
                 <UserSukiSection userSukiEmojis={userSukiResponse?.userSuki ?? []} />
                 <ShadowDivider />
             </div>
             {isPending && <LoadingSpin />}
-            {!isError &&
+            {!isFetchedEmotesError &&
                 !isPending &&
                 (emotes.length > 0 ? (
                     <>
@@ -274,6 +305,7 @@ export default function UserPage() {
             <FixedFloatingFollowButton
                 isFollowing={isFollowing}
                 onPostFollowButtonClickAction={onPostFollowButtonClickAction}
+                onUnFollowButtonClickAction={onUnFollowButtonClickAction}
             />
             {isFollowersDrawerOpen && (
                 <FollowUsersDrawer

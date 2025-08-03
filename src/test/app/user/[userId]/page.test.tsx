@@ -304,6 +304,14 @@ const server = setupServer(
             followeeUserIds: ["@a", "@b", "@fuga_fuga", "@x"]
         });
     }),
+    http.delete("http://localhost:3000/api/follow/:userId", () => {
+        return HttpResponse.json({
+            totalNumberOfFollowing: 10,
+            followingUserIds: ["@a", "@b", "@c"],
+            totalNumberOfFollowees: 19,
+            followeeUserIds: ["@a", "@b"]
+        });
+    }),
     http.get("http://localhost:3000/api/userSuki/:userId", () => {
         return HttpResponse.json({
             userId: "@x",
@@ -1675,6 +1683,49 @@ describe("フォローボタンをクリックした時", () => {
                 );
 
                 await user.click(await screen.findByRole("button", { name: "user-add フォロー" }));
+
+                await waitFor(() => {
+                    const alertComponent = screen.getByRole("alert");
+                    expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                    expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                });
+            }
+        );
+    });
+});
+
+describe("フォロー解除ボタンをクリックした時", () => {
+    beforeEach(async () => {
+        rendering();
+
+        await user.click(await screen.findByRole("button", { name: "user-add フォロー" }));
+    });
+
+    describe("正常系", () => {
+        test("フォロワー数を更新する", async () => {
+            await user.click(await screen.findByRole("button", { name: "check-circle フォロー中" }));
+
+            await waitFor(() => {
+                expect(within(screen.getByRole("button", { name: "フォロワー数を表示" })).getByText("19")).toBeTruthy();
+            });
+        });
+    });
+
+    describe("異常系", () => {
+        test.each([
+            ["FOL-31", "不正なリクエストです。もう一度やり直してください。"],
+            ["FOL-32", "不正なリクエストです。もう一度やり直してください。"],
+            ["FOL-33", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+        ])(
+            "フォロー登録APIに%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+            async (errorCode, errorMessage) => {
+                server.use(
+                    http.delete("http://localhost:3000/api/follow/:userId", () => {
+                        return HttpResponse.json({ data: errorCode }, { status: 400 });
+                    })
+                );
+
+                await user.click(await screen.findByRole("button", { name: "check-circle フォロー中" }));
 
                 await waitFor(() => {
                     const alertComponent = screen.getByRole("alert");
