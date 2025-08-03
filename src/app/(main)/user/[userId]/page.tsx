@@ -56,8 +56,7 @@ export default function UserPage() {
                 getHeader()
             );
             return response.data;
-        },
-        retry: 0
+        }
     });
 
     const {
@@ -69,8 +68,7 @@ export default function UserPage() {
         queryFn: async () => {
             const response = await fetchNextjsServer<FetchFollowResponse>(`/api/follow/${userId}`, getHeader());
             return response.data;
-        },
-        retry: 0
+        }
     });
 
     const {
@@ -85,8 +83,7 @@ export default function UserPage() {
                 getHeader()
             );
             return response.data;
-        },
-        retry: 0
+        }
     });
 
     const {
@@ -98,8 +95,7 @@ export default function UserPage() {
         queryFn: async () => {
             const response = await fetchNextjsServer<User>(`/api/user/${userId}`, getHeader());
             return response.data;
-        },
-        retry: 0
+        }
     });
 
     const {
@@ -119,8 +115,7 @@ export default function UserPage() {
             } else {
                 return null;
             }
-        },
-        retry: 0
+        }
     });
 
     const {
@@ -138,8 +133,7 @@ export default function UserPage() {
                 getHeader()
             );
             return response.data;
-        },
-        retry: 0
+        }
     });
 
     const {
@@ -157,8 +151,7 @@ export default function UserPage() {
                 getHeader()
             );
             return response.data;
-        },
-        retry: 0
+        }
     });
 
     const onReactionClickAction = async () => {

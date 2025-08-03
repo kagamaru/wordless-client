@@ -38,7 +38,6 @@ export function FollowUsersDrawer({ isOpen, setIsOpenAction, userIds, isFollower
             );
             return response.map((response) => response.data);
         },
-        retry: 0,
         enabled: hasUserInfo
     });
 

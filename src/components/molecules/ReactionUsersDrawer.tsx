@@ -76,8 +76,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
 
             return userReactionMap;
         },
-        enabled: isOpen,
-        retry: 0
+        enabled: isOpen
     });
 
     useEffect(() => {

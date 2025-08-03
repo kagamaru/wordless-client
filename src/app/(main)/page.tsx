@@ -26,7 +26,6 @@ export default function Home() {
             );
             return response.data;
         },
-        retry: 0,
         enabled: !hasEmoteSet
     });
 
@@ -47,8 +46,7 @@ export default function Home() {
             } else {
                 return null;
             }
-        },
-        retry: 0
+        }
     });
 
     const loadMoreEmotes = async () => {

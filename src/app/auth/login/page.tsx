@@ -29,8 +29,7 @@ export default function LoginSignup() {
                 password: request.password
             });
             return response.data;
-        },
-        retry: 0
+        }
     });
 
     const onLoginClick = async () => {

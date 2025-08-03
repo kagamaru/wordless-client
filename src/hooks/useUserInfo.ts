@@ -37,8 +37,7 @@ export const useUserInfo = () => {
 
             return user.data;
         },
-        enabled: !!token,
-        retry: false
+        enabled: !!token
     });
 
     return { data, isLoading, error };
