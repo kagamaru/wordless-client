@@ -8,6 +8,7 @@ import { handleAPIError } from "@/helpers/lambdaConnectionHelpers/handleAPIError
 import { getHeader } from "@/helpers/nextjsServerConnectionHelpers/getHeader";
 import { fetchNextjsServer } from "@/helpers/nextjsServerConnectionHelpers/fetchNextjsServer";
 import { postNextjsServer } from "@/helpers/nextjsServerConnectionHelpers/postNextjsServer";
+import { deleteNextjsServer } from "@/helpers/nextjsServerConnectionHelpers/deleteNextjsServer";
 export {
     emojiHelper,
     emojiSearch,
@@ -17,6 +18,7 @@ export {
     postWithTimeout,
     fetchNextjsServer,
     postNextjsServer,
+    deleteNextjsServer,
     handleAPIError,
     getHeader
 };
