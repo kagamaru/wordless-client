@@ -369,7 +369,8 @@ describe("初期表示時", () => {
         describe("ユーザー情報表示部分", () => {
             test("ユーザーのプロフィール画像を表示する", async () => {
                 rendering();
-                const userProfileImage = await screen.findByAltText("User Aのトッププロフィール画像");
+                const userInfoSection = await screen.findByRole("group", { name: "ユーザー情報" });
+                const userProfileImage = within(userInfoSection).getByAltText("User Aのトッププロフィール画像");
 
                 await waitFor(() => {
                     expect(userProfileImage).toBeTruthy();
@@ -378,7 +379,8 @@ describe("初期表示時", () => {
 
             test("ユーザーの名前を表示する", async () => {
                 rendering();
-                const userName = await screen.findByText("User A");
+                const userInfoSection = await screen.findByRole("group", { name: "ユーザー情報" });
+                const userName = within(userInfoSection).getByText("User A");
 
                 await waitFor(() => {
                     expect(userName).toBeTruthy();
@@ -387,7 +389,8 @@ describe("初期表示時", () => {
 
             test("ユーザーのIDを表示する", async () => {
                 rendering();
-                const userId = await screen.findByText("@a");
+                const userInfoSection = await screen.findByRole("group", { name: "ユーザー情報" });
+                const userId = within(userInfoSection).getByText("@a");
 
                 await waitFor(() => {
                     expect(userId).toBeTruthy();
@@ -396,21 +399,27 @@ describe("初期表示時", () => {
 
             test("ユーザーのフォロー数を表示する", async () => {
                 rendering();
+                const userInfoSection = await screen.findByRole("group", { name: "ユーザー情報" });
 
                 await waitFor(() => {
-                    expect(
-                        within(screen.getByRole("button", { name: "フォロー数を表示" })).getByText("10")
-                    ).toBeTruthy();
+                    const displayNumberOfFollowersButton = within(userInfoSection).getByRole("button", {
+                        name: "フォロー数を表示"
+                    });
+                    expect(displayNumberOfFollowersButton).toBeTruthy();
+                    expect(within(displayNumberOfFollowersButton).getByText("10")).toBeTruthy();
                 });
             });
 
             test("ユーザーのフォロワー数を表示する", async () => {
                 rendering();
+                const userInfoSection = await screen.findByRole("group", { name: "ユーザー情報" });
 
                 await waitFor(() => {
-                    expect(
-                        within(screen.getByRole("button", { name: "フォロワー数を表示" })).getByText("20")
-                    ).toBeTruthy();
+                    const displayNumberOfFolloweesButton = within(userInfoSection).getByRole("button", {
+                        name: "フォロワー数を表示"
+                    });
+                    expect(displayNumberOfFolloweesButton).toBeTruthy();
+                    expect(within(displayNumberOfFolloweesButton).getByText("20")).toBeTruthy();
                 });
             });
 
@@ -433,62 +442,65 @@ describe("初期表示時", () => {
         describe("エモート表示部分", () => {
             test("エモートをサーバから受け取った数表示する", async () => {
                 rendering();
+                const emoteList = await screen.findByRole("list", { name: "エモート一覧" });
 
                 await waitFor(() => {
-                    expect(screen.getAllByRole("listitem").length).toBe(4);
+                    expect(within(emoteList).getAllByRole("listitem").length).toBe(4);
                 });
             });
 
             test("投稿者の名前を表示する", async () => {
                 rendering();
+                const emoteList = await screen.findByRole("list", { name: "エモート一覧" });
 
                 await waitFor(() => {
-                    expect(screen.getByText("User A")).toBeTruthy();
+                    expect(within(emoteList).getAllByText("User A").length).toBe(4);
                 });
             });
 
             test("投稿者のアカウント名を表示する", async () => {
                 rendering();
+                const emoteList = await screen.findByRole("list", { name: "エモート一覧" });
 
                 await waitFor(() => {
-                    expect(screen.getByText("@a")).toBeTruthy();
+                    expect(within(emoteList).getAllByText("@a").length).toBe(4);
                 });
             });
 
             test("投稿日時を表示する", async () => {
                 rendering();
+                const emoteList = await screen.findByRole("list", { name: "エモート一覧" });
 
                 await waitFor(() => {
-                    expect(screen.getByText("2025-01-01 18:00:00")).toBeTruthy();
-                    expect(screen.getByText("2024-01-01 18:12:30")).toBeTruthy();
-                    expect(screen.getByText("2023-01-01 18:00:00")).toBeTruthy();
+                    expect(within(emoteList).getByText("2025-01-01 18:00:00")).toBeTruthy();
+                    expect(within(emoteList).getByText("2024-01-01 18:12:30")).toBeTruthy();
+                    expect(within(emoteList).getByText("2023-01-01 18:00:00")).toBeTruthy();
                 });
             });
 
             test("絵文字を表示する", async () => {
                 rendering();
+                const emoteList = await screen.findByRole("list", { name: "エモート一覧" });
+                const listItemA = within(emoteList).getByRole("listitem", { name: "a" });
+                const listItemB = within(emoteList).getByRole("listitem", { name: "b" });
+                const listItemC = within(emoteList).getByRole("listitem", { name: "c" });
+                const listItemD = within(emoteList).getByRole("listitem", { name: "d" });
 
                 await waitFor(() => {
-                    expect(
-                        within(screen.getByRole("listitem", { name: "a" })).getAllByLabelText(":rabbit:").length
-                    ).toBe(4);
-                    expect(
-                        within(screen.getByRole("listitem", { name: "b" })).getAllByLabelText(":smiling_face:").length
-                    ).toBe(3);
-                    expect(
-                        within(screen.getByRole("listitem", { name: "c" })).getAllByLabelText(":rabbit:").length
-                    ).toBe(1);
-                    expect(within(screen.getByRole("listitem", { name: "d" })).getAllByLabelText(":test:").length).toBe(
-                        1
-                    );
+                    expect(within(listItemA).getAllByLabelText(":rabbit:").length).toBe(4);
+                    expect(within(listItemB).getAllByLabelText(":smiling_face:").length).toBe(3);
+                    expect(within(listItemC).getAllByLabelText(":rabbit:").length).toBe(1);
+                    expect(within(listItemD).getAllByLabelText(":test:").length).toBe(1);
                 });
             });
 
             test("投稿者のプロフィール画像を表示する", async () => {
                 rendering();
+                const emoteList = await screen.findByRole("list", { name: "エモート一覧" });
+                const listItemA = within(emoteList).getByRole("listitem", { name: "a" });
 
                 await waitFor(() => {
-                    expect(screen.getAllByAltText("User AProfileImage").length).toBe(4);
+                    expect(within(listItemA).getByAltText("User AProfileImage")).toBeTruthy();
                 });
             });
 
