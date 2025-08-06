@@ -1,3 +1,4 @@
+import { CurrentUserView } from "./CurrentUserView";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { OtherPageUserView } from "./OtherPageUserView";
 import { PageTemplate } from "./PageTemplate";
@@ -6,6 +7,7 @@ import { UserInfoContext, UserInfoTemplate } from "./UserInfoTemplate";
 import { WebSocketContext, WebSocketProvider } from "./WebSocketTemplate";
 
 export {
+    CurrentUserView,
     ErrorBoundary,
     OtherPageUserView,
     PageTemplate,

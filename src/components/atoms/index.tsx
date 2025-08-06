@@ -1,8 +1,12 @@
+import { CancelButton } from "@/components/atoms/CancelButton";
 import { CloseButton } from "@/components/atoms/CloseButton";
+import { DeleteButton } from "@/components/atoms/DeleteButton";
+import { DeleteIconButton } from "@/components/atoms/DeleteIconButton";
 import { ImageEmojiButtonRow } from "@/components/atoms/ImageEmojiButtonRow";
 import { DisplayEmoteEmoji } from "@/components/atoms/DisplayEmoteEmoji";
 import { DisplayErrorMessage } from "@/components/atoms/DisplayErrorMessage";
 import { DisplayErrorMessageWithoutErrorCode } from "@/components/atoms/DisplayErrorMessageWithoutErrorCode";
+import { EditButton } from "@/components/atoms/EditButton";
 import { EmailAddressInput } from "@/components/atoms/EmailAddressInput";
 import { Emoji } from "@/components/atoms/Emoji";
 import { EmojiButton } from "@/components/atoms/EmojiButton";
@@ -26,17 +30,21 @@ import { PlusButton } from "@/components/atoms/PlusButton";
 import { ResetPasswordLink } from "@/components/atoms/ResetPasswordLink";
 import { ShadowDivider } from "@/components/atoms/ShadowDivider";
 import { SignupButton } from "@/components/atoms/SignupButton";
+import { SyncButton } from "@/components/atoms/SyncButton";
 import { TotalNumberOfFollowees } from "@/components/atoms/TotalNumberOfFollowees";
 import { TotalNumberOfFollowing } from "@/components/atoms/TotalNumberOfFollowing";
 import { TotalNumberOfReactionsButton } from "@/components/atoms/TotalNumberOfReactionsButton";
 import { WordlessDivider } from "@/components/atoms/WordlessDivider";
 
 export {
+    CancelButton,
     CloseButton,
-    ImageEmojiButtonRow,
+    DeleteButton,
+    DeleteIconButton,
     DisplayEmoteEmoji,
     DisplayErrorMessage,
     DisplayErrorMessageWithoutErrorCode,
+    EditButton,
     EmailAddressInput,
     Emoji,
     EmojiButton,
@@ -48,6 +56,7 @@ export {
     EmoteReactionButton,
     FixedFloatingButton,
     FixedFloatingFollowButton,
+    ImageEmojiButtonRow,
     LoadingSpin,
     LastEmoteFetchedText,
     LoadMoreButton,
@@ -60,6 +69,7 @@ export {
     ResetPasswordLink,
     ShadowDivider,
     SignupButton,
+    SyncButton,
     TotalNumberOfFollowees,
     TotalNumberOfFollowing,
     TotalNumberOfReactionsButton,

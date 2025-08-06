@@ -1,3 +1,7 @@
+import { CurrentUserProfile } from "@/components/molecules/CurrentUserProfile";
+import { CurrentUserSukiSection } from "@/components/molecules/CurrentUserSukiSection";
+import { CurrentUserWordlessEmote } from "@/components/molecules/CurrentUserWordlessEmote";
+import { DeleteEmoteDialog } from "@/components/molecules/DeleteEmoteDialog";
 import { EmojiButtonBlocksByType } from "@/components/molecules/EmojiButtonBlocksByType";
 import { EmotePostEmojiButtonBlocksByType } from "@/components/molecules/EmotePostEmojiButtonBlocksByType";
 import { EmojiSelectTabs } from "@/components/molecules/EmojiSelectTabs";
@@ -15,6 +19,10 @@ import { OtherUserSukiSection } from "@/components/molecules/OtherUserSukiSectio
 import { WordlessEmote } from "@/components/molecules/WordlessEmote";
 
 export {
+    CurrentUserProfile,
+    CurrentUserSukiSection,
+    CurrentUserWordlessEmote,
+    DeleteEmoteDialog,
     EmojiButtonBlocksByType,
     EmojiSelectTabs,
     EmotePostEmojiButtonBlocksByType,
