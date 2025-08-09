@@ -309,5 +309,8 @@ export const emoteHandlers = [
                       }
                   ]
         });
+    }),
+    http.delete("http://localhost:3000/api/emote", () => {
+        return HttpResponse.json({});
     })
 ];
