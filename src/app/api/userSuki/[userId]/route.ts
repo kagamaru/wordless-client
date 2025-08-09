@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchWithTimeout, handleAPIError } from "@/helpers";
+import { fetchWithTimeout, handleAPIError, postWithTimeout } from "@/helpers";
 
-import { User } from "@/@types";
+import { PostUserSukiRequest, PostUserSukiResponse, User } from "@/@types";
 
 const restApiUrl = process.env.REST_API_URL ?? "";
 
@@ -15,6 +15,29 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
 
     try {
         const response = await fetchWithTimeout<User>(restApiUrl + `userSuki/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        return NextResponse.json(response.data, { status: response.status });
+    } catch (error) {
+        return handleAPIError(error);
+    }
+}
+
+export async function POST(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+    const { userId } = await params;
+    const token = req.headers.get("authorization");
+    const body = (await req.json()) as PostUserSukiRequest;
+
+    if (!userId || !token) {
+        return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+    }
+
+    try {
+        const response = await postWithTimeout<PostUserSukiResponse>(restApiUrl + `userSuki/${userId}`, body, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
