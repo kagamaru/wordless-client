@@ -89,7 +89,7 @@ export default function Concept() {
                         </Button>
                     </div>
                     <div className="mt-5">
-                        <span>メールアドレス：</span>
+                        <span>メールアドレス(転職活動中)：</span>
                         <a href="mailto:01a17124@gmail.com">01a17124@gmail.com</a>
                     </div>
                     <div className="m-5">
