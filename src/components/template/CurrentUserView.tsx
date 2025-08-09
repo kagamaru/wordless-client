@@ -6,8 +6,8 @@ import { FetchFollowResponse, User, UserSukiEmojis } from "@/@types";
 import { Emote, FetchEmotesResponse } from "@/class";
 import { DisplayErrorMessage, LoadingSpin, NoEmoteText } from "@/components/atoms";
 import { EndOfEmotes } from "@/components/molecules";
-import { CurrentUserInfo, CurrentUserWordlessEmotes, WordlessEmotes } from "@/components/organisms";
-import { fetchNextjsServer, getHeader } from "@/helpers";
+import { CurrentUserInfo, CurrentUserWordlessEmotes } from "@/components/organisms";
+import { deleteNextjsServer, fetchNextjsServer, getHeader } from "@/helpers";
 import { useError } from "@/hooks";
 
 type Props = {
@@ -99,14 +99,34 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
         }
     });
 
-    const onReactionClickAction = async () => {
-        // TODO: リアクションしたエモートのみを取得し、反映するよう設計変更する
-        // BUG: 現在はユーザーページのユーザーがエモートを新規に投稿した時に、リアクションしたエモートが表示できない可能性がある
+    const {
+        mutateAsync: deleteEmote,
+        isPending: isDeletingEmote,
+        isError: isDeletingEmoteError,
+        error: deletingEmoteError
+    } = useMutation({
+        mutationFn: async (emoteId: string) => {
+            await deleteNextjsServer<void>(`/api/emote/${emoteId}`, {}, getHeader());
+        }
+    });
+
+    // TODO: リアクションしたエモートのみを取得し、反映するよう設計変更する
+    // BUG: 現在はユーザーページのユーザーがエモートを新規に投稿した時に、リアクションしたエモートが表示できない可能性がある
+    const setNumberOfAcquisitionsAndRefetchEmotes = async () => {
         numberOfCompletedAcquisitionsCompleted = emotes.length;
         await refetchEmotes();
         numberOfCompletedAcquisitionsCompleted = 10;
         if (fetchedEmotes) {
             setEmotes(fetchedEmotes.emotes);
+        }
+    };
+
+    const onEmoteDeleteAction = async (emoteId: string) => {
+        try {
+            await deleteEmote(emoteId);
+            setNumberOfAcquisitionsAndRefetchEmotes();
+        } catch (error) {
+            console.error("onEmoteDeleteActionError");
         }
     };
 
@@ -124,7 +144,8 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
             { isError: isProfileUserInfoError, error: profileUserInfoError },
             { isError: isFollowError, error: followError },
             { isError: isUserSukiError, error: userSukiError },
-            { isError: isFetchingMoreEmotesError, error: fetchingMoreEmotesError }
+            { isError: isFetchingMoreEmotesError, error: fetchingMoreEmotesError },
+            { isError: isDeletingEmoteError, error: deletingEmoteError }
         ];
 
         errors.forEach(({ isError, error }) => {
@@ -149,7 +170,9 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
         isFollowError,
         followError,
         isFetchingMoreEmotesError,
-        fetchingMoreEmotesError
+        fetchingMoreEmotesError,
+        isDeletingEmoteError,
+        deletingEmoteError
     ]);
 
     useEffect(() => {
@@ -191,7 +214,9 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
                     <>
                         <CurrentUserWordlessEmotes
                             emotes={emotes}
-                            onReactionClickAction={onReactionClickAction}
+                            isDeletingEmote={isDeletingEmote}
+                            onReactionClickAction={setNumberOfAcquisitionsAndRefetchEmotes}
+                            onEmoteDeleteAction={onEmoteDeleteAction}
                         ></CurrentUserWordlessEmotes>
                         <EndOfEmotes
                             hasLastEmoteFetched={hasLastEmoteFetched}
