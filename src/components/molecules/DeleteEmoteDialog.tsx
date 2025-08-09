@@ -4,17 +4,12 @@ import { css } from "ss/css";
 
 type Props = {
     isOpen: boolean;
+    isDeletingEmote: boolean;
     onClose: () => void;
     onDelete: () => void;
 };
 
-export function DeleteEmoteDialog({ isOpen, onClose, onDelete }: Props) {
-    const handleDelete = () => {
-        // TODO: エモート削除を画面から呼び出す
-        console.log("エモート削除");
-        onDelete();
-    };
-
+export function DeleteEmoteDialog({ isOpen, isDeletingEmote, onClose, onDelete }: Props) {
     const deleteDialogStyle = css({
         maxWidth: 400,
         width: "90%"
@@ -39,7 +34,7 @@ export function DeleteEmoteDialog({ isOpen, onClose, onDelete }: Props) {
 
                 <div className={buttonBlockStyle}>
                     <CancelButton onClickAction={onClose} />
-                    <DeleteButton onClickAction={handleDelete} />
+                    <DeleteButton onClickAction={onDelete} isPending={isDeletingEmote} />
                 </div>
             </Modal>
         </>

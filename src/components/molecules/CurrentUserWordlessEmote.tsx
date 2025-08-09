@@ -17,26 +17,25 @@ import {
 import { DeleteEmoteDialog, ReactionUsersDrawer } from "@/components/molecules";
 import { EmojiDialog } from "@/components/organisms";
 import { UserInfoContext, WebSocketContext } from "@/components/template";
+import { Emote } from "@/class";
 import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";
 
 type Props = {
-    emote: {
-        userName: string;
-        userId: string;
-        userAvatarUrl: string;
-        emoteDatetime: string;
-        emoteEmojis: EmoteEmojis;
-        emoteReactionId: string;
-        totalNumberOfReactions: number;
-        emoteReactionEmojis: EmoteReactionEmojiWithNumber[];
-    };
+    emote: Emote;
+    isDeletingEmote: boolean;
     onReactionClickAction: (() => Promise<void>) | undefined;
+    onEmoteDeleteAction: (emoteId: string) => Promise<void>;
 };
 
 dayjs.locale("ja");
 
-export function CurrentUserWordlessEmote({ emote, onReactionClickAction }: Props) {
+export function CurrentUserWordlessEmote({
+    emote,
+    isDeletingEmote,
+    onReactionClickAction,
+    onEmoteDeleteAction
+}: Props) {
     const isMobile = useIsMobile();
     const router = useRouter();
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -277,8 +276,11 @@ export function CurrentUserWordlessEmote({ emote, onReactionClickAction }: Props
                 />
                 <DeleteEmoteDialog
                     isOpen={isDeleteEmoteDialogOpen}
+                    isDeletingEmote={isDeletingEmote}
                     onClose={() => setIsDeleteEmoteDialogOpen(false)}
-                    onDelete={() => {}}
+                    onDelete={() => {
+                        onEmoteDeleteAction(emote.emoteId);
+                    }}
                 />
             </div>
         </>
