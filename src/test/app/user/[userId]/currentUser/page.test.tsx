@@ -40,6 +40,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 const mockFetchEmotes = vi.fn();
+const mockDeleteEmote = vi.fn();
 let numberOfCompletedAcquisitionsCompleted = "";
 
 // NOTE: 操作者は User X, 表示しているユーザーは User X
@@ -246,6 +247,10 @@ const server = setupServer(
                       }
                   ]
         });
+    }),
+    http.delete("http://localhost:3000/api/emote/:emoteId", () => {
+        mockDeleteEmote();
+        return HttpResponse.json({});
     }),
     http.get("http://localhost:3000/api/user/:userId", ({ params }) => {
         const { userId } = params;
@@ -794,7 +799,27 @@ describe("操作者のユーザーのページを表示した時", () => {
                 await user.click(within(listItemA).getByRole("button", { name: "エモート削除ボタン" }));
             });
 
-            test.todo("エモート削除ボタンをクリックした時、エモートが削除される");
+            test("エモート削除ボタンをクリックした時、ローディングアイコンを表示する", async () => {
+                server.use(
+                    http.delete("http://localhost:3000/api/emote/:emoteId", () => {
+                        // NOTE: 永続的にローディング状態を維持
+                        return new Promise(() => {});
+                    })
+                );
+                await user.click(await screen.findByRole("button", { name: "削除する" }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("img", { name: "loading" })).toBeTruthy();
+                });
+            });
+
+            test("エモート削除ボタンをクリックした時、エモートが削除される", async () => {
+                await user.click(await screen.findByRole("button", { name: "削除する" }));
+
+                await waitFor(() => {
+                    expect(mockDeleteEmote).toHaveBeenCalled();
+                });
+            });
 
             test("×ボタンをクリックした時、エモート削除確認ダイアログが閉じられる", async () => {
                 await user.click(await screen.findByRole("button", { name: "Close" }));
@@ -813,7 +838,34 @@ describe("操作者のユーザーのページを表示した時", () => {
             });
         });
 
-        test.todo("異常系");
+        describe("異常系", () => {
+            test.each([
+                ["EMT-11", "不正なリクエストです。もう一度やり直してください。"],
+                ["EMT-12", "不正なリクエストです。もう一度やり直してください。"],
+                ["EMT-13", "接続できません。もう一度やり直してください。"]
+            ])(
+                "エモート削除APIで%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+                async (errorCode, errorMessage) => {
+                    server.use(
+                        http.delete("http://localhost:3000/api/emote/:emoteId", () => {
+                            return HttpResponse.json({ data: errorCode }, { status: 400 });
+                        })
+                    );
+                    rendering();
+                    const emoteList = await screen.findByRole("list", { name: "エモート一覧" });
+                    const listItemA = within(emoteList).getByRole("listitem", { name: "a" });
+                    await user.click(within(listItemA).getByRole("button", { name: "エモート削除ボタン" }));
+
+                    await user.click(await screen.findByRole("button", { name: "削除する" }));
+
+                    await waitFor(() => {
+                        const alertComponent = screen.getByRole("alert");
+                        expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                        expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                    });
+                }
+            );
+        });
     });
 
     describe("リアクション総数ボタンをクリックした時", () => {
