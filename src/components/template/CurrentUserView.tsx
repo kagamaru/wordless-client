@@ -122,8 +122,12 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
     };
 
     const onEmoteDeleteAction = async (emoteId: string) => {
-        await deleteEmote(emoteId);
-        setNumberOfAcquisitionsAndRefetchEmotes();
+        try {
+            await deleteEmote(emoteId);
+            setNumberOfAcquisitionsAndRefetchEmotes();
+        } catch (error) {
+            console.error("onEmoteDeleteActionError");
+        }
     };
 
     const loadMoreEmotes = async () => {
@@ -166,7 +170,9 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
         isFollowError,
         followError,
         isFetchingMoreEmotesError,
-        fetchingMoreEmotesError
+        fetchingMoreEmotesError,
+        isDeletingEmoteError,
+        deletingEmoteError
     ]);
 
     useEffect(() => {

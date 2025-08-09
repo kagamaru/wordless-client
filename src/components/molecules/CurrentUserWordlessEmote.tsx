@@ -218,6 +218,14 @@ export function CurrentUserWordlessEmote({
         router.push(`/user/${emote.userId}`);
     };
 
+    const onDeleteEmote = () => {
+        try {
+            onEmoteDeleteAction(emote.emoteId);
+        } catch (error) {
+            setIsDeleteEmoteDialogOpen(false);
+        }
+    };
+
     return (
         <>
             <div className={wordlessEmoteStyle}>
@@ -278,9 +286,7 @@ export function CurrentUserWordlessEmote({
                     isOpen={isDeleteEmoteDialogOpen}
                     isDeletingEmote={isDeletingEmote}
                     onClose={() => setIsDeleteEmoteDialogOpen(false)}
-                    onDelete={() => {
-                        onEmoteDeleteAction(emote.emoteId);
-                    }}
+                    onDelete={onDeleteEmote}
                 />
             </div>
         </>
