@@ -1,13 +1,13 @@
 import { Col, Row } from "antd";
 import { UserSukiEmojis } from "@/@types";
-import { Emoji } from "@/components/atoms";
+import { EditButton, Emoji } from "@/components/atoms";
 import { css } from "ss/css";
 
 type Props = {
     userSukiEmojis: UserSukiEmojis | [];
 };
 
-export const UserSukiSection = ({ userSukiEmojis }: Props) => {
+export const CurrentUserSukiSection = ({ userSukiEmojis }: Props) => {
     const emojiSizeStyle = css({
         fontSize: "32px !important",
         marginTop: "12px"
@@ -40,6 +40,9 @@ export const UserSukiSection = ({ userSukiEmojis }: Props) => {
                 </Row>
             </Col>
             {emojis}
+            <Col className="ml-3">
+                <EditButton ariaLabel="ユーザースキ変更ボタン" onClickAction={() => {}} />
+            </Col>
         </Row>
     );
 };

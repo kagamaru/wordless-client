@@ -9,7 +9,7 @@ type Props = {
     userInfo: User;
 };
 
-export const UserProfile: React.FC<Props> = ({ userInfo }) => {
+export const OtherUserProfile: React.FC<Props> = ({ userInfo }) => {
     const isMobile = useIsMobile();
     const { userName, userId, userAvatarUrl } = userInfo;
     const userNameTextStyle = css({

@@ -3,21 +3,26 @@
 import { useState } from "react";
 import { FetchFollowResponse, User, UserSukiEmojis } from "@/@types";
 import { ShadowDivider } from "@/components/atoms";
-import { FollowButtonSection, FollowUsersDrawer, OtherUserProfile, OtherUserSukiSection } from "@/components/molecules";
+import {
+    CurrentUserProfile,
+    CurrentUserSukiSection,
+    FollowButtonSection,
+    FollowUsersDrawer
+} from "@/components/molecules";
 
-type DisplayOtherUserInfoProps = {
+type CurrentUserInfoProps = {
     profileUserInfo: User;
     followInfo: FetchFollowResponse;
     userSukiEmojis: UserSukiEmojis;
 };
 
-export const DisplayOtherUserInfo = ({ profileUserInfo, followInfo, userSukiEmojis }: DisplayOtherUserInfoProps) => {
+export const CurrentUserInfo = ({ profileUserInfo, followInfo, userSukiEmojis }: CurrentUserInfoProps) => {
     const [activeDrawer, setActiveDrawer] = useState<"followees" | "following" | null>(null);
 
     return (
         <>
             <div role="group" aria-label="ユーザー情報">
-                <OtherUserProfile userInfo={profileUserInfo} />
+                <CurrentUserProfile userInfo={profileUserInfo} />
                 <FollowButtonSection
                     totalNumberOfFollowees={followInfo.totalNumberOfFollowees}
                     onFolloweesClickAction={() => {
@@ -28,7 +33,7 @@ export const DisplayOtherUserInfo = ({ profileUserInfo, followInfo, userSukiEmoj
                         setActiveDrawer("following");
                     }}
                 />
-                <OtherUserSukiSection userSukiEmojis={userSukiEmojis} />
+                <CurrentUserSukiSection userSukiEmojis={userSukiEmojis} />
                 <ShadowDivider />
             </div>
             {activeDrawer === "followees" && (

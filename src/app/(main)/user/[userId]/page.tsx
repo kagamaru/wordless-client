@@ -2,14 +2,16 @@
 
 import { useParams } from "next/navigation";
 import { useContext, useEffect } from "react";
-import { OtherPageUserView, UserInfoContext } from "@/components/template";
+import { CurrentUserView, OtherPageUserView, UserInfoContext } from "@/components/template";
 import { useEmoteStore } from "@/store";
 
 export default function UserPage() {
     const { userId } = useParams();
-    if (typeof userId !== "string") {
+    if (!userId || typeof userId !== "string") {
         throw new Error("userId is not a string");
     }
+    // NOTE: ユーザーIDがURLに含まれる場合、@が%40に変換されるため、ここで変換する
+    const formattedUserId = userId.replace("%40", "@");
 
     const currentUserId = useContext(UserInfoContext)?.userInfo?.userId;
     if (!currentUserId) {
@@ -22,7 +24,11 @@ export default function UserPage() {
 
     return (
         <>
-            <OtherPageUserView currentUserId={currentUserId} otherUserId={userId} />
+            {currentUserId === formattedUserId ? (
+                <CurrentUserView currentUserId={currentUserId} />
+            ) : (
+                <OtherPageUserView currentUserId={currentUserId} otherUserId={formattedUserId} />
+            )}
         </>
     );
 }
