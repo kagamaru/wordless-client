@@ -1,6 +1,6 @@
 // NOTE: vitestSetupは他のimportよりも先に呼び出す必要がある
 // NOTE: import順が変わるとモックが効かなくなるため、必ずこの位置に記述する
-import { vitestSetup } from "../../vitest.setup";
+import { vitestSetup } from "../../../vitest.setup";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
@@ -46,326 +46,328 @@ vi.mock("jwt-decode", () => ({
     })
 }));
 
-describe("操作者ではないユーザーのページを表示した時", () => {
-    const mockFetchEmotes = vi.fn();
-    let numberOfCompletedAcquisitionsCompleted = "";
-    const server = setupServer(
-        http.get("http://localhost:3000/api/emote", ({ request }) => {
-            const urlSearchParams = new URL(request.url).searchParams;
-            const sequenceNumberStartOfSearch = urlSearchParams.get("sequenceNumberStartOfSearch");
-            numberOfCompletedAcquisitionsCompleted =
-                urlSearchParams.get("numberOfCompletedAcquisitionsCompleted") ?? "";
-            mockFetchEmotes();
+const mockFetchEmotes = vi.fn();
+let numberOfCompletedAcquisitionsCompleted = "";
 
-            return HttpResponse.json({
-                emotes: sequenceNumberStartOfSearch
-                    ? [
-                          {
-                              sequenceNumber: 16,
-                              emoteId: "e",
-                              userName: "User A",
-                              userId: "@a",
-                              emoteDatetime: "2021-01-01T09:00:00.000Z",
-                              emoteReactionId: "reaction-e",
-                              emoteEmojis: [
-                                  {
-                                      emojiId: ":last:"
-                                  }
-                              ],
-                              userAvatarUrl: "https://image.test/a.png",
-                              emoteReactionEmojis: [
-                                  {
-                                      emojiId: ":tiger:",
-                                      numberOfReactions: 2,
-                                      reactedUserIds: ["@c"]
-                                  }
-                              ],
-                              totalNumberOfReactions: 2
-                          },
-                          {
-                              sequenceNumber: 15,
-                              emoteId: "f",
-                              userName: "User A",
-                              userId: "@a",
-                              emoteDatetime: "2020-01-01T09:12:30.000Z",
-                              emoteReactionId: "reaction-f",
-                              emoteEmojis: [
-                                  {
-                                      emojiId: ":smiling_face:"
-                                  }
-                              ],
-                              userAvatarUrl: "https://image.test/b.png",
-                              emoteReactionEmojis: [
-                                  {
-                                      emojiId: ":tiger:",
-                                      numberOfReactions: 1,
-                                      reactedUserIds: ["@x"]
-                                  }
-                              ],
-                              totalNumberOfReactions: 1
-                          },
-                          {
-                              sequenceNumber: 14,
-                              emoteId: "g",
-                              userName: "User A",
-                              userId: "@a",
-                              emoteDatetime: "2019-01-01T09:00:00.000Z",
-                              emoteReactionId: "reaction-g",
-                              emoteEmojis: [
-                                  {
-                                      emojiId: ":rabbit:"
-                                  }
-                              ],
-                              userAvatarUrl: "https://image.test/c.png",
-                              emoteReactionEmojis: [],
-                              totalNumberOfReactions: 0
-                          },
-                          {
-                              sequenceNumber: 13,
-                              emoteId: "h",
-                              userName: "User A",
-                              userId: "@a",
-                              emoteDatetime: "2018-01-01T09:00:00.000Z",
-                              emoteReactionId: "reaction-h",
-                              emoteEmojis: [
-                                  {
-                                      emojiId: ":test:"
-                                  }
-                              ],
-                              userAvatarUrl: "https://image.test/d.png",
-                              emoteReactionEmojis: [
-                                  {
-                                      emojiId: ":test:",
-                                      numberOfReactions: 0,
-                                      reactedUserIds: []
-                                  }
-                              ],
-                              totalNumberOfReactions: 0
-                          }
-                      ]
-                    : [
-                          {
-                              sequenceNumber: 20,
-                              emoteId: "a",
-                              userName: "User A",
-                              userId: "@a",
-                              emoteDatetime: "2025-01-01T09:00:00.000Z",
-                              emoteReactionId: "reaction-a",
-                              emoteEmojis: [
-                                  {
-                                      emojiId: ":rabbit:"
-                                  },
-                                  {
-                                      emojiId: ":rabbit:"
-                                  },
-                                  {
-                                      emojiId: ":rabbit:"
-                                  },
-                                  {
-                                      emojiId: ":rabbit:"
-                                  }
-                              ],
-                              userAvatarUrl: "https://image.test/a.png",
-                              emoteReactionEmojis: [
-                                  {
-                                      emojiId: ":party_parrot:",
-                                      numberOfReactions: 10,
-                                      reactedUserIds: ["@a", "@b"]
-                                  },
-                                  {
-                                      emojiId: ":cow:",
-                                      numberOfReactions: 2,
-                                      reactedUserIds: ["@c"]
-                                  }
-                              ],
-                              totalNumberOfReactions: 10
-                          },
-                          {
-                              sequenceNumber: 19,
-                              emoteId: "b",
-                              userName: "User A",
-                              userId: "@a",
-                              emoteDatetime: "2024-01-01T09:12:30.000Z",
-                              emoteReactionId: "reaction-b",
-                              emoteEmojis: [
-                                  {
-                                      emojiId: ":smiling_face:"
-                                  },
-                                  {
-                                      emojiId: ":smiling_face:"
-                                  },
-                                  {
-                                      emojiId: ":smiling_face:"
-                                  }
-                              ],
-                              userAvatarUrl: "https://image.test/b.png",
-                              emoteReactionEmojis: [
-                                  {
-                                      emojiId: ":cow:",
-                                      numberOfReactions: 200,
-                                      reactedUserIds: ["@a"]
-                                  },
-                                  {
-                                      emojiId: ":tiger:",
-                                      numberOfReactions: 1,
-                                      reactedUserIds: ["@x"]
-                                  }
-                              ],
-                              totalNumberOfReactions: 200
-                          },
-                          {
-                              sequenceNumber: 18,
-                              emoteId: "c",
-                              userName: "User A",
-                              userId: "@a",
-                              emoteDatetime: "2023-01-01T09:00:00.000Z",
-                              emoteReactionId: "reaction-c",
-                              emoteEmojis: [
-                                  {
-                                      emojiId: ":rabbit:"
-                                  }
-                              ],
-                              userAvatarUrl: "https://image.test/c.png",
-                              emoteReactionEmojis: [],
-                              totalNumberOfReactions: 0
-                          },
-                          {
-                              sequenceNumber: 17,
-                              emoteId: "d",
-                              userName: "User A",
-                              userId: "@a",
-                              emoteDatetime: "2022-01-01T09:00:00.000Z",
-                              emoteReactionId: "reaction-d",
-                              emoteEmojis: [
-                                  {
-                                      emojiId: ":test:"
-                                  }
-                              ],
-                              userAvatarUrl: "https://image.test/d.png",
-                              emoteReactionEmojis: [
-                                  {
-                                      emojiId: ":test:",
-                                      numberOfReactions: 0,
-                                      reactedUserIds: []
-                                  }
-                              ],
-                              totalNumberOfReactions: 0
-                          }
-                      ]
-            });
-        }),
-        http.get("http://localhost:3000/api/user/:userId", ({ params }) => {
-            const { userId } = params;
+// NOTE: 操作者は User X, 表示しているユーザーは User A
+const server = setupServer(
+    http.get("http://localhost:3000/api/emote", ({ request }) => {
+        const urlSearchParams = new URL(request.url).searchParams;
+        const sequenceNumberStartOfSearch = urlSearchParams.get("sequenceNumberStartOfSearch");
+        numberOfCompletedAcquisitionsCompleted = urlSearchParams.get("numberOfCompletedAcquisitionsCompleted") ?? "";
+        mockFetchEmotes();
 
-            switch (userId) {
-                case "@a":
-                    return HttpResponse.json({
-                        userId: "@a",
-                        userName: "User A",
-                        userAvatarUrl: "https://image.test/a.png"
-                    });
-                case "@b":
-                    return HttpResponse.json({
-                        userId: "@b",
-                        userName: "User B",
-                        userAvatarUrl: "https://image.test/b.png"
-                    });
-                case "@c":
-                    return HttpResponse.json({
-                        userId: "@c",
-                        userName: "User C",
-                        userAvatarUrl: "https://image.test/c.png"
-                    });
-                case "@fuga_fuga":
-                    return HttpResponse.json({
-                        userId: "@fuga_fuga",
-                        userName: "User Fuga",
-                        userAvatarUrl: "https://image.test/fuga.png"
-                    });
-                default:
-                    return HttpResponse.json({
-                        userId: "@user1",
-                        userName: "User One",
-                        userAvatarUrl: "https://image.test/user1.png"
-                    });
-            }
-        }),
-        http.get("http://localhost:3000/api/follow/:userId", () => {
-            return HttpResponse.json({
-                totalNumberOfFollowing: 10,
-                followingUserIds: ["@b", "@c"],
-                totalNumberOfFollowees: 20,
-                followeeUserIds: ["@b", "@fuga_fuga"]
-            });
-        }),
-        http.post("http://localhost:3000/api/follow/:userId", () => {
-            return HttpResponse.json({
-                totalNumberOfFollowing: 10,
-                followingUserIds: ["@b", "@c"],
-                totalNumberOfFollowees: 21,
-                followeeUserIds: ["@b", "@fuga_fuga", "@x"]
-            });
-        }),
-        http.delete("http://localhost:3000/api/follow/:userId", () => {
-            return HttpResponse.json({
-                totalNumberOfFollowing: 10,
-                followingUserIds: ["@b", "@c"],
-                totalNumberOfFollowees: 19,
-                followeeUserIds: ["@b"]
-            });
-        }),
-        http.get("http://localhost:3000/api/userSuki/:userId", () => {
-            return HttpResponse.json({
-                userId: "@a",
-                userSuki: [":rat:", ":cow:", ":tiger:", ":rabbit:"]
-            });
-        })
-    );
-
-    beforeAll(() => {
-        server.listen();
-    });
-
-    beforeEach(() => {
-        vi.clearAllMocks();
-        vi.resetAllMocks();
-        vi.stubGlobal("localStorage", {
-            getItem: vi.fn().mockReturnValue("mocked_id_token"),
-            setItem: vi.fn(),
-            removeItem: vi.fn(),
-            clear: vi.fn()
+        return HttpResponse.json({
+            emotes: sequenceNumberStartOfSearch
+                ? [
+                      {
+                          sequenceNumber: 16,
+                          emoteId: "e",
+                          userName: "User A",
+                          userId: "@a",
+                          emoteDatetime: "2021-01-01T09:00:00.000Z",
+                          emoteReactionId: "reaction-e",
+                          emoteEmojis: [
+                              {
+                                  emojiId: ":last:"
+                              }
+                          ],
+                          userAvatarUrl: "https://image.test/a.png",
+                          emoteReactionEmojis: [
+                              {
+                                  emojiId: ":tiger:",
+                                  numberOfReactions: 2,
+                                  reactedUserIds: ["@c"]
+                              }
+                          ],
+                          totalNumberOfReactions: 2
+                      },
+                      {
+                          sequenceNumber: 15,
+                          emoteId: "f",
+                          userName: "User A",
+                          userId: "@a",
+                          emoteDatetime: "2020-01-01T09:12:30.000Z",
+                          emoteReactionId: "reaction-f",
+                          emoteEmojis: [
+                              {
+                                  emojiId: ":smiling_face:"
+                              }
+                          ],
+                          userAvatarUrl: "https://image.test/b.png",
+                          emoteReactionEmojis: [
+                              {
+                                  emojiId: ":tiger:",
+                                  numberOfReactions: 1,
+                                  reactedUserIds: ["@x"]
+                              }
+                          ],
+                          totalNumberOfReactions: 1
+                      },
+                      {
+                          sequenceNumber: 14,
+                          emoteId: "g",
+                          userName: "User A",
+                          userId: "@a",
+                          emoteDatetime: "2019-01-01T09:00:00.000Z",
+                          emoteReactionId: "reaction-g",
+                          emoteEmojis: [
+                              {
+                                  emojiId: ":rabbit:"
+                              }
+                          ],
+                          userAvatarUrl: "https://image.test/c.png",
+                          emoteReactionEmojis: [],
+                          totalNumberOfReactions: 0
+                      },
+                      {
+                          sequenceNumber: 13,
+                          emoteId: "h",
+                          userName: "User A",
+                          userId: "@a",
+                          emoteDatetime: "2018-01-01T09:00:00.000Z",
+                          emoteReactionId: "reaction-h",
+                          emoteEmojis: [
+                              {
+                                  emojiId: ":test:"
+                              }
+                          ],
+                          userAvatarUrl: "https://image.test/d.png",
+                          emoteReactionEmojis: [
+                              {
+                                  emojiId: ":test:",
+                                  numberOfReactions: 0,
+                                  reactedUserIds: []
+                              }
+                          ],
+                          totalNumberOfReactions: 0
+                      }
+                  ]
+                : [
+                      {
+                          sequenceNumber: 20,
+                          emoteId: "a",
+                          userName: "User A",
+                          userId: "@a",
+                          emoteDatetime: "2025-01-01T09:00:00.000Z",
+                          emoteReactionId: "reaction-a",
+                          emoteEmojis: [
+                              {
+                                  emojiId: ":rabbit:"
+                              },
+                              {
+                                  emojiId: ":rabbit:"
+                              },
+                              {
+                                  emojiId: ":rabbit:"
+                              },
+                              {
+                                  emojiId: ":rabbit:"
+                              }
+                          ],
+                          userAvatarUrl: "https://image.test/a.png",
+                          emoteReactionEmojis: [
+                              {
+                                  emojiId: ":party_parrot:",
+                                  numberOfReactions: 10,
+                                  reactedUserIds: ["@a", "@b"]
+                              },
+                              {
+                                  emojiId: ":cow:",
+                                  numberOfReactions: 2,
+                                  reactedUserIds: ["@c"]
+                              }
+                          ],
+                          totalNumberOfReactions: 10
+                      },
+                      {
+                          sequenceNumber: 19,
+                          emoteId: "b",
+                          userName: "User A",
+                          userId: "@a",
+                          emoteDatetime: "2024-01-01T09:12:30.000Z",
+                          emoteReactionId: "reaction-b",
+                          emoteEmojis: [
+                              {
+                                  emojiId: ":smiling_face:"
+                              },
+                              {
+                                  emojiId: ":smiling_face:"
+                              },
+                              {
+                                  emojiId: ":smiling_face:"
+                              }
+                          ],
+                          userAvatarUrl: "https://image.test/b.png",
+                          emoteReactionEmojis: [
+                              {
+                                  emojiId: ":cow:",
+                                  numberOfReactions: 200,
+                                  reactedUserIds: ["@a"]
+                              },
+                              {
+                                  emojiId: ":tiger:",
+                                  numberOfReactions: 1,
+                                  reactedUserIds: ["@x"]
+                              }
+                          ],
+                          totalNumberOfReactions: 200
+                      },
+                      {
+                          sequenceNumber: 18,
+                          emoteId: "c",
+                          userName: "User A",
+                          userId: "@a",
+                          emoteDatetime: "2023-01-01T09:00:00.000Z",
+                          emoteReactionId: "reaction-c",
+                          emoteEmojis: [
+                              {
+                                  emojiId: ":rabbit:"
+                              }
+                          ],
+                          userAvatarUrl: "https://image.test/c.png",
+                          emoteReactionEmojis: [],
+                          totalNumberOfReactions: 0
+                      },
+                      {
+                          sequenceNumber: 17,
+                          emoteId: "d",
+                          userName: "User A",
+                          userId: "@a",
+                          emoteDatetime: "2022-01-01T09:00:00.000Z",
+                          emoteReactionId: "reaction-d",
+                          emoteEmojis: [
+                              {
+                                  emojiId: ":test:"
+                              }
+                          ],
+                          userAvatarUrl: "https://image.test/d.png",
+                          emoteReactionEmojis: [
+                              {
+                                  emojiId: ":test:",
+                                  numberOfReactions: 0,
+                                  reactedUserIds: []
+                              }
+                          ],
+                          totalNumberOfReactions: 0
+                      }
+                  ]
         });
-    });
+    }),
+    http.get("http://localhost:3000/api/user/:userId", ({ params }) => {
+        const { userId } = params;
 
-    afterEach(() => {
-        cleanup();
-        server.resetHandlers();
-        useEmoteStore.getState().cleanAllData();
-    });
+        switch (userId) {
+            case "@a":
+                return HttpResponse.json({
+                    userId: "@a",
+                    userName: "User A",
+                    userAvatarUrl: "https://image.test/a.png"
+                });
+            case "@b":
+                return HttpResponse.json({
+                    userId: "@b",
+                    userName: "User B",
+                    userAvatarUrl: "https://image.test/b.png"
+                });
+            case "@c":
+                return HttpResponse.json({
+                    userId: "@c",
+                    userName: "User C",
+                    userAvatarUrl: "https://image.test/c.png"
+                });
+            case "@fuga_fuga":
+                return HttpResponse.json({
+                    userId: "@fuga_fuga",
+                    userName: "User Fuga",
+                    userAvatarUrl: "https://image.test/fuga.png"
+                });
+            default:
+                return HttpResponse.json({
+                    userId: "@user1",
+                    userName: "User One",
+                    userAvatarUrl: "https://image.test/user1.png"
+                });
+        }
+    }),
+    http.get("http://localhost:3000/api/follow/:userId", () => {
+        return HttpResponse.json({
+            totalNumberOfFollowing: 10,
+            followingUserIds: ["@b", "@c"],
+            totalNumberOfFollowees: 20,
+            followeeUserIds: ["@b", "@fuga_fuga"]
+        });
+    }),
+    http.post("http://localhost:3000/api/follow/:userId", () => {
+        return HttpResponse.json({
+            totalNumberOfFollowing: 10,
+            followingUserIds: ["@b", "@c"],
+            totalNumberOfFollowees: 21,
+            followeeUserIds: ["@b", "@fuga_fuga", "@x"]
+        });
+    }),
+    http.delete("http://localhost:3000/api/follow/:userId", () => {
+        return HttpResponse.json({
+            totalNumberOfFollowing: 10,
+            followingUserIds: ["@b", "@c"],
+            totalNumberOfFollowees: 19,
+            followeeUserIds: ["@b"]
+        });
+    }),
+    http.get("http://localhost:3000/api/userSuki/:userId", () => {
+        return HttpResponse.json({
+            userId: "@a",
+            userSuki: [":rat:", ":cow:", ":tiger:", ":rabbit:"]
+        });
+    })
+);
 
-    afterAll(() => {
-        server.close();
-    });
+beforeAll(() => {
+    server.listen();
+});
 
-    const rendering = (): void => {
-        render(
-            <ProviderTemplate>
-                <ErrorBoundary>
-                    <UserInfoContext.Provider
-                        value={{
-                            userInfo: { userId: "@x", userName: "User X", userAvatarUrl: "https://image.test/x.png" }
-                        }}
-                    >
-                        <WebSocketProvider>
-                            <PageTemplate>
-                                <UserPage />
-                            </PageTemplate>
-                        </WebSocketProvider>
-                    </UserInfoContext.Provider>
-                </ErrorBoundary>
-            </ProviderTemplate>
-        );
-    };
+beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetAllMocks();
+    vi.stubGlobal("localStorage", {
+        getItem: vi.fn().mockReturnValue("mocked_id_token"),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn()
+    });
+});
+
+afterEach(() => {
+    cleanup();
+    server.resetHandlers();
+    useEmoteStore.getState().cleanAllData();
+});
+
+afterAll(() => {
+    server.close();
+});
+
+const rendering = (): void => {
+    render(
+        <ProviderTemplate>
+            <ErrorBoundary>
+                <UserInfoContext.Provider
+                    value={{
+                        userInfo: { userId: "@x", userName: "User X", userAvatarUrl: "https://image.test/x.png" }
+                    }}
+                >
+                    <WebSocketProvider>
+                        <PageTemplate>
+                            <UserPage />
+                        </PageTemplate>
+                    </WebSocketProvider>
+                </UserInfoContext.Provider>
+            </ErrorBoundary>
+        </ProviderTemplate>
+    );
+};
+
+describe("操作者ではないユーザーのページを表示した時", () => {
     describe("初期表示時", () => {
         describe("正常系", () => {
             describe("ユーザー情報表示部分", () => {
