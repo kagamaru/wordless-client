@@ -34,13 +34,13 @@ const server = setupServer(
 );
 
 const token = "test-token";
-const getGetRequestURL = new NextRequest(userApiUrl, {
+const createGetRequestURL = new NextRequest(userApiUrl, {
     headers: {
         authorization: token
     }
 });
 
-const getPostRequestURL = (followerId: string) =>
+const createPostRequestURL = (followerId: string) =>
     new NextRequest(userApiUrl, {
         headers: {
             authorization: token
@@ -51,7 +51,7 @@ const getPostRequestURL = (followerId: string) =>
         })
     });
 
-const getDeleteRequestURL = (followerId: string) =>
+const createDeleteRequestURL = (followerId: string) =>
     new NextRequest(userApiUrl, {
         headers: {
             authorization: token
@@ -83,15 +83,15 @@ afterAll(() => {
 });
 
 const fetchFollow = async (): Promise<NextResponse> => {
-    return await GET(getGetRequestURL, getRequestParams);
+    return await GET(createGetRequestURL, getRequestParams);
 };
 
 const postFollow = async (followerId: string): Promise<NextResponse> => {
-    return await POST(getPostRequestURL(followerId), getRequestParams);
+    return await POST(createPostRequestURL(followerId), getRequestParams);
 };
 
 const deleteFollow = async (followerId: string): Promise<NextResponse> => {
-    return await DELETE(getDeleteRequestURL(followerId), getRequestParams);
+    return await DELETE(createDeleteRequestURL(followerId), getRequestParams);
 };
 
 describe("GET", () => {

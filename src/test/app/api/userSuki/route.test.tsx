@@ -23,12 +23,12 @@ const server = setupServer(
 );
 
 const token = "test-token";
-const getGetRequestURL = new NextRequest(userApiUrl, {
+const createGetRequestURL = new NextRequest(userApiUrl, {
     headers: {
         authorization: token
     }
 });
-const getPostRequestURL = (request: PostUserSukiRequest) =>
+const createPostRequestURL = (request: PostUserSukiRequest) =>
     new NextRequest(userApiUrl, {
         method: "POST",
         headers: {
@@ -58,11 +58,11 @@ afterAll(() => {
 });
 
 const fetchUserSuki = async (): Promise<NextResponse> => {
-    return await GET(getGetRequestURL, getRequestParams);
+    return await GET(createGetRequestURL, getRequestParams);
 };
 
 const postUserSuki = async (request: PostUserSukiRequest): Promise<NextResponse> => {
-    return await POST(getPostRequestURL(request), getRequestParams);
+    return await POST(createPostRequestURL(request), getRequestParams);
 };
 
 describe("GET", () => {
