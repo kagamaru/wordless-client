@@ -1,5 +1,5 @@
 import { EditOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button, ConfigProvider } from "antd";
 import { css } from "ss/css";
 
 type Props = {
@@ -14,13 +14,16 @@ export const EditButton = ({ ariaLabel, onClickAction }: Props) => {
     });
 
     return (
-        <Button
-            variant="outlined"
-            shape="circle"
-            icon={<EditOutlined />}
-            className={editButtonStyle}
-            aria-label={ariaLabel}
-            onClick={onClickAction}
-        />
+        // NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する
+        <ConfigProvider wave={{ disabled: true }}>
+            <Button
+                variant="outlined"
+                shape="circle"
+                icon={<EditOutlined />}
+                className={editButtonStyle}
+                aria-label={ariaLabel}
+                onClick={onClickAction}
+            />
+        </ConfigProvider>
     );
 };
