@@ -15,7 +15,6 @@ import {
     UserInfoContext,
     WebSocketProvider
 } from "@/components/template";
-import { useEmoteStore } from "@/store";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -344,7 +343,6 @@ beforeEach(() => {
 afterEach(() => {
     cleanup();
     server.resetHandlers();
-    useEmoteStore.getState().cleanAllData();
 });
 
 afterAll(() => {
@@ -774,6 +772,16 @@ describe("操作者のユーザーのページを表示した時", () => {
                     });
                 }
             );
+        });
+    });
+
+    test("ユーザースキ編集ボタンをクリックした時、ユーザースキ登録画面に遷移する", async () => {
+        rendering();
+
+        await user.click(await screen.findByRole("button", { name: "ユーザースキ変更ボタン" }));
+
+        await waitFor(() => {
+            expect(mockedUseRouter).toHaveBeenCalledWith("/user/@x/registration/usersuki");
         });
     });
 
