@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchWithTimeout, handleAPIError, postWithTimeout } from "@/helpers";
-
 import { PostUserSukiRequest, PostUserSukiResponse, User } from "@/@types";
 
 const restApiUrl = process.env.REST_API_URL ?? "";
