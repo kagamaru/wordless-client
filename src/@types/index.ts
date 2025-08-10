@@ -16,6 +16,7 @@ import { EmoteEmojis } from "@/@types/EmoteEmojis";
 import { EmoteReaction } from "@/@types/EmoteReaction";
 import { EmoteReactionEmojiWithNumber } from "@/@types/EmoteReactionEmojiWithNumber";
 import { ErrorCode } from "@/@types/ErrorCode";
+import { PostEmojis } from "@/@types/PostEmojis";
 import { User } from "./User";
 import { UserSukiEmojis } from "@/@types/UserSukiEmojis";
 
@@ -38,6 +39,7 @@ export type {
     EmoteReaction,
     EmoteReactionEmojiWithNumber,
     ErrorCode,
+    PostEmojis,
     User,
     UserSukiEmojis
 };
