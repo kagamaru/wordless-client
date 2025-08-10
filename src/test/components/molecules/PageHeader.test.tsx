@@ -86,6 +86,12 @@ afterAll(() => {
 });
 
 describe("PageHeader", () => {
+    test("ヘッダーをクリックした時、ダッシュボード画面に遷移する", async () => {
+        await user.click(await screen.findByRole("heading", { name: "Wordless" }));
+
+        expect(mockedUseRouter).toHaveBeenCalledWith("/");
+    });
+
     test("ヘッダーメニューをクリックした時、メニューを表示する", async () => {
         await user.click(await screen.findByRole("img", { name: "menu" }));
 
