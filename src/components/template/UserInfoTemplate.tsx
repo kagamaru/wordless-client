@@ -11,6 +11,8 @@ type UserInfoContextType = {
 
 export const UserInfoContext = createContext<UserInfoContextType | undefined>(undefined);
 
+const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+
 export function UserInfoTemplate({
     children
 }: Readonly<{
@@ -26,5 +28,22 @@ export function UserInfoTemplate({
         return <LoadingSpin />;
     }
 
+    const isMockEnabled = process.env.NEXT_PUBLIC_API_MOCKING === "enabled";
+
+    if (isMockEnabled) {
+        return (
+            <UserInfoContext.Provider
+                value={{
+                    userInfo: {
+                        userAvatarUrl: `${s3Url}/userProfile/fuga_fuga.png`,
+                        userId: "@hoge_hoge",
+                        userName: "Hoge"
+                    }
+                }}
+            >
+                {children}
+            </UserInfoContext.Provider>
+        );
+    }
     return <UserInfoContext.Provider value={{ userInfo }}>{children}</UserInfoContext.Provider>;
 }

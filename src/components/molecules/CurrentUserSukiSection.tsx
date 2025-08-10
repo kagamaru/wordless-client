@@ -2,12 +2,17 @@ import { Col, Row } from "antd";
 import { UserSukiEmojis } from "@/@types";
 import { EditButton, Emoji } from "@/components/atoms";
 import { css } from "ss/css";
+import { useRouter } from "next/navigation";
+import { useParamUserId } from "@/hooks";
 
 type Props = {
     userSukiEmojis: UserSukiEmojis | [];
 };
 
 export const CurrentUserSukiSection = ({ userSukiEmojis }: Props) => {
+    const router = useRouter();
+    const formattedUserId = useParamUserId();
+
     const emojiSizeStyle = css({
         fontSize: "32px !important",
         marginTop: "12px"
@@ -23,6 +28,10 @@ export const CurrentUserSukiSection = ({ userSukiEmojis }: Props) => {
             </Col>
         );
     });
+
+    const onEditClick = () => {
+        router.push(`/user/${formattedUserId}/registration/usersuki`);
+    };
 
     return (
         <Row
@@ -41,7 +50,7 @@ export const CurrentUserSukiSection = ({ userSukiEmojis }: Props) => {
             </Col>
             {emojis}
             <Col className="ml-3">
-                <EditButton ariaLabel="ユーザースキ変更ボタン" onClickAction={() => {}} />
+                <EditButton ariaLabel="ユーザースキ変更ボタン" onClickAction={onEditClick} />
             </Col>
         </Row>
     );

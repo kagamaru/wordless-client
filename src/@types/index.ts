@@ -1,9 +1,11 @@
 import { PostEmoteRequest } from "@/@types/request/PostEmoteRequest";
 import { PostFollowRequest } from "@/@types/request/PostFollowRequest";
+import { PostUserSukiRequest } from "@/@types/request/PostUserSukiRequest";
 import { ReactRequest } from "@/@types/request/ReactRequest";
 import { RestApiRequestOption } from "@/@types/request/RestApiRequestOption";
 import { FetchFollowResponse } from "@/@types/response/FetchFollowResponse";
 import { APIResponse } from "@/@types/response/APIResponse";
+import { PostUserSukiResponse } from "@/@types/response/PostUserSukiResponse";
 import { OnPostEmoteIncomingMessage } from "@/@types/webSocketMessage/OnPostEmoteIncomingMessage";
 import { OnReactIncomingMessage } from "@/@types/webSocketMessage/OnReactIncomingMessage";
 import { Emoji } from "@/@types/Emoji";
@@ -20,10 +22,12 @@ import { UserSukiEmojis } from "@/@types/UserSukiEmojis";
 export type {
     PostEmoteRequest,
     PostFollowRequest,
+    PostUserSukiRequest,
     ReactRequest,
     RestApiRequestOption,
     FetchFollowResponse,
     APIResponse,
+    PostUserSukiResponse,
     OnReactIncomingMessage,
     OnPostEmoteIncomingMessage,
     Emoji,
