@@ -139,7 +139,7 @@ describe("PageHeader", () => {
             await user.click(screen.getByRole("heading", { name: "ログアウト" }));
 
             expect(removeItemMock).toHaveBeenCalledWith("IdToken");
-            expect(mockedUseRouter).toHaveBeenCalledWith("auth/login");
+            expect(mockedUseRouter).toHaveBeenCalledWith("/auth/login");
         });
 
         test.todo("アカウント削除ボタンをクリックした時、アカウント削除ページに遷移する");

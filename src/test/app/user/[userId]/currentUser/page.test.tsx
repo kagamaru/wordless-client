@@ -40,6 +40,8 @@ vi.mock("next/navigation", () => ({
 
 const mockFetchEmotes = vi.fn();
 const mockDeleteEmote = vi.fn();
+const mockFetchUserInfo = vi.fn();
+const mockPostUserImage = vi.fn();
 let numberOfCompletedAcquisitionsCompleted = "";
 
 // NOTE: 操作者は User X, 表示しているユーザーは User X
@@ -253,6 +255,7 @@ const server = setupServer(
     }),
     http.get("http://localhost:3000/api/user/:userId", ({ params }) => {
         const { userId } = params;
+        mockFetchUserInfo();
 
         switch (userId) {
             case "@a":
@@ -292,6 +295,10 @@ const server = setupServer(
                     userAvatarUrl: "https://image.test/user1.png"
                 });
         }
+    }),
+    http.post("http://localhost:3000/api/userImage/:userId", () => {
+        mockPostUserImage();
+        return HttpResponse.json({});
     }),
     http.get("http://localhost:3000/api/follow/:userId", () => {
         return HttpResponse.json({
@@ -764,6 +771,92 @@ describe("操作者のユーザーのページを表示した時", () => {
                     );
 
                     rendering();
+
+                    await waitFor(() => {
+                        const alertComponent = screen.getByRole("alert");
+                        expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                        expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+                    });
+                }
+            );
+        });
+    });
+
+    describe("ユーザー画像編集ボタンを押下した時、", () => {
+        async function uploadImage() {
+            const fileInput = screen.getByTestId("file-input");
+            const file = new File(["test"], "test.png", { type: "image/png" });
+            await user.upload(fileInput, file);
+        }
+
+        describe("正常系", () => {
+            beforeEach(async () => {
+                rendering();
+            });
+
+            test("ローディングアイコンを表示する", async () => {
+                server.use(
+                    http.post("http://localhost:3000/api/userImage/:userId", () => {
+                        return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+                    })
+                );
+                await user.click(await screen.findByRole("button", { name: "ユーザー画像変更ボタン" }));
+                await uploadImage();
+
+                await waitFor(() => {
+                    expect(screen.getByRole("img", { name: "loading" })).toBeTruthy();
+                });
+            });
+
+            test("ユーザー画像登録APIが呼ばれる", async () => {
+                await user.click(await screen.findByRole("button", { name: "ユーザー画像変更ボタン" }));
+                await uploadImage();
+
+                expect(mockPostUserImage).toHaveBeenCalled();
+            });
+
+            test("エモート-取得APIが呼ばれる", async () => {
+                await user.click(await screen.findByRole("button", { name: "ユーザー画像変更ボタン" }));
+                await uploadImage();
+
+                expect(mockFetchEmotes).toHaveBeenCalled();
+            });
+
+            test("ユーザー情報取得APIが呼ばれる", async () => {
+                await user.click(await screen.findByRole("button", { name: "ユーザー画像変更ボタン" }));
+                await uploadImage();
+
+                expect(mockFetchUserInfo).toHaveBeenCalled();
+            });
+        });
+
+        describe("異常系", () => {
+            test.each([
+                ["IMG-01", "不正なリクエストです。もう一度やり直してください。"],
+                ["IMG-02", "サンプルユーザーはプロフィール画像を変えることが出来ません。"],
+                ["IMG-03", "不正なリクエストです。もう一度やり直してください。"],
+                ["IMG-04", "不正なリクエストです。もう一度やり直してください。"],
+                ["IMG-05", "不正なリクエストです。もう一度やり直してください。"],
+                ["IMG-06", "エラーが発生しています。しばらくの間使用できない可能性があります。"],
+                ["IMG-07", "不正なリクエストです。もう一度やり直してください。"],
+                ["IMG-08", "エラーが発生しています。しばらくの間使用できない可能性があります。"],
+                ["IMG-09", "エラーが発生しています。しばらくの間使用できない可能性があります。"],
+                ["IMG-91", "不正なリクエストです。もう一度やり直してください。"],
+                ["IMG-92", "サンプルユーザーはプロフィール画像を変えることが出来ません。"],
+                ["IMG-93", "画像データがありません。"],
+                ["IMG-94", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+            ])(
+                "ユーザー画像登録APIで%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+                async (errorCode, errorMessage) => {
+                    server.use(
+                        http.post("http://localhost:3000/api/userImage/:userId", () => {
+                            return HttpResponse.json({ data: errorCode }, { status: 400 });
+                        })
+                    );
+                    rendering();
+
+                    await user.click(await screen.findByRole("button", { name: "ユーザー画像変更ボタン" }));
+                    await uploadImage();
 
                     await waitFor(() => {
                         const alertComponent = screen.getByRole("alert");
