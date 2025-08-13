@@ -60,7 +60,7 @@ export const SyncButton = ({ onClickAction }: Props) => {
                     className={syncButtonStyle}
                     aria-label="ユーザー画像変更ボタン"
                     aria-disabled={loading}
-                    onClick={onClickAsync}
+                    onClick={loading ? undefined : onClickAsync}
                 />
             </ConfigProvider>
         </>
