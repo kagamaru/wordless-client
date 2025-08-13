@@ -7,7 +7,7 @@ import { Emote, FetchEmotesResponse } from "@/class";
 import { DisplayErrorMessage, LoadingSpin, NoEmoteText } from "@/components/atoms";
 import { EndOfEmotes } from "@/components/molecules";
 import { CurrentUserInfo, CurrentUserWordlessEmotes } from "@/components/organisms";
-import { deleteNextjsServer, fetchNextjsServer, getHeader } from "@/helpers";
+import { deleteNextjsServer, fetchNextjsServer, getHeader, postImageNextjsServer } from "@/helpers";
 import { useError } from "@/hooks";
 
 type Props = {
@@ -69,6 +69,7 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
 
     const {
         data: profileUserInfo,
+        refetch: fetchUserInfoAsyncAPI,
         isError: isProfileUserInfoError,
         error: profileUserInfoError
     } = useQuery({
@@ -76,6 +77,20 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
         queryFn: async () => {
             const response = await fetchNextjsServer<User>(`/api/user/${currentUserId}`, getHeader());
             return response.data;
+        }
+    });
+
+    const {
+        mutateAsync: postUserImageAsyncAPI,
+        isError: isPostUserImageError,
+        error: postUserImageError
+    } = useMutation({
+        mutationFn: async (fileData: FormData) => {
+            await postImageNextjsServer<void>(`/api/userImage/${currentUserId}`, fileData, {
+                headers: {
+                    authorization: localStorage.getItem("IdToken") ?? ""
+                }
+            });
         }
     });
 
@@ -109,6 +124,12 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
             await deleteNextjsServer<void>(`/api/emote/${emoteId}`, {}, getHeader());
         }
     });
+
+    const userImagePostClick = async (fileData: FormData): Promise<void> => {
+        await postUserImageAsyncAPI(fileData);
+        await fetchUserInfoAsyncAPI();
+        await refetchEmotes();
+    };
 
     // TODO: リアクションしたエモートのみを取得し、反映するよう設計変更する
     // BUG: 現在はユーザーページのユーザーがエモートを新規に投稿した時に、リアクションしたエモートが表示できない可能性がある
@@ -144,6 +165,7 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
             { isError: isProfileUserInfoError, error: profileUserInfoError },
             { isError: isFollowError, error: followError },
             { isError: isUserSukiError, error: userSukiError },
+            { isError: isPostUserImageError, error: postUserImageError },
             { isError: isFetchingMoreEmotesError, error: fetchingMoreEmotesError },
             { isError: isDeletingEmoteError, error: deletingEmoteError }
         ];
@@ -167,6 +189,8 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
         profileUserInfoError,
         isUserSukiError,
         userSukiError,
+        isPostUserImageError,
+        postUserImageError,
         isFollowError,
         followError,
         isFetchingMoreEmotesError,
@@ -204,6 +228,7 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
                         profileUserInfo={profileUserInfo}
                         followInfo={followResponseState}
                         userSukiEmojis={userSukiResponse?.userSuki ?? []}
+                        onUserImageChangeClickAction={userImagePostClick}
                     />
                 )}
             </div>

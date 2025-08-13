@@ -14,15 +14,21 @@ type CurrentUserInfoProps = {
     profileUserInfo: User;
     followInfo: FetchFollowResponse;
     userSukiEmojis: UserSukiEmojis;
+    onUserImageChangeClickAction: (fileData: FormData) => Promise<void>;
 };
 
-export const CurrentUserInfo = ({ profileUserInfo, followInfo, userSukiEmojis }: CurrentUserInfoProps) => {
+export const CurrentUserInfo = ({
+    profileUserInfo,
+    followInfo,
+    userSukiEmojis,
+    onUserImageChangeClickAction
+}: CurrentUserInfoProps) => {
     const [activeDrawer, setActiveDrawer] = useState<"followees" | "following" | null>(null);
 
     return (
         <>
             <div role="group" aria-label="ユーザー情報">
-                <CurrentUserProfile userInfo={profileUserInfo} />
+                <CurrentUserProfile userInfo={profileUserInfo} onUserImageChangeClick={onUserImageChangeClickAction} />
                 <FollowButtonSection
                     totalNumberOfFollowees={followInfo.totalNumberOfFollowees}
                     onFolloweesClickAction={() => {
