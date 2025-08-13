@@ -53,7 +53,7 @@ export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
 
     const onLogoutClick = () => {
         localStorage.removeItem("IdToken");
-        router.push("auth/login");
+        router.push("/auth/login");
         onClose();
     };
 

@@ -9,6 +9,8 @@ import { getHeader } from "@/helpers/nextjsServerConnectionHelpers/getHeader";
 import { fetchNextjsServer } from "@/helpers/nextjsServerConnectionHelpers/fetchNextjsServer";
 import { postNextjsServer } from "@/helpers/nextjsServerConnectionHelpers/postNextjsServer";
 import { deleteNextjsServer } from "@/helpers/nextjsServerConnectionHelpers/deleteNextjsServer";
+import { postImageNextjsServer } from "@/helpers/nextjsServerConnectionHelpers/postImageNextjsServer";
+
 export {
     emojiHelper,
     emojiSearch,
@@ -19,6 +21,7 @@ export {
     fetchNextjsServer,
     postNextjsServer,
     deleteNextjsServer,
+    postImageNextjsServer,
     handleAPIError,
     getHeader
 };

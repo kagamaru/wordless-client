@@ -8,9 +8,10 @@ const { Text } = Typography;
 
 type Props = {
     userInfo: User;
+    onUserImageChangeClick: (fileData: FormData) => Promise<void>;
 };
 
-export const CurrentUserProfile: React.FC<Props> = ({ userInfo }) => {
+export const CurrentUserProfile: React.FC<Props> = ({ userInfo, onUserImageChangeClick }) => {
     const isMobile = useIsMobile();
     const { userName, userId, userAvatarUrl } = userInfo;
 
@@ -25,7 +26,7 @@ export const CurrentUserProfile: React.FC<Props> = ({ userInfo }) => {
                 <Col>
                     <Row align="top">
                         <Avatar size={80} src={userAvatarUrl} alt={userName + "のトッププロフィール画像"} />
-                        <SyncButton onClickAction={() => {}} />
+                        <SyncButton onClickAction={onUserImageChangeClick} />
                     </Row>
                 </Col>
                 <Col>
