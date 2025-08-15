@@ -12,10 +12,24 @@ import {
     LoginButton,
     PasswordInput,
     ResetPasswordLink,
+    SampleLoginButton,
     SignupButton
 } from "@/components/atoms";
 import { getErrorMessage, postWithTimeout } from "@/helpers";
 import { useIsMobile } from "@/hooks";
+
+const env = process.env;
+
+const sampleUsers = {
+    Nozomi: {
+        emailAddress: env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS,
+        password: env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_PASSWORD
+    },
+    Nico: {
+        emailAddress: env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS,
+        password: env.NEXT_PUBLIC_SAMPLE_USER_NICO_PASSWORD
+    }
+};
 
 export default function LoginSignup() {
     const [form] = Form.useForm();
@@ -59,6 +73,15 @@ export default function LoginSignup() {
         }
     };
 
+    const onSampleLoginClick = async (sampleUserName: "Nozomi" | "Nico") => {
+        const userInfo = sampleUsers[sampleUserName];
+        form.setFieldsValue({
+            emailAddress: userInfo.emailAddress,
+            password: userInfo.password
+        });
+        await onLoginClick();
+    };
+
     // TODO: 後続で実装する
     // const onSignupClick = async (email: string, password: string) => {
     //     try {
@@ -87,6 +110,8 @@ export default function LoginSignup() {
                 <PasswordInput />
                 <LoginButton />
                 <ResetPasswordLink />
+                <SampleLoginButton sampleUserName="Nozomi" onClickAction={() => onSampleLoginClick("Nozomi")} />
+                <SampleLoginButton sampleUserName="Nico" onClickAction={() => onSampleLoginClick("Nico")} />
             </Form>
         </>
     );
