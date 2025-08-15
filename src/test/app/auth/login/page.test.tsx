@@ -1,10 +1,12 @@
+// NOTE: vitestSetupは他のimportよりも先に呼び出す必要がある
+// NOTE: import順が変わるとモックが効かなくなるため、必ずこの位置に記述する
+import { vitestSetup } from "../../vitest.setup";
 import { NewDeviceMetadataType } from "@aws-sdk/client-cognito-identity-provider";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
-import { vitestSetup } from "../../vitest.setup";
 import LoginSignup from "@/app/auth/login/page";
 import { ProviderTemplate } from "@/components/template";
 
@@ -334,6 +336,41 @@ describe("ログインボタン押下時", () => {
         const alertComponent = await screen.findByRole("alert");
         expect(within(alertComponent).getByText("Error : AUN-99")).toBeTruthy();
         expect(within(alertComponent).getByText("認証できませんでした。IDとパスワードをご確認ください。")).toBeTruthy();
+    });
+});
+
+function commonLoginTests(name: string, email: string, password: string) {
+    beforeEach(async () => {
+        rendering();
+        await user.click(await screen.findByRole("button", { name }));
+    });
+
+    test("Eメールアドレスが入力される", async () => {
+        await waitFor(() => {
+            expect(screen.getByRole("textbox", { name: "Eメール" }).getAttribute("value")).toBe(email);
+        });
+    });
+
+    test("パスワードが入力される", async () => {
+        await waitFor(() => {
+            expect(screen.getByLabelText("パスワード").getAttribute("value")).toBe(password);
+        });
+    });
+
+    test("ログインAPIを呼び出す", async () => {
+        await waitFor(() => {
+            expect(mockSignin).toHaveBeenCalledTimes(1);
+        });
+    });
+}
+
+describe("サンプルログインテスト", () => {
+    describe("Nozomi押下時", () => {
+        commonLoginTests("サンプルログイン（Nozomi）", "wordless.nozomi@gmail.com", "1234567XXX");
+    });
+
+    describe("Nico押下時", () => {
+        commonLoginTests("サンプルログイン（Nico）", "wordless.nico@gmail.com", "1234567YYY");
     });
 });
 
