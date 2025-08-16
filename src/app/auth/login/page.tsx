@@ -2,7 +2,7 @@
 
 import { AuthenticationResultType } from "@aws-sdk/client-cognito-identity-provider";
 import { useMutation } from "@tanstack/react-query";
-import { Card, Form, Tabs } from "antd";
+import { Form, Tabs } from "antd";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { css } from "ss/css";
@@ -16,7 +16,7 @@ import {
     SignupButton
 } from "@/components/atoms";
 import { getErrorMessage, postWithTimeout } from "@/helpers";
-import { useIsMobile } from "@/hooks";
+import { CardPageTemplate } from "@/components/template";
 
 const env = process.env;
 
@@ -34,8 +34,8 @@ const sampleUsers = {
 export default function LoginSignup() {
     const [form] = Form.useForm();
     const [activeTab, setActiveTab] = useState("login");
-    const isMobile = useIsMobile();
     const router = useRouter();
+
     const { mutateAsync, isError } = useMutation({
         mutationFn: async (request: { email: string; password: string }) => {
             const response = await postWithTimeout<AuthenticationResultType>(`/api/auth`, {
@@ -140,47 +140,11 @@ export default function LoginSignup() {
         }
     ];
 
-    const loginSignupPageStyle = css({
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        background: "loginPageBackground"
-    });
-
-    const loginSignupPageBlockStyle = css({
-        textAlign: "center"
-    });
-
-    const wordlessTitleStyle = css({
-        color: "primary",
-        fontSize: "48px",
-        fontWeight: "bold"
-    });
-
-    const wordlessSubTitleStyle = css({
-        marginBottom: "8px",
-        fontSize: "16px",
-        color: "grey"
-    });
-
-    const loginSignupCardStyle = css({
-        width: isMobile ? "99%" : 500,
-        margin: "auto",
-        marginTop: 50
-    });
-
     return (
         <>
-            <div className={loginSignupPageStyle}>
-                <div className={loginSignupPageBlockStyle}>
-                    <div className={wordlessTitleStyle}>Wordless</div>
-                    <div className={wordlessSubTitleStyle}>- 絵文字でつながるSNS -</div>
-                    <Card className={loginSignupCardStyle}>
-                        <Tabs activeKey={activeTab} items={tabItems} onChange={setActiveTab} centered></Tabs>
-                    </Card>
-                </div>
-            </div>
+            <CardPageTemplate>
+                <Tabs activeKey={activeTab} items={tabItems} onChange={setActiveTab} centered></Tabs>
+            </CardPageTemplate>
         </>
     );
 }

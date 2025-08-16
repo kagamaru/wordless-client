@@ -1,3 +1,4 @@
+import { CardPageTemplate } from "./CardPageTemplate";
 import { CurrentUserView } from "./CurrentUserView";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { OtherPageUserView } from "./OtherPageUserView";
@@ -7,6 +8,7 @@ import { UserInfoContext, UserInfoTemplate } from "./UserInfoTemplate";
 import { WebSocketContext, WebSocketProvider } from "./WebSocketTemplate";
 
 export {
+    CardPageTemplate,
     CurrentUserView,
     ErrorBoundary,
     OtherPageUserView,
