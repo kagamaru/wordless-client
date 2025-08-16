@@ -1,5 +1,6 @@
-import { Avatar, Col, Row, Typography } from "antd";
+import { Col, Row, Typography } from "antd";
 import { User } from "@/@types";
+import { TopProfileAvatar } from "@/components/atoms";
 import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";
 
@@ -21,7 +22,7 @@ export const OtherUserProfile: React.FC<Props> = ({ userInfo }) => {
         <>
             <Row gutter={[16, 16]} align="middle" justify={isMobile ? "start" : "center"}>
                 <Col>
-                    <Avatar size={80} src={userAvatarUrl} alt={userName + "のトッププロフィール画像"} />
+                    <TopProfileAvatar userAvatarUrl={userAvatarUrl} userName={userName} />
                 </Col>
                 <Col>
                     <div className={isMobile ? "" : "ml-4"}>
