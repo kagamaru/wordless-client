@@ -30,6 +30,7 @@ import { RedirectLoginButton } from "@/components/atoms/RedirectLoginButton";
 import { RedirectTopButton } from "@/components/atoms/RedirectTopButton";
 import { PlusButton } from "@/components/atoms/PlusButton";
 import { ResetPasswordLink } from "@/components/atoms/ResetPasswordLink";
+import { SampleLoginButton } from "@/components/atoms/SampleLoginButton";
 import { SendEmoteButton } from "@/components/atoms/SendEmoteButton";
 import { ShadowDivider } from "@/components/atoms/ShadowDivider";
 import { SignupButton } from "@/components/atoms/SignupButton";
@@ -72,6 +73,7 @@ export {
     RedirectTopButton,
     PlusButton,
     ResetPasswordLink,
+    SampleLoginButton,
     SendEmoteButton,
     ShadowDivider,
     SignupButton,
