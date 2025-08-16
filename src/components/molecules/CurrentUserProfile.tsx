@@ -1,4 +1,5 @@
 import { Avatar, Col, Row, Typography } from "antd";
+import { useRouter } from "next/navigation";
 import { User } from "@/@types";
 import { EditButton, SyncButton } from "@/components/atoms";
 import { useIsMobile } from "@/hooks";
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export const CurrentUserProfile: React.FC<Props> = ({ userInfo, onUserImageChangeClick }) => {
+    const router = useRouter();
     const isMobile = useIsMobile();
     const { userName, userId, userAvatarUrl } = userInfo;
 
@@ -19,6 +21,10 @@ export const CurrentUserProfile: React.FC<Props> = ({ userInfo, onUserImageChang
         fontSize: "24px !important",
         fontWeight: "bold"
     });
+
+    const onUserNameChangeClick = () => {
+        router.push(`/user/${userId}/registration/userName`);
+    };
 
     return (
         <>
@@ -44,7 +50,7 @@ export const CurrentUserProfile: React.FC<Props> = ({ userInfo, onUserImageChang
                     </div>
                 </Col>
                 <Col>
-                    <EditButton ariaLabel="ユーザー名変更ボタン" onClickAction={() => {}} />
+                    <EditButton ariaLabel="ユーザー名変更ボタン" onClickAction={onUserNameChangeClick} />
                 </Col>
             </Row>
         </>
