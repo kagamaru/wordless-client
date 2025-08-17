@@ -878,6 +878,16 @@ describe("操作者のユーザーのページを表示した時", () => {
         });
     });
 
+    test("ユーザー名変更ボタンをクリックした時、ユーザー名変更画面に遷移する", async () => {
+        rendering();
+
+        await user.click(await screen.findByRole("button", { name: "ユーザー名変更ボタン" }));
+
+        await waitFor(() => {
+            expect(mockedUseRouter).toHaveBeenCalledWith("/user/@x/registration/userName");
+        });
+    });
+
     describe("エモート削除ボタンをクリックした時", () => {
         test("エモート削除確認ダイアログを表示する", async () => {
             rendering();

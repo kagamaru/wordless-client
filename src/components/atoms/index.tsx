@@ -1,4 +1,7 @@
+import { ArrowBackButton } from "@/components/atoms/ArrowBackButton";
 import { CancelButton } from "@/components/atoms/CancelButton";
+import { CardDivider } from "@/components/atoms/CardDivider";
+import { ChangeUserNameButton } from "@/components/atoms/ChangeUserNameButton";
 import { CloseButton } from "@/components/atoms/CloseButton";
 import { DeleteButton } from "@/components/atoms/DeleteButton";
 import { DeleteIconButton } from "@/components/atoms/DeleteIconButton";
@@ -6,6 +9,7 @@ import { ImageEmojiButtonRow } from "@/components/atoms/ImageEmojiButtonRow";
 import { DisplayEmoteEmoji } from "@/components/atoms/DisplayEmoteEmoji";
 import { DisplayErrorMessage } from "@/components/atoms/DisplayErrorMessage";
 import { DisplayErrorMessageWithoutErrorCode } from "@/components/atoms/DisplayErrorMessageWithoutErrorCode";
+import { DisplayUserId } from "@/components/atoms/DisplayUserId";
 import { EditButton } from "@/components/atoms/EditButton";
 import { EmailAddressInput } from "@/components/atoms/EmailAddressInput";
 import { Emoji } from "@/components/atoms/Emoji";
@@ -35,19 +39,25 @@ import { SendEmoteButton } from "@/components/atoms/SendEmoteButton";
 import { ShadowDivider } from "@/components/atoms/ShadowDivider";
 import { SignupButton } from "@/components/atoms/SignupButton";
 import { SyncButton } from "@/components/atoms/SyncButton";
+import { TopProfileAvatar } from "@/components/atoms/TopProfileAvatar";
 import { TotalNumberOfFollowees } from "@/components/atoms/TotalNumberOfFollowees";
 import { TotalNumberOfFollowing } from "@/components/atoms/TotalNumberOfFollowing";
 import { TotalNumberOfReactionsButton } from "@/components/atoms/TotalNumberOfReactionsButton";
+import { UserNameInput } from "@/components/atoms/UserNameInput";
 import { WordlessDivider } from "@/components/atoms/WordlessDivider";
 
 export {
+    ArrowBackButton,
     CancelButton,
+    CardDivider,
+    ChangeUserNameButton,
     CloseButton,
     DeleteButton,
     DeleteIconButton,
     DisplayEmoteEmoji,
     DisplayErrorMessage,
     DisplayErrorMessageWithoutErrorCode,
+    DisplayUserId,
     EditButton,
     EmailAddressInput,
     Emoji,
@@ -78,8 +88,10 @@ export {
     ShadowDivider,
     SignupButton,
     SyncButton,
+    TopProfileAvatar,
     TotalNumberOfFollowees,
     TotalNumberOfFollowing,
     TotalNumberOfReactionsButton,
+    UserNameInput,
     WordlessDivider
 };

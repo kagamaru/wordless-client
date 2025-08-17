@@ -10,7 +10,7 @@ import { DisplayErrorMessage, EmojiSearchTextBox, PostUserSukiButton } from "@/c
 import { PostEmoteEmojiSelectTabs, TypingEmote } from "@/components/molecules";
 import { UserInfoContext } from "@/components/template";
 import { emojiHelper, emojiSearch, getHeader, postNextjsServer } from "@/helpers";
-import { useError, useIsMobile, useParamUserId } from "@/hooks";
+import { useError, useIsMobile } from "@/hooks";
 import { presetEmojiMap, customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
 import { css } from "ss/css";
 
@@ -32,7 +32,6 @@ export function UserSukiPostDrawer({ isOpen, onCloseAction }: Props) {
     const [searchedCustomEmojis, setSearchedCustomEmojis] = useState<Array<EmojiInterface>>(customEmojiMap);
     const [searchedMemeEmojis, setSearchedMemeEmojis] = useState<Array<EmojiInterface>>(memeEmojiMap);
 
-    const formattedUserId = useParamUserId();
     const { handledError, handleErrors, hasError } = useError();
     const userInfo = useContext(UserInfoContext)?.userInfo;
     const isMobile = useIsMobile();
@@ -46,7 +45,7 @@ export function UserSukiPostDrawer({ isOpen, onCloseAction }: Props) {
     } = useMutation({
         mutationFn: async () => {
             await postNextjsServer<PostUserSukiResponse>(
-                `/api/userSuki/${formattedUserId}`,
+                `/api/userSuki/${userInfo?.userId}`,
                 {
                     userSukiEmoji1: postUserSukiEmojis[0]?.emojiId,
                     userSukiEmoji2: postUserSukiEmojis[1]?.emojiId,

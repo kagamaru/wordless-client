@@ -1,3 +1,4 @@
+import { ChangeUserInfoCard } from "@/components/organisms/ChangeUserInfoCard";
 import { CurrentUserInfo } from "@/components/organisms/CurrentUserInfo";
 import { CurrentUserWordlessEmotes } from "@/components/organisms/CurrentUserWordlessEmotes";
 import { DisplayOtherUserInfo } from "@/components/organisms/DisplayOtherUserInfo";
@@ -7,6 +8,7 @@ import { UserSukiPostDrawer } from "@/components/organisms/UserSukiPostDrawer";
 import { WordlessEmotes } from "@/components/organisms/WordlessEmotes";
 
 export {
+    ChangeUserInfoCard,
     CurrentUserInfo,
     CurrentUserWordlessEmotes,
     DisplayOtherUserInfo,
