@@ -8,19 +8,16 @@ export async function DELETE(
     { params }: { params: Promise<{ emoteId: string }> }
 ): Promise<NextResponse> {
     const { emoteId } = await params;
+    const body = (await req.json()) as { userId: string };
     const token = req.headers.get("authorization");
 
     try {
-        const response = await deleteWithTimeout(
-            restApiUrl + `emote/${emoteId}`,
-            {},
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
+        const response = await deleteWithTimeout(restApiUrl + `emote/${emoteId}`, body, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
             }
-        );
+        });
 
         return NextResponse.json({}, { status: response.status });
     } catch (error) {

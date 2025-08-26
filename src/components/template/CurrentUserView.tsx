@@ -121,7 +121,13 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
         error: deletingEmoteError
     } = useMutation({
         mutationFn: async (emoteId: string) => {
-            await deleteNextjsServer<void>(`/api/emote/${emoteId}`, {}, getHeader());
+            await deleteNextjsServer<void>(
+                `/api/emote/${emoteId}`,
+                {
+                    userId: currentUserId
+                },
+                getHeader()
+            );
         }
     });
 
