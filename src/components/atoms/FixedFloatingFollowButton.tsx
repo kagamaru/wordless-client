@@ -1,16 +1,18 @@
-import { CheckCircleOutlined, UserAddOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, LoadingOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Button, ConfigProvider } from "antd";
 import { useIsMobile } from "@/hooks";
 import { css } from "ss/css";
 
 type Props = {
     isFollowing: boolean;
+    isLoading: boolean;
     onPostFollowButtonClickAction: () => void;
     onUnFollowButtonClickAction: () => void;
 };
 
 export const FixedFloatingFollowButton: React.FC<Props> = ({
     isFollowing,
+    isLoading,
     onPostFollowButtonClickAction,
     onUnFollowButtonClickAction
 }) => {
@@ -54,18 +56,20 @@ export const FixedFloatingFollowButton: React.FC<Props> = ({
                     {isFollowing ? (
                         <Button
                             shape="round"
-                            icon={<CheckCircleOutlined />}
+                            icon={isLoading ? <LoadingOutlined /> : <CheckCircleOutlined />}
                             className={followingButtonStyle}
                             onClick={onUnFollowButtonClickAction}
+                            loading={isLoading}
                         >
                             フォロー中
                         </Button>
                     ) : (
                         <Button
                             shape="round"
-                            icon={<UserAddOutlined />}
+                            icon={isLoading ? <LoadingOutlined /> : <UserAddOutlined />}
                             className={followButtonStyle}
                             onClick={onPostFollowButtonClickAction}
+                            loading={isLoading}
                         >
                             フォロー
                         </Button>

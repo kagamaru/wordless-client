@@ -158,7 +158,7 @@ const deleteEmote = async (): Promise<NextResponse> => {
                 authorization: "test-token"
             },
             method: "DELETE",
-            body: JSON.stringify({})
+            body: JSON.stringify({ userId: "@a" })
         }),
         getRequestParams
     );

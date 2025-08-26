@@ -1689,6 +1689,21 @@ describe("操作者ではないユーザーのページを表示した時", () =
                     ).toBeTruthy();
                 });
             });
+
+            test("ローディングアイコンを表示する", async () => {
+                server.use(
+                    http.post("http://localhost:3000/api/follow/:userId", () => {
+                        return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+                    })
+                );
+                rendering();
+
+                await user.click(await screen.findByRole("button", { name: "user-add フォロー" }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("button", { name: "loading フォロー" })).toBeTruthy();
+                });
+            });
         });
 
         describe("異常系", () => {
@@ -1735,6 +1750,21 @@ describe("操作者ではないユーザーのページを表示した時", () =
                     expect(
                         within(screen.getByRole("button", { name: "フォロワー数を表示" })).getByText("19")
                     ).toBeTruthy();
+                });
+            });
+
+            test("ローディングアイコンを表示する", async () => {
+                server.use(
+                    http.delete("http://localhost:3000/api/follow/:userId", () => {
+                        return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+                    })
+                );
+                rendering();
+
+                await user.click(await screen.findByRole("button", { name: "check-circle フォロー中" }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("button", { name: "loading フォロー中" })).toBeTruthy();
                 });
             });
         });
