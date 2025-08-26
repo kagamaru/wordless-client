@@ -103,6 +103,7 @@ export const OtherPageUserView = ({ currentUserId, otherUserId }: Props) => {
 
     const {
         data: postFollowResponse,
+        isPending: isPostFollowLoading,
         mutateAsync: postFollow,
         isError: isPostFollowError,
         error: postFollowError
@@ -121,6 +122,7 @@ export const OtherPageUserView = ({ currentUserId, otherUserId }: Props) => {
 
     const {
         data: unFollowResponse,
+        isPending: isUnFollowLoading,
         mutateAsync: unFollow,
         isError: isUnFollowError,
         error: unFollowError
@@ -270,6 +272,7 @@ export const OtherPageUserView = ({ currentUserId, otherUserId }: Props) => {
                 ))}
             <FixedFloatingFollowButton
                 isFollowing={isFollowing}
+                isLoading={isPostFollowLoading || isUnFollowLoading}
                 onPostFollowButtonClickAction={onPostFollowButtonClickAction}
                 onUnFollowButtonClickAction={onUnFollowButtonClickAction}
             />
