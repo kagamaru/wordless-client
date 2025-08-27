@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { FetchFollowResponse, User, UserSukiEmojis } from "@/@types";
 import { Emote, FetchEmotesResponse } from "@/class";
-import { DisplayErrorMessage, LoadingSpin, NoEmoteText } from "@/components/atoms";
+import { DisplayErrorMessage, LoadingSpin, NoEmoteText, UserInfoLoadingSkeleton } from "@/components/atoms";
 import { EndOfEmotes } from "@/components/molecules";
 import { CurrentUserInfo, CurrentUserWordlessEmotes } from "@/components/organisms";
 import { deleteNextjsServer, fetchNextjsServer, getHeader, postImageNextjsServer } from "@/helpers";
@@ -229,13 +229,15 @@ export const CurrentUserView = ({ currentUserId }: Props) => {
         <>
             <div className="p-4 mt-1">
                 {hasErrorOnUserPage && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
-                {profileUserInfo && followResponseState && userSukiResponse && (
+                {profileUserInfo && followResponseState && userSukiResponse ? (
                     <CurrentUserInfo
                         profileUserInfo={profileUserInfo}
                         followInfo={followResponseState}
                         userSukiEmojis={userSukiResponse?.userSuki ?? []}
                         onUserImageChangeClickAction={userImagePostClick}
                     />
+                ) : (
+                    <UserInfoLoadingSkeleton />
                 )}
             </div>
             {isFetchingEmotes && <LoadingSpin />}

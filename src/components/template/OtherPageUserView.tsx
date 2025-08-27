@@ -4,7 +4,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { FetchFollowResponse, User, UserSukiEmojis } from "@/@types";
 import { Emote, FetchEmotesResponse } from "@/class";
-import { DisplayErrorMessage, FixedFloatingFollowButton, LoadingSpin, NoEmoteText } from "@/components/atoms";
+import {
+    DisplayErrorMessage,
+    FixedFloatingFollowButton,
+    LoadingSpin,
+    NoEmoteText,
+    UserInfoLoadingSkeleton
+} from "@/components/atoms";
 import { EndOfEmotes } from "@/components/molecules";
 import { DisplayOtherUserInfo, WordlessEmotes } from "@/components/organisms";
 import { deleteNextjsServer, fetchNextjsServer, getHeader, postNextjsServer } from "@/helpers";
@@ -247,12 +253,14 @@ export const OtherPageUserView = ({ currentUserId, otherUserId }: Props) => {
         <>
             <div className="p-4 mt-1">
                 {hasErrorOnUserPage && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
-                {profileUserInfo && followResponseState && userSukiResponse && (
+                {profileUserInfo && followResponseState && userSukiResponse ? (
                     <DisplayOtherUserInfo
                         profileUserInfo={profileUserInfo}
                         followInfo={followResponseState}
                         userSukiEmojis={userSukiResponse?.userSuki ?? []}
                     />
+                ) : (
+                    <UserInfoLoadingSkeleton />
                 )}
             </div>
             {isFetchingEmotes && <LoadingSpin />}
