@@ -3,6 +3,8 @@
 import { vitestSetup } from "../../../../vitest.setup";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import UserNameRegistrationPage from "@/app/(main)/user/[userId]/registration/userName/page";
 import { ErrorBoundary, ProviderTemplate, UserInfoContext, WebSocketProvider } from "@/components/template";
@@ -38,8 +40,25 @@ vi.mock("jwt-decode", () => ({
     })
 }));
 
+const mockGetUser = vi.fn();
+const mockPostUserName = vi.fn();
+const server = setupServer(
+    http.get("http://localhost:3000/api/user/:userId", () => {
+        mockGetUser();
+        return HttpResponse.json({
+            userId: "@x",
+            userName: "UserX",
+            userAvatarUrl: "https://image.test/x.png"
+        });
+    }),
+    http.post("http://localhost:3000/api/userName/:userId", () => {
+        mockPostUserName();
+        return HttpResponse.json({});
+    })
+);
+
 beforeAll(() => {
-    // server.listen();
+    server.listen();
 });
 
 beforeEach(() => {
@@ -55,12 +74,12 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-    // server.resetHandlers();
+    server.resetHandlers();
     cleanup();
 });
 
 afterAll(() => {
-    // server.close();
+    server.close();
 });
 
 const rendering = (): void => {
@@ -82,33 +101,60 @@ const rendering = (): void => {
 };
 
 describe("初期表示時", () => {
-    test("ユーザー情報表示に戻るボタンを表示する", () => {
-        expect(screen.getByRole("button", { name: "ユーザー情報表示に戻る" })).toBeTruthy();
+    test("ユーザー情報取得APIを呼び出す", () => {
+        expect(mockGetUser).toHaveBeenCalled();
     });
 
-    test("ユーザーのプロフィール画像を表示する", () => {
-        expect(screen.getByRole("img", { name: "UserXのトッププロフィール画像" })).toBeTruthy();
+    test("ユーザー情報表示に戻るボタンを表示する", async () => {
+        expect(await screen.findByRole("button", { name: "ユーザー情報表示に戻る" })).toBeTruthy();
     });
 
-    test("ユーザーIDを表示する", () => {
-        expect(screen.getByText("@x")).toBeTruthy();
+    test("ユーザーのプロフィール画像を表示する", async () => {
+        expect(await screen.findByRole("img", { name: "UserXのトッププロフィール画像" })).toBeTruthy();
     });
 
-    test("ユーザー名入力テキストボックスを表示する", () => {
-        expect(screen.getByRole("textbox", { name: "ユーザー名：" })).toBeTruthy();
+    test("ユーザーIDを表示する", async () => {
+        expect(await screen.findByText("@x")).toBeTruthy();
     });
 
-    test("ユーザー名入力テキストボックスの初期値として、現在のユーザー名が表示されている", () => {
-        expect(screen.getByRole("textbox", { name: "ユーザー名：" }).getAttribute("value")).toBe("UserX");
+    test("ユーザー名入力テキストボックスを表示する", async () => {
+        expect(await screen.findByRole("textbox", { name: "ユーザー名：" })).toBeTruthy();
     });
 
-    test("ユーザー名変更ボタンを表示する", () => {
-        expect(screen.getByRole("button", { name: "ユーザー名を変更する" })).toBeTruthy();
+    test("ユーザー名入力テキストボックスの初期値として、現在のユーザー名が表示されている", async () => {
+        expect((await screen.findByRole("textbox", { name: "ユーザー名：" })).getAttribute("value")).toBe("UserX");
     });
+
+    test("ユーザー名変更ボタンを表示する", async () => {
+        expect(await screen.findByRole("button", { name: "ユーザー名を変更する" })).toBeTruthy();
+    });
+
+    test.each([
+        ["USE-11", "不正なリクエストです。もう一度やり直してください。"],
+        ["USE-12", "ユーザーが見つかりません。もう一度ログインしてください。"],
+        ["USE-13", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+    ])(
+        "ユーザー情報取得APIで%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+        async (errorCode, errorMessage) => {
+            server.use(
+                http.get("http://localhost:3000/api/user/:userId", () => {
+                    return HttpResponse.json({ data: errorCode }, { status: 400 });
+                })
+            );
+
+            rendering();
+            const alertComponent = await screen.findByRole("alert");
+
+            await waitFor(() => {
+                expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+            });
+        }
+    );
 });
 
 test("ユーザー情報表示に戻るボタン押下時、ユーザー情報表示画面に戻る", async () => {
-    await user.click(screen.getByRole("button", { name: "ユーザー情報表示に戻る" }));
+    await user.click(await screen.findByRole("button", { name: "ユーザー情報表示に戻る" }));
 
     expect(mockedUseRouterPush).toHaveBeenCalledWith("/user/@x");
 });
@@ -117,8 +163,9 @@ describe("ユーザー名テキストボックス入力時", () => {
     test.each(["A", "User.Name", "foo-bar", "HELLO_WORLD", ".-_.", "Z9.-_", "X".repeat(24)])(
         "ユーザー名テキストボックスに%sを入力した場合、エラーメッセージが表示されない",
         async (userName) => {
-            await user.clear(screen.getByRole("textbox", { name: "ユーザー名：" }));
-            await user.type(screen.getByRole("textbox", { name: "ユーザー名：" }), userName);
+            const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
+            await user.clear(userNameInput);
+            await user.type(userNameInput, userName);
             // NOTE: テキストボックスからフォーカスアウトする
             await user.tab();
 
@@ -129,7 +176,7 @@ describe("ユーザー名テキストボックス入力時", () => {
     );
 
     test("ユーザー名を入力しなかった時、「ユーザー名を入力してください。」というエラーメッセージが表示される", async () => {
-        await user.clear(screen.getByRole("textbox", { name: "ユーザー名：" }));
+        await user.clear(await screen.findByRole("textbox", { name: "ユーザー名：" }));
         await user.tab();
 
         await waitFor(() => {
@@ -138,7 +185,8 @@ describe("ユーザー名テキストボックス入力時", () => {
     });
 
     test("ユーザー名が25文字以上の時、「1文字〜24文字で入力してください。」というエラーメッセージが表示される", async () => {
-        await user.type(screen.getByRole("textbox", { name: "ユーザー名：" }), "X".repeat(25));
+        const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
+        await user.type(userNameInput, "X".repeat(25));
         await user.tab();
 
         await waitFor(() => {
@@ -149,7 +197,9 @@ describe("ユーザー名テキストボックス入力時", () => {
     test.each(["ユーザーネーム", "ゆーざーねーむ", "🐍", "@/", " name "])(
         "ユーザー名テキストボックスに%sを入力した場合、「使用できる文字は英数字・ドット(.)・アンダースコア(_)・ハイフン(-)です。」というエラーメッセージが表示される",
         async (userName) => {
-            await user.type(screen.getByRole("textbox", { name: "ユーザー名：" }), userName);
+            const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
+            await user.clear(userNameInput);
+            await user.type(userNameInput, userName);
             await user.tab();
 
             await waitFor(() => {
@@ -168,10 +218,11 @@ test.todo("ユーザー名変更ボタン押下時", () => {
         test.each(["A", "User.Name", "foo-bar", "HELLO_WORLD", ".-_.", "Z9.-_", "X".repeat(24)])(
             "ユーザー名テキストボックスに%sを入力した場合、エラーメッセージが表示されない",
             async (userName) => {
-                await user.clear(screen.getByRole("textbox", { name: "ユーザー名：" }));
-                await user.type(screen.getByRole("textbox", { name: "ユーザー名：" }), userName);
+                const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
+                await user.clear(userNameInput);
+                await user.type(userNameInput, userName);
 
-                await user.click(screen.getByRole("button", { name: "ユーザー名を変更する" }));
+                await user.click(await screen.findByRole("button", { name: "ユーザー名を変更する" }));
 
                 await waitFor(() => {
                     expect(screen.queryByRole("alert")).toBeNull();
@@ -179,7 +230,29 @@ test.todo("ユーザー名変更ボタン押下時", () => {
             }
         );
 
-        test.todo("ユーザー名を変更するAPIを呼び出す");
+        test("ユーザー名を変更するAPIを呼び出す", async () => {
+            const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
+            await user.clear(userNameInput);
+            await user.type(userNameInput, "validName");
+
+            await user.click(screen.getByRole("button", { name: "ユーザー名を変更する" }));
+
+            await waitFor(() => {
+                expect(mockPostUserName).toHaveBeenCalled();
+            });
+        });
+
+        test("ユーザー情報表示画面に遷移する", async () => {
+            const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
+            await user.clear(userNameInput);
+            await user.type(userNameInput, "validName");
+
+            await user.click(screen.getByRole("button", { name: "ユーザー名を変更する" }));
+
+            await waitFor(() => {
+                expect(mockedUseRouterPush).toHaveBeenCalledWith("/user/@x");
+            });
+        });
     });
 
     describe("ユーザー名テキストボックスに入力した文字が正常な文字列でない場合", () => {
@@ -217,8 +290,58 @@ test.todo("ユーザー名変更ボタン押下時", () => {
             }
         );
 
-        test.todo("ユーザー名を変更するAPIを呼び出さない");
+        test("ユーザー名を変更するAPIを呼び出さない", async () => {
+            const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
+            await user.clear(userNameInput);
+            await user.type(userNameInput, "不適切なユーザー名");
+
+            await user.click(screen.getByRole("button", { name: "ユーザー名を変更する" }));
+
+            await waitFor(() => {
+                expect(mockPostUserName).not.toHaveBeenCalled();
+            });
+        });
+
+        test("ユーザー情報表示画面に遷移しない", async () => {
+            const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
+            await user.clear(userNameInput);
+            await user.type(screen.getByRole("textbox", { name: "ユーザー名：" }), "不適切なユーザー名");
+
+            await user.click(screen.getByRole("button", { name: "ユーザー名を変更する" }));
+
+            await waitFor(() => {
+                expect(mockedUseRouterPush).not.toHaveBeenCalled();
+            });
+        });
     });
 
-    test.todo("ユーザー名を変更するAPIのレスポンスがエラーの場合、エラーメッセージを表示する");
+    test.each([
+        ["USE-21", "不正なリクエストです。もう一度やり直してください。"],
+        ["USE-22", "サンプルユーザーはユーザー名を変えることが出来ません。"],
+        ["USE-23", "不正なリクエストです。もう一度やり直してください。"],
+        ["USE-24", "エラーが発生しています。しばらくの間使用できない可能性があります。"],
+        ["USE-25", "エラーが発生しています。しばらくの間使用できない可能性があります。"],
+        ["USE-26", "ユーザー名の形式が不正です。"],
+        ["USE-27", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+    ])(
+        "ユーザー名変更APIで%sエラーが返却された時、エラーメッセージ「%s」を表示する",
+        async (errorCode, errorMessage) => {
+            server.use(
+                http.post("http://localhost:3000/api/userName/:userId", () => {
+                    return HttpResponse.json({ data: errorCode }, { status: 400 });
+                })
+            );
+            const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
+            await user.clear(userNameInput);
+            await user.type(userNameInput, "validName");
+
+            await user.click(screen.getByRole("button", { name: "ユーザー名を変更する" }));
+
+            await waitFor(() => {
+                const alertComponent = screen.getByRole("alert");
+                expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
+            });
+        }
+    );
 });
