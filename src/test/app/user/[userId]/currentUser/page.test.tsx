@@ -489,6 +489,34 @@ describe("操作者のユーザーのページを表示した時", () => {
                         expect(userSukiChangeButton).toBeTruthy();
                     });
                 });
+
+                test.each([
+                    [
+                        "ユーザー情報取得",
+                        http.get("http://localhost:3000/api/user/:userId", () => {
+                            return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+                        })
+                    ],
+                    [
+                        "フォロー取得",
+                        http.get("http://localhost:3000/api/follow/:userId", () => {
+                            return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+                        })
+                    ],
+                    [
+                        "ユーザースキ取得",
+                        http.get("http://localhost:3000/api/userSuki/:userId", () => {
+                            return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+                        })
+                    ]
+                ])("%s APIが実行中、ローディングスケルトンを表示する", async (_apiName, api) => {
+                    server.use(api);
+                    rendering();
+
+                    await waitFor(() => {
+                        expect(screen.getByRole("status", { busy: true })).toBeTruthy();
+                    });
+                });
             });
 
             describe("エモート表示部分", () => {
