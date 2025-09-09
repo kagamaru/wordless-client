@@ -142,6 +142,12 @@ describe("PageHeader", () => {
             expect(mockedUseRouter).toHaveBeenCalledWith("/auth/login");
         });
 
+        test("パスワード変更ボタンをクリックした時、パスワード変更ページに遷移する", async () => {
+            await user.click(screen.getByRole("heading", { name: "パスワード変更" }));
+
+            expect(mockedUseRouter).toHaveBeenCalledWith("/user/@x/settings/password");
+        });
+
         test.todo("アカウント削除ボタンをクリックした時、アカウント削除ページに遷移する");
 
         test("×ボタン押下時、メニューを閉じる", async () => {
