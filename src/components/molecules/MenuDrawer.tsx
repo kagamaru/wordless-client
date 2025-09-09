@@ -7,7 +7,8 @@ import {
     BulbOutlined,
     DeleteOutlined,
     LogoutOutlined,
-    CloseOutlined
+    CloseOutlined,
+    LockOutlined
 } from "@ant-design/icons";
 import { User } from "@/@types";
 import { css } from "ss/css";
@@ -57,6 +58,11 @@ export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
         onClose();
     };
 
+    const onPasswordChangeClick = () => {
+        router.push(`/user/${user.userId}/settings/password`);
+        onClose();
+    };
+
     return (
         <Drawer title={null} placement="left" open={open} width={280} closable={false}>
             <div>
@@ -99,6 +105,12 @@ export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
                         title: "ログアウト",
                         icon: <LogoutOutlined />,
                         onClick: onLogoutClick,
+                        danger: false
+                    },
+                    {
+                        title: "パスワード変更",
+                        icon: <LockOutlined />,
+                        onClick: onPasswordChangeClick,
                         danger: false
                     },
                     {
