@@ -38,7 +38,7 @@ export default function LoginSignup() {
 
     const { mutateAsync, isError } = useMutation({
         mutationFn: async (request: { email: string; password: string }) => {
-            const response = await postWithTimeout<AuthenticationResultType>(`/api/auth`, {
+            const response = await postWithTimeout<AuthenticationResultType>(`/api/cognito/login`, {
                 email: request.email,
                 password: request.password
             });
