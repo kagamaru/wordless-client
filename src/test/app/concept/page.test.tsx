@@ -12,7 +12,6 @@ import {
     UserInfoContext,
     WebSocketProvider
 } from "@/components/template";
-import { useEmoteStore } from "@/store";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -53,7 +52,6 @@ beforeEach(() => {
 
 afterEach(() => {
     cleanup();
-    useEmoteStore.getState().cleanAllData();
 });
 
 const rendering = (): void => {
