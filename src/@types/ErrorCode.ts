@@ -1,6 +1,8 @@
 export type ErrorCode =
     | "ABT-01"
     | "AUN-99"
+    | "COG-01"
+    | "COG-02"
     | "ERR-01"
     | "WSK-99"
     | "EMT-01"
