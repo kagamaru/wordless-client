@@ -16,7 +16,7 @@ const user = userEvent.setup();
 const mockSignin = vi.fn();
 
 const server = setupServer(
-    http.post("http://localhost:3000/api/auth", () => {
+    http.post("http://localhost:3000/api/cognito/login", () => {
         mockSignin();
         return HttpResponse.json({
             AccessToken: "mock-access-token",
@@ -323,7 +323,7 @@ describe("ログインボタン押下時", () => {
 
     test("ログインAPIでエラーが返却された時、エラーメッセージを表示する", async () => {
         server.use(
-            http.post("http://localhost:3000/api/auth", () => {
+            http.post("http://localhost:3000/api/cognito/login", () => {
                 return HttpResponse.json({ data: "AUN-01" }, { status: 401 });
             })
         );

@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { CognitoIdentityProviderClient, InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
+import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
+import { getCognitoProviderClient } from "@/app/api/cognito/getCognitoProviderClient";
 
-const client = new CognitoIdentityProviderClient({
-    region: process.env.REGION_AWS ?? ""
-});
+const client = getCognitoProviderClient();
 const cognitoClientId = process.env.COGNITO_CLIENT_ID as string;
 
 export async function POST(req: NextRequest) {
