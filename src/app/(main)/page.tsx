@@ -87,11 +87,13 @@ export default function Home() {
             {(isError || isFetchingMoreEmotesError) && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
             {isPending && <LoadingSpin />}
             {emotes && <WordlessEmotes emotes={emotes}></WordlessEmotes>}
-            <EndOfEmotes
-                hasLastEmoteFetched={hasLastEmoteFetched}
-                isFetchingMoreEmotes={isFetchingMoreEmotes}
-                loadMoreEmotesAction={loadMoreEmotes}
-            />
+            {!isPending && (
+                <EndOfEmotes
+                    hasLastEmoteFetched={hasLastEmoteFetched}
+                    isFetchingMoreEmotes={isFetchingMoreEmotes}
+                    loadMoreEmotesAction={loadMoreEmotes}
+                />
+            )}
             <FixedFloatingButton />
         </>
     );

@@ -1,10 +1,10 @@
 // NOTE: vitestSetupは他のimportよりも先に呼び出す必要がある
 // NOTE: import順が変わるとモックが効かなくなるため、必ずこの位置に記述する
 import { vitestSetup } from "@/test/app/vitest.setup";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import ConceptPage from "@/app/(main)/concept/page";
+import { describe } from "node:test";
 import {
     ErrorBoundary,
     PageTemplate,
@@ -12,6 +12,7 @@ import {
     UserInfoContext,
     WebSocketProvider
 } from "@/components/template";
+import PasswordChangeCompletion from "@/app/(main)/user/[userId]/settings/password/completion/page";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -35,9 +36,6 @@ vi.mock("jwt-decode", () => ({
         };
     })
 }));
-
-const mockWindowOpen = vi.fn();
-window.open = mockWindowOpen;
 
 beforeEach(() => {
     vi.clearAllMocks();
@@ -65,7 +63,7 @@ const rendering = (): void => {
                 >
                     <WebSocketProvider>
                         <PageTemplate>
-                            <ConceptPage />
+                            <PasswordChangeCompletion />
                         </PageTemplate>
                     </WebSocketProvider>
                 </UserInfoContext.Provider>
@@ -74,23 +72,16 @@ const rendering = (): void => {
     );
 };
 
-test("作者GitHubボタンをクリックしたら、GitHubのリポジトリページが別タブで開かれる", async () => {
-    rendering();
-    const authorGitHubButton = screen.getByRole("button", { name: "github 作者GitHub" });
-
-    user.click(authorGitHubButton);
-
-    await waitFor(() => {
-        expect(mockWindowOpen).toHaveBeenCalledWith("https://github.com/kagamaru?tab=repositories", "_blank");
+describe("初期表示時", () => {
+    test("トップ画面に戻るボタンを表示する", async () => {
+        rendering();
+        expect(await screen.findByRole("button", { name: "トップ画面に戻る" })).toBeTruthy();
     });
 });
-test("トップページへボタンをクリックしたら、トップページにリダイレクトされる", async () => {
+
+test("トップ画面に戻るボタン押下時、トップ画面に遷移する", async () => {
     rendering();
-    const topPageButton = screen.getByRole("button", { name: "トップページへ" });
+    await user.click(await screen.findByRole("button", { name: "トップ画面に戻る" }));
 
-    user.click(topPageButton);
-
-    await waitFor(() => {
-        expect(mockedUseRouter).toHaveBeenCalledWith("/");
-    });
+    expect(mockedUseRouter).toHaveBeenCalledWith("/");
 });

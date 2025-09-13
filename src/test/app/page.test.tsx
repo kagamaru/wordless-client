@@ -1,6 +1,6 @@
 // NOTE: vitestSetupは他のimportよりも先に呼び出す必要がある
 // NOTE: import順が変わるとモックが効かなくなるため、必ずこの位置に記述する
-import { vitestSetup } from "./vitest.setup";
+import { vitestSetup } from "@/test/app/vitest.setup";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
@@ -494,14 +494,6 @@ describe("初期表示時", () => {
                 expect(screen.getByRole("button", { name: "エモート投稿ボタン" })).toBeTruthy();
             });
         });
-
-        test("ローディングスピナーを表示する", async () => {
-            rendering();
-
-            await waitFor(() => {
-                expect(screen.getByRole("img", { name: "loading" })).toBeTruthy();
-            });
-        });
     });
 
     describe("異常系", () => {
@@ -525,6 +517,32 @@ describe("初期表示時", () => {
                 expect(within(alertComponent).getByText(`Error : ${errorCode}`)).toBeTruthy();
                 expect(within(alertComponent).getByText(errorMessage as string)).toBeTruthy();
             });
+        });
+    });
+});
+
+describe("初期表示前のエモート取得中", () => {
+    beforeEach(() => {
+        server.use(
+            http.get("http://localhost:3000/api/emote", () => {
+                return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+            })
+        );
+    });
+
+    test("ローディングスピナーを表示する", async () => {
+        rendering();
+
+        await waitFor(() => {
+            expect(screen.getByRole("img", { name: "loading" })).toBeTruthy();
+        });
+    });
+
+    test("もっと見るボタンを表示しない", async () => {
+        rendering();
+
+        await waitFor(() => {
+            expect(screen.queryByRole("button", { name: "search もっと見る" })).toBeFalsy();
         });
     });
 });
@@ -974,7 +992,8 @@ describe("もっと見るボタンをクリックした時", () => {
             })
         );
 
-        await user.click(screen.getByRole("button", { name: "search もっと見る" }));
+        const moreButton = await screen.findByRole("button", { name: "search もっと見る" });
+        await user.click(moreButton);
 
         await waitFor(() => {
             expect(screen.getByRole("button", { name: "loading もっと見る" })).toBeTruthy();
@@ -985,7 +1004,8 @@ describe("もっと見るボタンをクリックした時", () => {
         describe("取得したエモートが1件以上だった時", () => {
             beforeEach(async () => {
                 rendering();
-                await user.click(screen.getByRole("button", { name: "search もっと見る" }));
+                const moreButton = await screen.findByRole("button", { name: "search もっと見る" });
+                await user.click(moreButton);
             });
 
             test("取得したエモートを表示する", async () => {
@@ -1012,7 +1032,8 @@ describe("もっと見るボタンをクリックした時", () => {
                     })
                 );
 
-                await user.click(screen.getByRole("button", { name: "search もっと見る" }));
+                const moreButton = await screen.findByRole("button", { name: "search もっと見る" });
+                await user.click(moreButton);
             });
 
             test("「最後のエモートです」を表示する", async () => {
@@ -1088,7 +1109,8 @@ describe("もっと見るボタンをクリックした時", () => {
                 })
             );
 
-            await user.click(screen.getByRole("button", { name: "search もっと見る" }));
+            const moreButton = await screen.findByRole("button", { name: "search もっと見る" });
+            await user.click(moreButton);
 
             await waitFor(() => {
                 const alertComponent = screen.getByRole("alert");

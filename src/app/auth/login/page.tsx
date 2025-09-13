@@ -63,6 +63,7 @@ export default function LoginSignup() {
 
             if (loginResult) {
                 localStorage.setItem("IdToken", loginResult.IdToken ?? "");
+                localStorage.setItem("AccessToken", loginResult.AccessToken ?? "");
             } else {
                 throw new Error();
             }
@@ -101,7 +102,7 @@ export default function LoginSignup() {
             <div className={alertBlockStyle}>
                 {isError && (
                     <DisplayErrorMessage
-                        error={{ errorCode: "AUN-99", errorMessage: getErrorMessage("AUN-99") }}
+                        error={{ errorCode: "COG-01", errorMessage: getErrorMessage("COG-01") }}
                     ></DisplayErrorMessage>
                 )}
             </div>

@@ -334,7 +334,7 @@ describe("ログインボタン押下時", () => {
         await user.click(await screen.findByRole("button", { name: "ログイン" }));
 
         const alertComponent = await screen.findByRole("alert");
-        expect(within(alertComponent).getByText("Error : AUN-99")).toBeTruthy();
+        expect(within(alertComponent).getByText("Error : COG-01")).toBeTruthy();
         expect(within(alertComponent).getByText("認証できませんでした。IDとパスワードをご確認ください。")).toBeTruthy();
     });
 });
