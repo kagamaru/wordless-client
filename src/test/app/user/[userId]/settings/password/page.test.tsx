@@ -3,6 +3,7 @@
 import { vitestSetup } from "../../../../vitest.setup";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { ErrorBoundary, ProviderTemplate, UserInfoContext, WebSocketProvider } from "@/components/template";
@@ -20,12 +21,18 @@ vi.mock("@/app/api/_WebSocketService", async () => {
     };
 });
 
+const mockChangePassword = vi.fn();
+const server = setupServer(
+    http.post("http://localhost:3000/api/cognito/changePassword", () => {
+        mockChangePassword();
+        return HttpResponse.json({});
+    })
+);
+
 const mockedUseRouterPush = vi.fn();
-const mockedUseRouterBack = vi.fn();
 vi.mock("next/navigation", () => ({
     useRouter: () => ({
-        push: mockedUseRouterPush,
-        back: mockedUseRouterBack
+        push: mockedUseRouterPush
     }),
     useParams: () => ({
         userId: "@x"
@@ -38,8 +45,6 @@ vi.mock("jwt-decode", () => ({
         };
     })
 }));
-
-const server = setupServer();
 
 beforeAll(() => {
     server.listen();
@@ -159,38 +164,142 @@ test("新しいパスワードと確認用パスワードが一致しない時�
 });
 
 describe("パスワード変更ボタン押下時", () => {
-    test.todo("パスワード変更APIを呼び出す");
+    test("パスワード変更APIを呼び出す", async () => {
+        await user.type(await screen.findByLabelText("現在のパスワード"), "example01");
+        await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+        await user.type(await screen.findByLabelText("新しいパスワード（確認）"), "example01");
 
-    test.todo("パスワード変更完了画面に遷移する");
+        await user.click(await screen.findByRole("button", { name: "パスワード変更" }));
+
+        expect(mockChangePassword).toHaveBeenCalled();
+    });
+
+    test("パスワード変更完了画面に遷移する", async () => {
+        await user.type(await screen.findByLabelText("現在のパスワード"), "example01");
+        await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+        await user.type(await screen.findByLabelText("新しいパスワード（確認）"), "example01");
+
+        await user.click(await screen.findByRole("button", { name: "パスワード変更" }));
+
+        expect(mockedUseRouterPush).toHaveBeenCalledWith("/user/@x/settings/password/completion");
+    });
 
     describe.each(["現在のパスワード", "新しいパスワード", "新しいパスワード（確認）"])(
         "%sテキストボックス",
         (textBox) => {
             describe(textBox, () => {
                 describe("未入力の時", () => {
-                    test.todo("パスワード変更APIを呼び出さない");
+                    beforeEach(async () => {
+                        await user.type(await screen.findByLabelText("現在のパスワード"), "example01");
+                        await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+                        await user.type(await screen.findByLabelText("新しいパスワード（確認）"), "example01");
 
-                    test.todo("パスワード変更完了画面に遷移しない");
+                        await user.clear(await screen.findByLabelText(textBox));
+
+                        await user.click(await screen.findByRole("button", { name: "パスワード変更" }));
+                    });
+
+                    test("パスワード変更APIを呼び出さない", async () => {
+                        expect(mockChangePassword).toHaveBeenCalledTimes(0);
+                    });
+
+                    test("パスワード変更完了画面に遷移しない", async () => {
+                        expect(mockedUseRouterPush).toHaveBeenCalledTimes(0);
+                    });
                 });
 
                 describe("パスワードが6文字以下の時", () => {
-                    test.todo("パスワード変更APIを呼び出さない");
+                    beforeEach(async () => {
+                        await user.type(await screen.findByLabelText("現在のパスワード"), "example01");
+                        await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+                        await user.type(await screen.findByLabelText("新しいパスワード（確認）"), "example01");
 
-                    test.todo("パスワード変更完了画面に遷移しない");
+                        await user.clear(await screen.findByLabelText(textBox));
+                        await user.type(await screen.findByLabelText(textBox), "123456");
+
+                        await user.click(await screen.findByRole("button", { name: "パスワード変更" }));
+                    });
+
+                    test("パスワード変更APIを呼び出さない", async () => {
+                        expect(mockChangePassword).toHaveBeenCalledTimes(0);
+                    });
+
+                    test("パスワード変更完了画面に遷移しない", async () => {
+                        expect(mockedUseRouterPush).toHaveBeenCalledTimes(0);
+                    });
                 });
 
                 describe("パスワードに数字が含まれていない時", () => {
-                    test.todo("パスワード変更APIを呼び出さない");
+                    beforeEach(async () => {
+                        await user.type(await screen.findByLabelText("現在のパスワード"), "example01");
+                        await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+                        await user.type(await screen.findByLabelText("新しいパスワード（確認）"), "example01");
 
-                    test.todo("パスワード変更完了画面に遷移しない");
+                        await user.clear(await screen.findByLabelText(textBox));
+                        await user.type(await screen.findByLabelText(textBox), "wordless");
+
+                        await user.click(await screen.findByRole("button", { name: "パスワード変更" }));
+                    });
+
+                    test("パスワード変更APIを呼び出さない", async () => {
+                        expect(mockChangePassword).toHaveBeenCalledTimes(0);
+                    });
+
+                    test("パスワード変更完了画面に遷移しない", async () => {
+                        expect(mockedUseRouterPush).toHaveBeenCalledTimes(0);
+                    });
                 });
             });
         }
     );
 
     describe("新しいパスワードと確認用パスワードが一致しない時", () => {
-        test.todo("パスワード変更APIを呼び出さない");
+        beforeEach(async () => {
+            await user.type(await screen.findByLabelText("現在のパスワード"), "example01");
+            await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+            await user.type(await screen.findByLabelText("新しいパスワード（確認）"), "example02");
 
-        test.todo("パスワード変更完了画面に遷移しない");
+            await user.click(await screen.findByRole("button", { name: "パスワード変更" }));
+        });
+
+        test("パスワード変更APIを呼び出さない", async () => {
+            expect(mockChangePassword).toHaveBeenCalledTimes(0);
+        });
+
+        test("パスワード変更完了画面に遷移しない", async () => {
+            expect(mockedUseRouterPush).toHaveBeenCalledTimes(0);
+        });
+    });
+
+    describe("パスワード変更APIでエラーが返却された時", () => {
+        beforeEach(async () => {
+            server.use(
+                http.post("http://localhost:3000/api/cognito/changePassword", () => {
+                    return HttpResponse.json({}, { status: 500 });
+                })
+            );
+
+            await user.type(await screen.findByLabelText("現在のパスワード"), "example01");
+            await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+            await user.type(await screen.findByLabelText("新しいパスワード（確認）"), "example01");
+
+            await user.click(await screen.findByRole("button", { name: "パスワード変更" }));
+        });
+
+        test("パスワード変更APIを呼び出さない", async () => {
+            expect(mockChangePassword).toHaveBeenCalledTimes(0);
+        });
+
+        test("パスワード変更完了画面に遷移しない", async () => {
+            expect(mockedUseRouterPush).toHaveBeenCalledTimes(0);
+        });
+
+        test("エラーメッセージを表示する", async () => {
+            const alertComponent = await screen.findByRole("alert");
+            expect(within(alertComponent).getByText("Error : COG-02")).toBeTruthy();
+            expect(
+                within(alertComponent).getByText("パスワードが間違っているか、1日の変更可能回数を超過しました。")
+            ).toBeTruthy();
+        });
     });
 });
