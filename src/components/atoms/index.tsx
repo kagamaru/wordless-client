@@ -1,6 +1,7 @@
 import { ArrowBackButton } from "@/components/atoms/ArrowBackButton";
 import { CancelButton } from "@/components/atoms/CancelButton";
 import { CardDivider } from "@/components/atoms/CardDivider";
+import { ChangePasswordButton } from "@/components/atoms/ChangePasswordButton";
 import { ChangeUserNameButton } from "@/components/atoms/ChangeUserNameButton";
 import { CloseButton } from "@/components/atoms/CloseButton";
 import { DeleteButton } from "@/components/atoms/DeleteButton";
@@ -51,6 +52,7 @@ export {
     ArrowBackButton,
     CancelButton,
     CardDivider,
+    ChangePasswordButton,
     ChangeUserNameButton,
     CloseButton,
     DeleteButton,
