@@ -1,3 +1,4 @@
+import { ChangePasswordForm } from "@/components/molecules/ChangePasswordForm";
 import { CurrentUserProfile } from "@/components/molecules/CurrentUserProfile";
 import { CurrentUserSukiSection } from "@/components/molecules/CurrentUserSukiSection";
 import { CurrentUserWordlessEmote } from "@/components/molecules/CurrentUserWordlessEmote";
@@ -20,6 +21,7 @@ import { TypingEmote } from "@/components/molecules/TypingEmote";
 import { WordlessEmote } from "@/components/molecules/WordlessEmote";
 
 export {
+    ChangePasswordForm,
     CurrentUserProfile,
     CurrentUserSukiSection,
     CurrentUserWordlessEmote,
