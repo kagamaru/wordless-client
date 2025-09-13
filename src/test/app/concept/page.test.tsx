@@ -1,6 +1,6 @@
 // NOTE: vitestSetupは他のimportよりも先に呼び出す必要がある
 // NOTE: import順が変わるとモックが効かなくなるため、必ずこの位置に記述する
-import { vitestSetup } from "../vitest.setup";
+import { vitestSetup } from "@/test/app/vitest.setup";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
