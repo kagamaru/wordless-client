@@ -20,6 +20,7 @@ export function CardPageTemplate({
     });
 
     const cardPageBlockStyle = css({
+        width: isMobile ? "100%" : "500px",
         textAlign: "center"
     });
 
