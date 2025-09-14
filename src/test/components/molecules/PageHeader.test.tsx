@@ -3,8 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import { User } from "@/@types";
 import { PageHeader } from "@/components/molecules";
-import { ErrorBoundary, ProviderTemplate, UserInfoTemplate, WebSocketProvider } from "@/components/template";
+import { ErrorBoundary, ProviderTemplate, UserInfoContext, WebSocketProvider } from "@/components/template";
 import { useEmoteStore } from "@/store";
 import { vitestSetup } from "@/test/app/vitest.setup";
 
@@ -44,15 +45,23 @@ const server = setupServer(
     })
 );
 
-const rendering = (): void => {
+const rendering = (userInfo?: User): void => {
     render(
         <ProviderTemplate>
             <ErrorBoundary>
-                <UserInfoTemplate>
+                <UserInfoContext.Provider
+                    value={{
+                        userInfo: userInfo ?? {
+                            userId: "@x",
+                            userName: "User X",
+                            userAvatarUrl: "https://image.test/x.png"
+                        }
+                    }}
+                >
                     <WebSocketProvider>
                         <PageHeader />
                     </WebSocketProvider>
-                </UserInfoTemplate>
+                </UserInfoContext.Provider>
             </ErrorBoundary>
         </ProviderTemplate>
     );
@@ -72,7 +81,6 @@ beforeEach(() => {
         removeItem: removeItemMock,
         clear: vi.fn()
     });
-    rendering();
 });
 
 afterEach(() => {
@@ -87,12 +95,16 @@ afterAll(() => {
 
 describe("PageHeader", () => {
     test("ヘッダーをクリックした時、ダッシュボード画面に遷移する", async () => {
+        rendering();
+
         await user.click(await screen.findByRole("heading", { name: "Wordless" }));
 
         expect(mockedUseRouter).toHaveBeenCalledWith("/");
     });
 
     test("ヘッダーメニューをクリックした時、メニューを表示する", async () => {
+        rendering();
+
         await user.click(await screen.findByRole("img", { name: "menu" }));
 
         await waitFor(() => {
@@ -102,6 +114,8 @@ describe("PageHeader", () => {
 
     describe("メニュー表示時", () => {
         beforeEach(async () => {
+            rendering();
+
             await user.click(await screen.findByRole("img", { name: "menu" }));
         });
 
@@ -154,6 +168,23 @@ describe("PageHeader", () => {
             await user.click(screen.getByRole("img", { name: "close" }));
 
             expect(screen.queryByRole("dialog")).toBeNull();
+        });
+    });
+
+    describe("サンプルユーザーの時", () => {
+        test.each([
+            process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_ID,
+            process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_USER_ID
+        ])("サンプルユーザーの時、アカウント削除ボタンとパスワード変更ボタンが表示されない", async (userId) => {
+            rendering({
+                userId: userId ?? "",
+                userName: "User",
+                userAvatarUrl: "https://image.test/" + userId + ".png"
+            });
+            await user.click(await screen.findByRole("heading", { name: "Wordless" }));
+
+            expect(screen.queryByRole("heading", { name: "アカウント削除" })).toBeNull();
+            expect(screen.queryByRole("heading", { name: "パスワード変更" })).toBeNull();
         });
     });
 });

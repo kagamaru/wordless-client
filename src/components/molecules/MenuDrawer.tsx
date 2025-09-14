@@ -23,6 +23,9 @@ type Props = {
 
 export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
     const router = useRouter();
+    const isSampleUser =
+        user.userId === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_ID ||
+        user.userId === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_USER_ID;
 
     const closeIconStyle = css({
         fontSize: "24px",
@@ -53,6 +56,7 @@ export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
     };
 
     const onLogoutClick = () => {
+        localStorage.removeItem("AccessToken");
         localStorage.removeItem("IdToken");
         router.push("/auth/login");
         onClose();
@@ -121,23 +125,26 @@ export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
                         danger: true
                     }
                 ]}
-                renderItem={(item) => (
-                    <List.Item onClick={item.onClick} className={listItemStyle}>
-                        <List.Item.Meta
-                            avatar={item.icon}
-                            title={
-                                <span
-                                    style={{
-                                        color: item.danger ? "red" : "inherit",
-                                        fontWeight: item.danger ? "bold" : undefined
-                                    }}
-                                >
-                                    {item.title}
-                                </span>
-                            }
-                        />
-                    </List.Item>
-                )}
+                renderItem={(item) =>
+                    (isSampleUser && item.title === "アカウント削除") ||
+                    (isSampleUser && item.title === "パスワード変更") ? null : (
+                        <List.Item onClick={item.onClick} className={listItemStyle}>
+                            <List.Item.Meta
+                                avatar={item.icon}
+                                title={
+                                    <span
+                                        style={{
+                                            color: item.danger ? "red" : "inherit",
+                                            fontWeight: item.danger ? "bold" : undefined
+                                        }}
+                                    >
+                                        {item.title}
+                                    </span>
+                                }
+                            />
+                        </List.Item>
+                    )
+                }
             />
         </Drawer>
     );
