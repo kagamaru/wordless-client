@@ -9,6 +9,9 @@ export const ChangePasswordForm = () => {
     const [form] = Form.useForm();
     const router = useRouter();
     const userId = useParamUserId();
+    const isSampleUser =
+        userId === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_ID ||
+        userId === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_USER_ID;
 
     const {
         mutateAsync: postChangePasswordAsyncAPI,
@@ -30,6 +33,10 @@ export const ChangePasswordForm = () => {
     });
 
     const onPasswordChangeClick = async (values: { currentPassword: string; newPassword: string }) => {
+        if (isSampleUser) {
+            return;
+        }
+
         try {
             await postChangePasswordAsyncAPI(values);
             router.push(`/user/${userId}/settings/password/completion`);
