@@ -67,6 +67,11 @@ export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
         onClose();
     };
 
+    const onDeleteUserClick = () => {
+        router.push(`/user/${user.userId}/settings/deleteUser`);
+        onClose();
+    };
+
     const isRenderingItem = (itemTitle: string) => {
         return (isSampleUser && itemTitle === "アカウント削除") || (isSampleUser && itemTitle === "パスワード変更");
     };
@@ -124,8 +129,7 @@ export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
                     {
                         title: "アカウント削除",
                         icon: <DeleteOutlined />,
-                        // TODO: アカウント削除の実装をする
-                        onClick: () => console.log("アカウント削除"),
+                        onClick: onDeleteUserClick,
                         danger: true
                     }
                 ]}

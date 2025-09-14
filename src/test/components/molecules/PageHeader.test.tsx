@@ -162,7 +162,11 @@ describe("PageHeader", () => {
             expect(mockedUseRouter).toHaveBeenCalledWith("/user/@x/settings/password");
         });
 
-        test.todo("アカウント削除ボタンをクリックした時、アカウント削除ページに遷移する");
+        test("アカウント削除ボタンをクリックした時、アカウント削除ページに遷移する", async () => {
+            await user.click(screen.getByRole("heading", { name: "アカウント削除" }));
+
+            expect(mockedUseRouter).toHaveBeenCalledWith("/user/@x/settings/deleteUser");
+        });
 
         test("×ボタン押下時、メニューを閉じる", async () => {
             await user.click(screen.getByRole("img", { name: "close" }));
