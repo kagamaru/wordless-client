@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import { User } from "@/@types";
 import { ErrorBoundary, ProviderTemplate, UserInfoContext, WebSocketProvider } from "@/components/template";
 import PasswordChange from "@/app/(main)/user/[userId]/settings/password/page";
 
@@ -59,7 +60,6 @@ beforeEach(() => {
         removeItem: vi.fn(),
         clear: vi.fn()
     });
-    rendering();
 });
 
 afterEach(() => {
@@ -71,13 +71,17 @@ afterAll(() => {
     server.close();
 });
 
-const rendering = (): void => {
+const rendering = (userInfo?: User): void => {
     render(
         <ProviderTemplate>
             <ErrorBoundary>
                 <UserInfoContext.Provider
                     value={{
-                        userInfo: { userId: "@x", userName: "UserX", userAvatarUrl: "https://image.test/x.png" }
+                        userInfo: userInfo ?? {
+                            userId: "@x",
+                            userName: "UserX",
+                            userAvatarUrl: "https://image.test/x.png"
+                        }
                     }}
                 >
                     <WebSocketProvider>
@@ -90,6 +94,10 @@ const rendering = (): void => {
 };
 
 describe("初期表示時", () => {
+    beforeEach(async () => {
+        rendering();
+    });
+
     test("トップ画面に戻るボタンを表示する", async () => {
         expect(await screen.findByRole("button", { name: "トップ画面に戻る" })).toBeTruthy();
     });
@@ -112,12 +120,18 @@ describe("初期表示時", () => {
 });
 
 test("トップ画面に戻るボタン押下時、トップ画面に遷移する", async () => {
+    rendering();
+
     await user.click(await screen.findByRole("button", { name: "トップ画面に戻る" }));
 
     expect(mockedUseRouterPush).toHaveBeenCalledWith("/");
 });
 
 describe.each(["現在のパスワード", "新しいパスワード", "新しいパスワード（確認）"])("%sテキストボックス", (textBox) => {
+    beforeEach(async () => {
+        rendering();
+    });
+
     test("正しい形式のパスワードを入力した時、エラーメッセージが表示されない", async () => {
         await user.type(await screen.findByLabelText(textBox), "example01");
 
@@ -155,6 +169,8 @@ describe.each(["現在のパスワード", "新しいパスワード", "新し�
 });
 
 test("新しいパスワードと確認用パスワードが一致しない時、「新しいパスワードと一致しません」が表示される", async () => {
+    rendering();
+
     await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
     await user.type(await screen.findByLabelText("新しいパスワード（確認）"), "example02");
 
@@ -164,6 +180,10 @@ test("新しいパスワードと確認用パスワードが一致しない時�
 });
 
 describe("パスワード変更ボタン押下時", () => {
+    beforeEach(async () => {
+        rendering();
+    });
+
     test("パスワード変更APIを呼び出す", async () => {
         await user.type(await screen.findByLabelText("現在のパスワード"), "example01");
         await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
@@ -300,6 +320,25 @@ describe("パスワード変更ボタン押下時", () => {
             expect(
                 within(alertComponent).getByText("パスワードが間違っているか、1日の変更可能回数を超過しました。")
             ).toBeTruthy();
+        });
+    });
+});
+
+describe("サンプルユーザーの時", () => {
+    describe.each([
+        process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_ID,
+        process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_USER_ID
+    ])("%s", async (userId) => {
+        beforeEach(async () => {
+            rendering({ userId: userId ?? "", userName: "User", userAvatarUrl: "https://image.test/x.png" });
+        });
+
+        test("パスワード変更APIを呼び出さない", async () => {
+            expect(mockChangePassword).toHaveBeenCalledTimes(0);
+        });
+
+        test("パスワード変更完了画面に遷移しない", async () => {
+            expect(mockedUseRouterPush).toHaveBeenCalledTimes(0);
         });
     });
 });
