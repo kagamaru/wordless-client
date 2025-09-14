@@ -2,7 +2,7 @@
 import { ChangePasswordCommand, CognitoIdentityProviderClient } from "@aws-sdk/client-cognito-identity-provider";
 import { mockClient } from "aws-sdk-client-mock";
 import { NextRequest, NextResponse } from "next/server";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { POST } from "@/app/api/cognito/changePassword/route";
 
 type PostRequestParams = {
