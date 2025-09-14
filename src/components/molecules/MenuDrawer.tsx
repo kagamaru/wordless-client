@@ -67,6 +67,10 @@ export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
         onClose();
     };
 
+    const isRenderingItem = (itemTitle: string) => {
+        return (isSampleUser && itemTitle === "アカウント削除") || (isSampleUser && itemTitle === "パスワード変更");
+    };
+
     return (
         <Drawer title={null} placement="left" open={open} width={280} closable={false}>
             <div>
@@ -126,8 +130,7 @@ export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
                     }
                 ]}
                 renderItem={(item) =>
-                    (isSampleUser && item.title === "アカウント削除") ||
-                    (isSampleUser && item.title === "パスワード変更") ? null : (
+                    isRenderingItem(item.title) ? null : (
                         <List.Item onClick={item.onClick} className={listItemStyle}>
                             <List.Item.Meta
                                 avatar={item.icon}
