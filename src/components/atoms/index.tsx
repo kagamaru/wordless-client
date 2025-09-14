@@ -34,8 +34,9 @@ import { PostUserSukiButton } from "@/components/atoms/PostUserSukiButton";
 import { RedirectLoginButton } from "@/components/atoms/RedirectLoginButton";
 import { RedirectTopButton } from "@/components/atoms/RedirectTopButton";
 import { PlusButton } from "@/components/atoms/PlusButton";
-import { ResetPasswordLink } from "@/components/atoms/ResetPasswordLink";
+import { LinkButton } from "@/components/atoms/LinkButton";
 import { SampleLoginButton } from "@/components/atoms/SampleLoginButton";
+import { SendEmailButton } from "@/components/atoms/SendEmailButton";
 import { SendEmoteButton } from "@/components/atoms/SendEmoteButton";
 import { ShadowDivider } from "@/components/atoms/ShadowDivider";
 import { SignupButton } from "@/components/atoms/SignupButton";
@@ -85,8 +86,9 @@ export {
     RedirectLoginButton,
     RedirectTopButton,
     PlusButton,
-    ResetPasswordLink,
+    LinkButton,
     SampleLoginButton,
+    SendEmailButton,
     SendEmoteButton,
     ShadowDivider,
     SignupButton,

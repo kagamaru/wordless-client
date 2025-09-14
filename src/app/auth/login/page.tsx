@@ -9,14 +9,14 @@ import { css } from "ss/css";
 import {
     DisplayErrorMessage,
     EmailAddressInput,
+    LinkButton,
     LoginButton,
     PasswordInput,
-    ResetPasswordLink,
     SampleLoginButton,
     SignupButton
 } from "@/components/atoms";
-import { getErrorMessage, postWithTimeout } from "@/helpers";
 import { CardPageTemplate } from "@/components/template";
+import { getErrorMessage, postWithTimeout } from "@/helpers";
 
 const env = process.env;
 
@@ -97,6 +97,10 @@ export default function LoginSignup() {
         textAlign: "left"
     });
 
+    const resetPasswordLinkButton = (
+        <LinkButton label="パスワードを忘れた場合" routerPath="/auth/forgetPassword/emailAddressInput" />
+    );
+
     const loginTab = (
         <>
             <div className={alertBlockStyle}>
@@ -110,7 +114,7 @@ export default function LoginSignup() {
                 <EmailAddressInput />
                 <PasswordInput />
                 <LoginButton />
-                <ResetPasswordLink />
+                {resetPasswordLinkButton}
                 <SampleLoginButton sampleUserName="Nozomi" onClickAction={() => onSampleLoginClick("Nozomi")} />
                 <SampleLoginButton sampleUserName="Nico" onClickAction={() => onSampleLoginClick("Nico")} />
             </Form>
@@ -123,7 +127,7 @@ export default function LoginSignup() {
                 <EmailAddressInput />
                 <PasswordInput />
                 <SignupButton />
-                <ResetPasswordLink />
+                {resetPasswordLinkButton}
             </Form>
         </>
     );

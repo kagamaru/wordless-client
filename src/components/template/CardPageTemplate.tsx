@@ -15,11 +15,12 @@ export function CardPageTemplate({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
+        minHeight: "100vh",
         background: "loginPageBackground"
     });
 
     const cardPageBlockStyle = css({
+        width: isMobile ? "100%" : "500px",
         textAlign: "center"
     });
 
@@ -36,7 +37,7 @@ export function CardPageTemplate({
     });
 
     const cardStyle = css({
-        width: isMobile ? "99%" : 500,
+        width: isMobile ? "100%" : 500,
         margin: "auto",
         marginTop: 50
     });

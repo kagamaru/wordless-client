@@ -1,6 +1,6 @@
 // NOTE: vitestSetupは他のimportよりも先に呼び出す必要がある
 // NOTE: import順が変わるとモックが効かなくなるため、必ずこの位置に記述する
-import { vitestSetup } from "../../vitest.setup";
+import { vitestSetup } from "@/test/app/vitest.setup";
 import { NewDeviceMetadataType } from "@aws-sdk/client-cognito-identity-provider";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -371,6 +371,17 @@ describe("サンプルログインテスト", () => {
 
     describe("Nico押下時", () => {
         commonLoginTests("サンプルログイン（Nico）", "wordless.nico@gmail.com", "1234567YYY");
+    });
+});
+
+test("パスワードを忘れた場合ボタン押下時、パスワードリセットメール送信画面に遷移する", async () => {
+    rendering();
+    const forgetPasswordButton = await screen.findByRole("button", { name: "パスワードを忘れた場合" });
+
+    await user.click(forgetPasswordButton);
+
+    await waitFor(() => {
+        expect(mockedUseRouter).toHaveBeenCalledWith("/auth/forgetPassword/emailAddressInput");
     });
 });
 
