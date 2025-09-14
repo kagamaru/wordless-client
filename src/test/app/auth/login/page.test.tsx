@@ -366,11 +366,11 @@ function commonLoginTests(name: string, email: string, password: string) {
 
 describe("サンプルログインテスト", () => {
     describe("Nozomi押下時", () => {
-        commonLoginTests("サンプルログイン（Nozomi）", "wordless.nozomi@gmail.com", "1234567XXX");
+        commonLoginTests("サンプルログイン（Nozomi）", "wordless.nozomi@example.com", "1234567XXX");
     });
 
     describe("Nico押下時", () => {
-        commonLoginTests("サンプルログイン（Nico）", "wordless.nico@gmail.com", "1234567YYY");
+        commonLoginTests("サンプルログイン（Nico）", "wordless.nico@example.com", "1234567YYY");
     });
 });
 
