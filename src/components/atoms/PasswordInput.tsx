@@ -18,7 +18,7 @@ export function PasswordInput({ label = "パスワード", name = "password" }: 
                 { pattern: /\d/, message: "パスワードには数字を含める必要があります" }
             ]}
         >
-            <Input.Password />
+            <Input.Password aria-label={label} />
         </Form.Item>
     );
 }
