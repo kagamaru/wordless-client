@@ -6,6 +6,8 @@ import userEvent from "@testing-library/user-event";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { ProviderTemplate } from "@/components/template";
 import EmailAddressInputPage from "@/app/auth/forgetPassword/emailAddressInput/page";
+import { setupServer } from "msw/node";
+import { http, HttpResponse } from "msw";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -17,17 +19,36 @@ vi.mock("next/navigation", () => ({
     })
 }));
 
-beforeAll(() => {});
+const mockForgotPassword = vi.fn();
+const server = setupServer(
+    http.post("http://localhost:3000/api/cognito/forgotPassword", () => {
+        mockForgotPassword();
+        return HttpResponse.json({
+            CodeDeliveryDetails: {
+                AttributeName: "email",
+                DeliveryMedium: "EMAIL",
+                Destination: "test@example.com"
+            }
+        });
+    })
+);
+
+beforeAll(() => {
+    server.listen();
+});
 
 beforeEach(() => {
     vi.clearAllMocks();
     vi.resetAllMocks();
 });
 
-afterAll(() => {});
+afterAll(() => {
+    server.close();
+});
 
 afterEach(() => {
     cleanup();
+    server.resetHandlers();
 });
 
 const rendering = (): void => {
@@ -101,21 +122,116 @@ describe("パスワードリセットメール送信ボタン押下時", () => {
     });
 
     describe("Eメールが入力されている時、", () => {
-        test.todo("パスワードリセットメール送信APIを呼び出す");
+        test("パスワードリセットメール送信APIを呼び出す", async () => {
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "test@example.com");
+            await user.click(await screen.findByRole("button", { name: "send メール送信" }));
 
-        test.todo("新規パスワード入力画面に遷移する");
+            await waitFor(() => {
+                expect(mockForgotPassword).toHaveBeenCalledTimes(1);
+            });
+        });
+
+        test("新規パスワード入力画面に遷移する", async () => {
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "test@example.com");
+            await user.click(await screen.findByRole("button", { name: "send メール送信" }));
+
+            await waitFor(() => {
+                expect(mockedUseRouter).toHaveBeenCalledWith("/auth/forgetPassword/newPasswordInput");
+            });
+        });
     });
 
     describe("Eメールが入力されていない時、", () => {
-        test.todo("パスワードリセットメール送信APIを呼び出さない");
+        test("パスワードリセットメール送信APIを呼び出さない", async () => {
+            await user.click(await screen.findByRole("button", { name: "send メール送信" }));
 
-        test.todo("新規パスワード入力画面に遷移しない");
+            await waitFor(() => {
+                expect(mockForgotPassword).not.toHaveBeenCalled();
+            });
+        });
+
+        test("新規パスワード入力画面に遷移しない", async () => {
+            await user.click(await screen.findByRole("button", { name: "send メール送信" }));
+
+            await waitFor(() => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/forgetPassword/newPasswordInput");
+            });
+        });
     });
 
     describe("Eメールとして正しい形式でない時、", () => {
-        test.todo("パスワードリセットメール送信APIを呼び出さない");
+        test("パスワードリセットメール送信APIを呼び出さない", async () => {
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@");
+            await user.click(await screen.findByRole("button", { name: "send メール送信" }));
 
-        test.todo("新規パスワード入力画面に遷移しない");
+            await waitFor(() => {
+                expect(mockForgotPassword).not.toHaveBeenCalled();
+            });
+        });
+
+        test("新規パスワード入力画面に遷移しない", async () => {
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@");
+            await user.click(await screen.findByRole("button", { name: "send メール送信" }));
+
+            await waitFor(() => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/forgetPassword/newPasswordInput");
+            });
+        });
+    });
+
+    describe.each(["wordless.nozomi@example.com", "wordless.nico@example.com"])(
+        "サンプルユーザーのメールアドレスを入力した時、",
+        async (email) => {
+            test("パスワードリセットメール送信APIを呼び出さない", async () => {
+                await user.type(await screen.findByRole("textbox", { name: "Eメール" }), email);
+                await user.click(await screen.findByRole("button", { name: "send メール送信" }));
+
+                await waitFor(() => {
+                    expect(mockForgotPassword).not.toHaveBeenCalled();
+                });
+            });
+
+            test("新規パスワード入力画面に遷移しない", async () => {
+                await user.type(await screen.findByRole("textbox", { name: "Eメール" }), email);
+                await user.click(await screen.findByRole("button", { name: "send メール送信" }));
+
+                await waitFor(() => {
+                    expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/forgetPassword/newPasswordInput");
+                });
+            });
+
+            test("「登録されていないメールアドレスか、サンプルユーザーのメールアドレスです。」を表示する", async () => {
+                await user.type(await screen.findByRole("textbox", { name: "Eメール" }), email);
+                await user.click(await screen.findByRole("button", { name: "send メール送信" }));
+
+                await waitFor(() => {
+                    expect(
+                        within(screen.getByRole("alert")).getByText(
+                            "登録されていないメールアドレスか、サンプルユーザーのメールアドレスです。"
+                        )
+                    ).toBeTruthy();
+                });
+            });
+        }
+    );
+
+    test("パスワードを忘れた場合APIでエラーが発生した時、「登録されていないメールアドレスか、サンプルユーザーのメールアドレスです。」を表示する", async () => {
+        server.use(
+            http.post("http://localhost:3000/api/cognito/forgotPassword", () => {
+                return HttpResponse.json({}, { status: 400 });
+            })
+        );
+
+        await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "test@example.com");
+        await user.click(await screen.findByRole("button", { name: "send メール送信" }));
+
+        await waitFor(() => {
+            expect(
+                within(screen.getByRole("alert")).getByText(
+                    "登録されていないメールアドレスか、サンプルユーザーのメールアドレスです。"
+                )
+            ).toBeTruthy();
+        });
     });
 });
 
