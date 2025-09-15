@@ -3,6 +3,8 @@
 import { vitestSetup } from "@/test/app/vitest.setup";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import RegistrationConfirmationCodePage from "@/app/auth/registration/confirmationCode/page";
 import { ProviderTemplate } from "@/components/template";
@@ -17,17 +19,31 @@ vi.mock("next/navigation", () => ({
     })
 }));
 
-beforeAll(() => {});
+const mockConfirmSignup = vi.fn();
+const server = setupServer(
+    http.post("http://localhost:3000/api/cognito/confirmSignup", () => {
+        mockConfirmSignup();
+        return HttpResponse.json({});
+    })
+);
+
+beforeAll(() => {
+    server.listen();
+});
 
 beforeEach(() => {
     vi.clearAllMocks();
     vi.resetAllMocks();
+    rendering();
 });
 
-afterAll(() => {});
+afterAll(() => {
+    server.close();
+});
 
 afterEach(() => {
     cleanup();
+    server.resetHandlers();
 });
 
 const rendering = (): void => {
@@ -39,10 +55,6 @@ const rendering = (): void => {
 };
 
 describe("初期表示時", () => {
-    beforeEach(() => {
-        rendering();
-    });
-
     test("Eメールテキストボックスが表示されている", async () => {
         await waitFor(() => {
             expect(screen.getByRole("textbox", { name: "Eメール" })).toBeTruthy();
@@ -63,10 +75,6 @@ describe("初期表示時", () => {
 });
 
 describe("Eメール入力時", () => {
-    beforeEach(() => {
-        rendering();
-    });
-
     test("Eメールとして正しい形式である場合、何もしない", async () => {
         await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@example.com");
         await user.tab();
@@ -96,10 +104,6 @@ describe("Eメール入力時", () => {
 });
 
 describe("確認コード入力時", () => {
-    beforeEach(() => {
-        rendering();
-    });
-
     test("確認コードとして正しい形式である場合、何もしない", async () => {
         await user.type(await screen.findByLabelText("確認コード"), "123456");
         await user.tab();
@@ -131,32 +135,134 @@ describe("確認コード入力時", () => {
 
 describe("確認コード検証ボタン押下時", () => {
     describe("Eメールと確認コードが両方正しいものである時、", () => {
-        test.todo("確認コード検証APIを呼び出す");
+        beforeEach(async () => {
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@example.com");
+            await user.type(await screen.findByLabelText("確認コード"), "123456");
+            await user.click(await screen.findByRole("button", { name: "確認コードを検証" }));
+        });
 
-        test.todo("ユーザー名登録画面に遷移する");
+        test("確認コード検証APIを呼び出す", async () => {
+            await waitFor(() => {
+                expect(mockConfirmSignup).toHaveBeenCalledTimes(1);
+            });
+        });
+
+        test("ユーザー名登録画面に遷移する", async () => {
+            await waitFor(() => {
+                expect(mockedUseRouter).toHaveBeenCalledWith("/auth/registration/userInfo");
+            });
+        });
     });
 
     describe("Eメールが入力されていない時、", () => {
-        test.todo("確認コード検証APIを呼び出さない");
+        beforeEach(async () => {
+            await user.type(await screen.findByLabelText("確認コード"), "123456");
+            await user.click(await screen.findByRole("button", { name: "確認コードを検証" }));
+        });
 
-        test.todo("ユーザー名登録画面に遷移しない");
+        test("確認コード検証APIを呼び出さない", async () => {
+            await waitFor(() => {
+                expect(mockConfirmSignup).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        test("ユーザー名登録画面に遷移しない", async () => {
+            await waitFor(() => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/userInfo");
+            });
+        });
     });
 
     describe("Eメールが正しい形式でない時、", () => {
-        test.todo("確認コード検証APIを呼び出さない");
+        beforeEach(async () => {
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@");
+            await user.type(await screen.findByLabelText("確認コード"), "123456");
+            await user.click(await screen.findByRole("button", { name: "確認コードを検証" }));
+        });
 
-        test.todo("ユーザー名登録画面に遷移しない");
+        test("確認コード検証APIを呼び出さない", async () => {
+            await waitFor(() => {
+                expect(mockConfirmSignup).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        test("ユーザー名登録画面に遷移しない", async () => {
+            await waitFor(() => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/userInfo");
+            });
+        });
     });
 
     describe("確認コードが入力されていない時、", () => {
-        test.todo("確認コード検証APIを呼び出さない");
+        beforeEach(async () => {
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@example.com");
+            await user.click(await screen.findByRole("button", { name: "確認コードを検証" }));
+        });
 
-        test.todo("ユーザー名登録画面に遷移しない");
+        test("確認コード検証APIを呼び出さない", async () => {
+            await waitFor(() => {
+                expect(mockConfirmSignup).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        test("ユーザー名登録画面に遷移しない", async () => {
+            await waitFor(() => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/userInfo");
+            });
+        });
     });
 
     describe("確認コードが数値でない時、", () => {
-        test.todo("確認コード検証APIを呼び出さない");
+        beforeEach(async () => {
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@example.com");
+            await user.type(await screen.findByLabelText("確認コード"), "example");
+            await user.click(await screen.findByRole("button", { name: "確認コードを検証" }));
+        });
 
-        test.todo("ユーザー名登録画面に遷移しない");
+        test("確認コード検証APIを呼び出さない", async () => {
+            await waitFor(() => {
+                expect(mockConfirmSignup).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        test("ユーザー名登録画面に遷移しない", async () => {
+            await waitFor(() => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/userInfo");
+            });
+        });
+    });
+
+    describe("確認コード検証APIがエラーを返す時、", () => {
+        beforeEach(async () => {
+            server.use(
+                http.post("http://localhost:3000/api/cognito/confirmSignup", () => {
+                    return HttpResponse.json({}, { status: 400 });
+                })
+            );
+
+            await user.type(await screen.findByRole("textbox", { name: "Eメール" }), "example@example.com");
+            await user.type(await screen.findByLabelText("確認コード"), "123456");
+            await user.click(await screen.findByRole("button", { name: "確認コードを検証" }));
+        });
+
+        test("確認コード検証APIを呼び出さない", async () => {
+            await waitFor(() => {
+                expect(mockConfirmSignup).toHaveBeenCalledTimes(0);
+            });
+        });
+
+        test("ユーザー名登録画面に遷移しない", async () => {
+            await waitFor(() => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/userInfo");
+            });
+        });
+
+        test("エラーメッセージを表示する", async () => {
+            await waitFor(() => {
+                const alertComponent = screen.getByRole("alert");
+                expect(within(alertComponent).getByText("Error : COG-06")).toBeTruthy();
+                expect(within(alertComponent).getByText("確認コードが不正です。")).toBeTruthy();
+            });
+        });
     });
 });
