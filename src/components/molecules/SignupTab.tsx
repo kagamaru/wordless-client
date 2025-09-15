@@ -36,7 +36,7 @@ export const SignupTab = () => {
                 password
             });
 
-            router.push("/auth/register/confirmationCode");
+            router.push("/auth/registration/confirmationCode");
         } catch {
             return;
         }
