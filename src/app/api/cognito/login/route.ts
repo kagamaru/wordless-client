@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { getCognitoProviderClient } from "@/app/api/cognito/getCognitoProviderClient";
 
-const client = getCognitoProviderClient();
 const cognitoClientId = process.env.COGNITO_CLIENT_ID as string;
 
 export async function POST(req: NextRequest) {
+    const client = getCognitoProviderClient();
     try {
         const { email, password } = await req.json();
 
