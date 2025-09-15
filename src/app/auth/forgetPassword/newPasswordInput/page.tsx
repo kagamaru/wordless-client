@@ -1,13 +1,70 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { Form, Typography } from "antd";
-import { BaseButton, ConfirmationCodeTextBox, EmailAddressInput, LinkButton, PasswordInput } from "@/components/atoms";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import {
+    BaseButton,
+    ConfirmationCodeTextBox,
+    DisplayErrorMessage,
+    EmailAddressInput,
+    LinkButton,
+    PasswordInput
+} from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
+import { getErrorMessage, getHeader, postNextjsServer } from "@/helpers";
+import { css } from "ss/css";
 
 const { Title, Text } = Typography;
 
 export default function NewPasswordInputPage() {
     const [form] = Form.useForm();
+    const router = useRouter();
+    const [isSampleUserRegisterError, setIsSampleUserRegisterError] = useState(false);
+
+    const alertBlockStyle = css({
+        textAlign: "left"
+    });
+
+    const {
+        mutateAsync: postForgotPasswordAsyncAPI,
+        isPending,
+        isError
+    } = useMutation({
+        mutationFn: async (values: { email: string; confirmationCode: string; newPassword: string }) => {
+            const response = await postNextjsServer<void>(`/api/cognito/confirmForgotPassword`, values, getHeader());
+            return response;
+        }
+    });
+
+    const onPasswordChangeClick = async (values: {
+        emailAddress: string;
+        confirmationCode: string;
+        newPassword: string;
+    }) => {
+        try {
+            const emailAddress = values.emailAddress;
+            const confirmationCode = values.confirmationCode;
+            const newPassword = values.newPassword;
+            if (
+                emailAddress === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS ||
+                emailAddress === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS
+            ) {
+                setIsSampleUserRegisterError(true);
+                return;
+            }
+
+            await postForgotPasswordAsyncAPI({
+                email: emailAddress,
+                confirmationCode: confirmationCode,
+                newPassword: newPassword
+            });
+            router.push("/auth/forgetPassword/completion");
+        } catch {
+            return;
+        }
+    };
 
     return (
         <>
@@ -23,12 +80,19 @@ export default function NewPasswordInputPage() {
                         <Text>届いた確認コードを入力してください。</Text>
                     </p>
                 </div>
-                <Form form={form} onFinish={() => {}}>
+                {(isError || isSampleUserRegisterError) && (
+                    <div className={alertBlockStyle}>
+                        <DisplayErrorMessage
+                            error={{ errorCode: "COG-04", errorMessage: getErrorMessage("COG-04") }}
+                        ></DisplayErrorMessage>
+                    </div>
+                )}
+                <Form form={form} onFinish={onPasswordChangeClick}>
                     <EmailAddressInput />
                     <PasswordInput label="新しいパスワード" name="newPassword" />
                     <ConfirmationCodeTextBox />
                     <div className="mt-6">
-                        <BaseButton label="パスワード変更" loading={false} />
+                        <BaseButton label="パスワード変更" loading={isPending} />
                     </div>
                 </Form>
                 <LinkButton label="ログイン画面に戻る" routerPath="/auth/login" />

@@ -1,16 +1,2 @@
 export type ErrorCode =
-    | "ABT-01"
-    | "AUN-99"
-    | "COG-01"
-    | "COG-02"
-    | "COG-03"
-    | "ERR-01"
-    | "WSK-99"
-    | "EMT-01"
-    | "EMT-02"
-    | "EMT-03"
-    | "EMT-04"
-    | "EMT-05"
-    | "USE-01"
-    | "USE-02"
-    | "USE-03";
+    `${Uppercase<string>}${Uppercase<string>}${Uppercase<string>}-${0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}${0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}`;
