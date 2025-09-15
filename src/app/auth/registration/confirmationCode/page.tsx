@@ -1,13 +1,45 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { Form, Typography } from "antd";
-import { BaseButton, CloseTabWarning, ConfirmationCodeTextBox, EmailAddressInput } from "@/components/atoms";
+import { useRouter } from "next/navigation";
+import {
+    BaseButton,
+    CloseTabWarning,
+    ConfirmationCodeTextBox,
+    DisplayErrorMessage,
+    EmailAddressInput
+} from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
+import { getErrorMessage, getHeader, postNextjsServer } from "@/helpers";
 
 const { Title, Text } = Typography;
 
 export default function RegistrationConfirmationCodePage() {
     const [form] = Form.useForm();
+    const router = useRouter();
+
+    const {
+        mutateAsync: postConfirmSignupAsyncAPI,
+        isPending,
+        isError
+    } = useMutation({
+        mutationFn: async (values: { email: string; confirmationCode: string }) => {
+            const response = await postNextjsServer<void>(`/api/cognito/confirmSignup`, values, getHeader());
+            return response;
+        }
+    });
+
+    const onConfirmClick = async (values: { emailAddress: string; confirmationCode: string }) => {
+        try {
+            const email = values.emailAddress;
+            const confirmationCode = values.confirmationCode;
+            await postConfirmSignupAsyncAPI({ email, confirmationCode });
+            router.push("/auth/registration/userInfo");
+        } catch {
+            return;
+        }
+    };
 
     return (
         <>
@@ -22,13 +54,19 @@ export default function RegistrationConfirmationCodePage() {
                     <p>
                         <CloseTabWarning />
                     </p>
-                    <Form form={form} onFinish={() => {}}>
+                    {isError && (
+                        <DisplayErrorMessage
+                            error={{ errorCode: "COG-06", errorMessage: getErrorMessage("COG-06") }}
+                            alignLeft={true}
+                        ></DisplayErrorMessage>
+                    )}
+                    <Form form={form} onFinish={onConfirmClick}>
                         <div className="mt-6">
                             <EmailAddressInput />
                             <ConfirmationCodeTextBox />
                         </div>
                         <div className="mt-6">
-                            <BaseButton label="確認コードを検証" loading={false} />
+                            <BaseButton label="確認コードを検証" loading={isPending} />
                         </div>
                     </Form>
                 </div>
