@@ -1,7 +1,7 @@
 import { ArrowBackButton } from "@/components/atoms/ArrowBackButton";
+import { BaseButton } from "@/components/atoms/BaseButton";
 import { CancelButton } from "@/components/atoms/CancelButton";
 import { CardDivider } from "@/components/atoms/CardDivider";
-import { ChangePasswordButton } from "@/components/atoms/ChangePasswordButton";
 import { ChangeUserNameButton } from "@/components/atoms/ChangeUserNameButton";
 import { CloseButton } from "@/components/atoms/CloseButton";
 import { ConfirmationCodeTextBox } from "@/components/atoms/ConfirmationCodeTextBox";
@@ -28,7 +28,6 @@ import { FixedFloatingFollowButton } from "@/components/atoms/FixedFloatingFollo
 import { LoadingSpin } from "@/components/atoms/LoadingSpin";
 import { LastEmoteFetchedText } from "@/components/atoms/LastEmoteFetchedText";
 import { LoadMoreButton } from "@/components/atoms/LoadMoreButton";
-import { LoginButton } from "@/components/atoms/LoginButton";
 import { NoEmoteText } from "@/components/atoms/NoEmoteText";
 import { PasswordInput } from "@/components/atoms/PasswordInput";
 import { PostUserSukiButton } from "@/components/atoms/PostUserSukiButton";
@@ -40,7 +39,6 @@ import { SampleLoginButton } from "@/components/atoms/SampleLoginButton";
 import { SendEmailButton } from "@/components/atoms/SendEmailButton";
 import { SendEmoteButton } from "@/components/atoms/SendEmoteButton";
 import { ShadowDivider } from "@/components/atoms/ShadowDivider";
-import { SignupButton } from "@/components/atoms/SignupButton";
 import { SyncButton } from "@/components/atoms/SyncButton";
 import { TopProfileAvatar } from "@/components/atoms/TopProfileAvatar";
 import { TotalNumberOfFollowees } from "@/components/atoms/TotalNumberOfFollowees";
@@ -52,9 +50,9 @@ import { WordlessDivider } from "@/components/atoms/WordlessDivider";
 
 export {
     ArrowBackButton,
+    BaseButton,
     CancelButton,
     CardDivider,
-    ChangePasswordButton,
     ChangeUserNameButton,
     CloseButton,
     ConfirmationCodeTextBox,
@@ -81,7 +79,6 @@ export {
     LoadingSpin,
     LastEmoteFetchedText,
     LoadMoreButton,
-    LoginButton,
     NoEmoteText,
     PasswordInput,
     PostUserSukiButton,
@@ -93,7 +90,6 @@ export {
     SendEmailButton,
     SendEmoteButton,
     ShadowDivider,
-    SignupButton,
     SyncButton,
     TopProfileAvatar,
     TotalNumberOfFollowees,

@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { Form, Input } from "antd";
 import { useRouter } from "next/navigation";
-import { ChangePasswordButton, DisplayErrorMessage, PasswordInput } from "@/components/atoms";
+import { BaseButton, DisplayErrorMessage, PasswordInput } from "@/components/atoms";
 import { getErrorMessage, getHeader, postNextjsServer } from "@/helpers";
 import { useParamUserId } from "@/hooks";
 
@@ -75,7 +75,7 @@ export const ChangePasswordForm = () => {
                 >
                     <Input.Password />
                 </Form.Item>
-                <ChangePasswordButton isLoading={isPending} />
+                <BaseButton label="パスワード変更" loading={isPending} />
             </Form>
         </>
     );

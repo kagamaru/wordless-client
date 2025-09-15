@@ -1,18 +1,17 @@
-"use client";
-
 import { Button, ConfigProvider } from "antd";
 
 type Props = {
-    isLoading: boolean;
+    label: string;
+    loading?: boolean;
 };
 
-export function ChangePasswordButton({ isLoading }: Props) {
+export function BaseButton({ label, loading = false }: Props) {
     return (
         <>
             {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}
             <ConfigProvider wave={{ disabled: true }}>
-                <Button className="mt-4" color="primary" type="primary" htmlType="submit" block loading={isLoading}>
-                    パスワード変更
+                <Button className="mt-4" color="primary" type="primary" htmlType="submit" block loading={loading}>
+                    {label}
                 </Button>
             </ConfigProvider>
         </>
