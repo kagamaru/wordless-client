@@ -14,7 +14,6 @@ import {
 } from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
 import { getErrorMessage, getHeader, postNextjsServer } from "@/helpers";
-import { css } from "ss/css";
 
 const { Title, Text } = Typography;
 
@@ -22,10 +21,6 @@ export default function NewPasswordInputPage() {
     const [form] = Form.useForm();
     const router = useRouter();
     const [isSampleUserRegisterError, setIsSampleUserRegisterError] = useState(false);
-
-    const alertBlockStyle = css({
-        textAlign: "left"
-    });
 
     const {
         mutateAsync: postConfirmForgotPasswordAsyncAPI,
@@ -81,11 +76,10 @@ export default function NewPasswordInputPage() {
                     </p>
                 </div>
                 {(isError || isSampleUserRegisterError) && (
-                    <div className={alertBlockStyle}>
-                        <DisplayErrorMessage
-                            error={{ errorCode: "COG-04", errorMessage: getErrorMessage("COG-04") }}
-                        ></DisplayErrorMessage>
-                    </div>
+                    <DisplayErrorMessage
+                        error={{ errorCode: "COG-04", errorMessage: getErrorMessage("COG-04") }}
+                        alignLeft={true}
+                    ></DisplayErrorMessage>
                 )}
                 <Form form={form} onFinish={onPasswordChangeClick}>
                     <EmailAddressInput />

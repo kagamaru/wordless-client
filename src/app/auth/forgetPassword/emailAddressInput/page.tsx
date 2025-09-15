@@ -3,11 +3,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { Form, Typography } from "antd";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { DisplayErrorMessage, EmailAddressInput, LinkButton, SendEmailButton } from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
 import { getErrorMessage, getHeader, postNextjsServer } from "@/helpers";
-import { css } from "ss/css";
-import { useState } from "react";
 
 const { Title, Text } = Typography;
 
@@ -15,10 +14,6 @@ export default function EmailAddressInputPage() {
     const [form] = Form.useForm();
     const router = useRouter();
     const [isSampleUserRegisterError, setIsSampleUserRegisterError] = useState(false);
-
-    const alertBlockStyle = css({
-        textAlign: "left"
-    });
 
     const {
         mutateAsync: postForgotPasswordAsyncAPI,
@@ -70,11 +65,10 @@ export default function EmailAddressInputPage() {
                     </p>
                 </div>
                 {(isError || isSampleUserRegisterError) && (
-                    <div className={alertBlockStyle}>
-                        <DisplayErrorMessage
-                            error={{ errorCode: "COG-03", errorMessage: getErrorMessage("COG-03") }}
-                        ></DisplayErrorMessage>
-                    </div>
+                    <DisplayErrorMessage
+                        error={{ errorCode: "COG-03", errorMessage: getErrorMessage("COG-03") }}
+                        alignLeft={true}
+                    ></DisplayErrorMessage>
                 )}
                 <Form form={form} onFinish={onSendEmailClick}>
                     <EmailAddressInput />
