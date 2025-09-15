@@ -3,6 +3,8 @@
 import { vitestSetup } from "@/test/app/vitest.setup";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import NewPasswordInputPage from "@/app/auth/forgetPassword/newPasswordInput/page";
 import { ProviderTemplate } from "@/components/template";
@@ -17,17 +19,30 @@ vi.mock("next/navigation", () => ({
     })
 }));
 
-beforeAll(() => {});
+const mockConfirmForgotPassword = vi.fn();
+const server = setupServer(
+    http.post("http://localhost:3000/api/cognito/confirmForgotPassword", () => {
+        mockConfirmForgotPassword();
+        return HttpResponse.json({});
+    })
+);
+
+beforeAll(() => {
+    server.listen();
+});
 
 beforeEach(() => {
     vi.clearAllMocks();
     vi.resetAllMocks();
 });
 
-afterAll(() => {});
+afterAll(() => {
+    server.close();
+});
 
 afterEach(() => {
     cleanup();
+    server.resetHandlers();
 });
 
 const rendering = (): void => {
@@ -187,55 +202,186 @@ describe("確認コード入力時", () => {
 
 describe("パスワード変更ボタン押下時", () => {
     describe("Eメール、新しいパスワード、確認コードが正しく入力されている時", () => {
-        test.todo("パスワード変更APIを呼び出す");
+        beforeEach(async () => {
+            rendering();
 
-        test.todo("パスワード変更完了画面に遷移する");
+            await user.type(await screen.findByLabelText("Eメール"), "example@example.com");
+            await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+            await user.type(await screen.findByLabelText("確認コード"), "123456");
+
+            await user.click(screen.getByRole("button", { name: "パスワード変更" }));
+        });
+
+        test("パスワード変更APIを呼び出す", async () => {
+            expect(mockConfirmForgotPassword).toHaveBeenCalled();
+        });
+
+        test("パスワード変更完了画面に遷移する", async () => {
+            expect(mockedUseRouter).toHaveBeenCalledWith("/auth/forgetPassword/completion");
+        });
     });
 
     describe("Eメールが正しく入力されていない時", () => {
-        describe("Eメールが入力されていない時", () => {
-            test.todo("パスワード変更APIを呼び出さない");
-            test.todo("パスワード変更完了画面に遷移しない");
+        beforeEach(async () => {
+            rendering();
+
+            await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+            await user.type(await screen.findByLabelText("確認コード"), "123456");
         });
 
-        describe("新しいパスワードが正しく入力されていない時", () => {
-            describe("新しいパスワードが入力されていない時", () => {
-                test.todo("パスワード変更APIを呼び出さない");
+        describe("Eメールが入力されていない時", () => {
+            beforeEach(async () => {
+                await user.clear(await screen.findByLabelText("Eメール"));
 
-                test.todo("パスワード変更完了画面に遷移しない");
+                await user.click(screen.getByRole("button", { name: "パスワード変更" }));
             });
 
-            describe("新しいパスワードが6文字以下の時", () => {
-                test.todo("パスワード変更APIを呼び出さない");
-
-                test.todo("パスワード変更完了画面に遷移しない");
+            test("パスワード変更APIを呼び出さない", async () => {
+                expect(mockConfirmForgotPassword).not.toHaveBeenCalled();
             });
 
-            describe("新しいパスワードに数字が含まれていない時", () => {
-                test.todo("パスワード変更APIを呼び出さない");
+            test("パスワード変更完了画面に遷移しない", async () => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/forgetPassword/completion");
+            });
+        });
 
-                test.todo("パスワード変更完了画面に遷移しない");
+        describe("Eメールとして正しい形式でない時", () => {
+            beforeEach(async () => {
+                await user.type(await screen.findByLabelText("Eメール"), "example@");
+
+                await user.click(screen.getByRole("button", { name: "パスワード変更" }));
+            });
+
+            test("パスワード変更APIを呼び出さない", async () => {
+                expect(mockConfirmForgotPassword).not.toHaveBeenCalled();
+            });
+
+            test("パスワード変更完了画面に遷移しない", async () => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/forgetPassword/completion");
+            });
+        });
+    });
+
+    describe("新しいパスワードが正しく入力されていない時", () => {
+        beforeEach(async () => {
+            rendering();
+
+            await user.type(await screen.findByLabelText("Eメール"), "example@example.com");
+            await user.type(await screen.findByLabelText("確認コード"), "123456");
+
+            await user.click(screen.getByRole("button", { name: "パスワード変更" }));
+        });
+
+        describe("新しいパスワードが入力されていない時", () => {
+            beforeEach(async () => {
+                await user.clear(await screen.findByLabelText("新しいパスワード"));
+
+                await user.click(screen.getByRole("button", { name: "パスワード変更" }));
+            });
+
+            test("パスワード変更APIを呼び出さない", async () => {
+                expect(mockConfirmForgotPassword).not.toHaveBeenCalled();
+            });
+
+            test("パスワード変更完了画面に遷移しない", async () => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/forgetPassword/completion");
+            });
+        });
+
+        describe.each([
+            ["6文字以下", "123456"],
+            ["数字が含まれていない", "wordless"]
+        ])("新しいパスワードが%sの時", (_, newPassword) => {
+            beforeEach(async () => {
+                await user.type(await screen.findByLabelText("新しいパスワード"), newPassword);
+
+                await user.click(screen.getByRole("button", { name: "パスワード変更" }));
+            });
+
+            test("パスワード変更APIを呼び出さない", async () => {
+                expect(mockConfirmForgotPassword).not.toHaveBeenCalled();
+            });
+
+            test("パスワード変更完了画面に遷移しない", async () => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/forgetPassword/completion");
             });
         });
     });
 
     describe("確認コードが正しく入力されていない時", () => {
-        describe("確認コードが入力されていない時", () => {
-            test.todo("パスワード変更APIを呼び出さない");
+        beforeEach(async () => {
+            rendering();
 
-            test.todo("パスワード変更完了画面に遷移しない");
+            await user.type(await screen.findByLabelText("Eメール"), "example@example.com");
+            await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+        });
+
+        describe("確認コードが入力されていない時", () => {
+            beforeEach(async () => {
+                await user.clear(await screen.findByLabelText("確認コード"));
+
+                await user.click(screen.getByRole("button", { name: "パスワード変更" }));
+            });
+
+            test("パスワード変更APIを呼び出さない", async () => {
+                expect(mockConfirmForgotPassword).not.toHaveBeenCalled();
+            });
+
+            test("パスワード変更完了画面に遷移しない", async () => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/forgetPassword/completion");
+            });
         });
 
         describe("確認コードが数値でない時", () => {
-            test.todo("パスワード変更APIを呼び出さない");
+            beforeEach(async () => {
+                await user.type(await screen.findByLabelText("確認コード"), "example");
 
-            test.todo("パスワード変更完了画面に遷移しない");
+                await user.click(screen.getByRole("button", { name: "パスワード変更" }));
+            });
+
+            test("パスワード変更APIを呼び出さない", async () => {
+                expect(mockConfirmForgotPassword).not.toHaveBeenCalled();
+            });
+
+            test("パスワード変更完了画面に遷移しない", async () => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/forgetPassword/completion");
+            });
         });
     });
 
-    test.todo("パスワード変更APIでエラーが返却された時、エラーメッセージを表示する");
+    test("パスワード変更APIでエラーが返却された時、エラーメッセージを表示する", async () => {
+        server.use(
+            http.post("http://localhost:3000/api/cognito/confirmForgotPassword", () => {
+                return HttpResponse.json({}, { status: 400 });
+            })
+        );
+        rendering();
 
-    test.todo("サンプルユーザーのメールアドレスを入力した時、エラーメッセージを表示する");
+        await user.type(await screen.findByLabelText("Eメール"), "example@example.com");
+        await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+        await user.type(await screen.findByLabelText("確認コード"), "123456");
+
+        await user.click(screen.getByRole("button", { name: "パスワード変更" }));
+
+        expect(within(screen.getByRole("alert")).getByText("Error : COG-04")).toBeTruthy();
+        expect(within(screen.getByRole("alert")).getByText("確認コードかメールアドレスが不正です。")).toBeTruthy();
+    });
+
+    test.each(["wordless.nozomi@example.com", "wordless.nico@example.com"])(
+        "サンプルユーザーのメールアドレスを入力した時、エラーメッセージを表示する",
+        async (email) => {
+            rendering();
+
+            await user.type(await screen.findByLabelText("Eメール"), email);
+            await user.type(await screen.findByLabelText("新しいパスワード"), "example01");
+            await user.type(await screen.findByLabelText("確認コード"), "123456");
+
+            await user.click(screen.getByRole("button", { name: "パスワード変更" }));
+
+            expect(within(screen.getByRole("alert")).getByText("Error : COG-04")).toBeTruthy();
+            expect(within(screen.getByRole("alert")).getByText("確認コードかメールアドレスが不正です。")).toBeTruthy();
+        }
+    );
 });
 
 test("ログイン画面に戻るボタン押下時、ログイン画面に遷移する", async () => {
