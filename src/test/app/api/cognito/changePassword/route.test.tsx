@@ -87,7 +87,7 @@ describe("パスワード変更API", () => {
         test.each(["", null])("リクエストに現在のパスワードがないとき、400エラーを返す", async (previousPassword) => {
             const response = await postChangePassword({
                 accessToken: "test-token",
-                previousPassword: "",
+                previousPassword,
                 proposedPassword: "test-password-new"
             });
 
@@ -98,7 +98,7 @@ describe("パスワード変更API", () => {
             const response = await postChangePassword({
                 accessToken: "test-token",
                 previousPassword: "test-password-old",
-                proposedPassword: ""
+                proposedPassword
             });
 
             expect(response.status).toBe(400);

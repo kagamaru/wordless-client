@@ -28,7 +28,7 @@ export default function NewPasswordInputPage() {
     });
 
     const {
-        mutateAsync: postForgotPasswordAsyncAPI,
+        mutateAsync: postConfirmForgotPasswordAsyncAPI,
         isPending,
         isError
     } = useMutation({
@@ -55,7 +55,7 @@ export default function NewPasswordInputPage() {
                 return;
             }
 
-            await postForgotPasswordAsyncAPI({
+            await postConfirmForgotPasswordAsyncAPI({
                 email: emailAddress,
                 confirmationCode: confirmationCode,
                 newPassword: newPassword
