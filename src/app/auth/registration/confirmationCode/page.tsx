@@ -1,11 +1,14 @@
 "use client";
 
-import { Typography } from "antd";
+import { Form, Typography } from "antd";
+import { BaseButton, CloseTabWarning, ConfirmationCodeTextBox, EmailAddressInput } from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
 
 const { Title, Text } = Typography;
 
 export default function RegistrationConfirmationCodePage() {
+    const [form] = Form.useForm();
+
     return (
         <>
             <CardPageTemplate>
@@ -14,8 +17,20 @@ export default function RegistrationConfirmationCodePage() {
                 </Title>
                 <div className="mb-4">
                     <p>
-                        <Text>確認コードを入力してください。</Text>
+                        <Text>メールアドレスと確認コードを入力してください。</Text>
                     </p>
+                    <p>
+                        <CloseTabWarning />
+                    </p>
+                    <Form form={form} onFinish={() => {}}>
+                        <div className="mt-6">
+                            <EmailAddressInput />
+                            <ConfirmationCodeTextBox />
+                        </div>
+                        <div className="mt-6">
+                            <BaseButton label="確認コードを検証" loading={false} />
+                        </div>
+                    </Form>
                 </div>
             </CardPageTemplate>
         </>
