@@ -3,6 +3,7 @@ export type ErrorCode =
     | "AUN-99"
     | "COG-01"
     | "COG-02"
+    | "COG-03"
     | "ERR-01"
     | "WSK-99"
     | "EMT-01"
