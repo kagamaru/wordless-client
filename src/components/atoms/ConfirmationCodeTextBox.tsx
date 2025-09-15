@@ -5,7 +5,7 @@ export const ConfirmationCodeTextBox = () => {
     return (
         <Form.Item
             label="確認コード"
-            name="verificationCode"
+            name="confirmationCode"
             rules={[
                 { required: true, message: "確認コードを入力してください" },
                 {
