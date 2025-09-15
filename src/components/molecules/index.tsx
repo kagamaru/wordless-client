@@ -12,6 +12,7 @@ import { FollowUsersDrawer } from "@/components/molecules/FollowUsersDrawer";
 import { PostEmoteEmojiSelectTabs } from "@/components/molecules/PostEmoteEmojiSelectTabs";
 import { PageHeader } from "@/components/molecules/PageHeader";
 import { PageHeaderWithoutMenu } from "@/components/molecules/PageHeaderWithoutMenu";
+import { LoginTab } from "@/components/molecules/LoginTab";
 import { MenuDrawer } from "@/components/molecules/MenuDrawer";
 import { PresetEmojis } from "@/components/molecules/PresetEmojis";
 import { ReactionUsersDrawer } from "@/components/molecules/ReactionUsersDrawer";
@@ -34,6 +35,7 @@ export {
     FollowUsersDrawer,
     PageHeader,
     PageHeaderWithoutMenu,
+    LoginTab,
     MenuDrawer,
     PresetEmojis,
     PostEmoteEmojiSelectTabs,
