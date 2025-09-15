@@ -4,6 +4,7 @@ import { CancelButton } from "@/components/atoms/CancelButton";
 import { CardDivider } from "@/components/atoms/CardDivider";
 import { ChangeUserNameButton } from "@/components/atoms/ChangeUserNameButton";
 import { CloseButton } from "@/components/atoms/CloseButton";
+import { CloseTabWarning } from "@/components/atoms/CloseTabWarning";
 import { ConfirmationCodeTextBox } from "@/components/atoms/ConfirmationCodeTextBox";
 import { DeleteButton } from "@/components/atoms/DeleteButton";
 import { DeleteIconButton } from "@/components/atoms/DeleteIconButton";
@@ -55,6 +56,7 @@ export {
     CardDivider,
     ChangeUserNameButton,
     CloseButton,
+    CloseTabWarning,
     ConfirmationCodeTextBox,
     DeleteButton,
     DeleteIconButton,
