@@ -4,6 +4,7 @@ import { CardDivider } from "@/components/atoms/CardDivider";
 import { ChangePasswordButton } from "@/components/atoms/ChangePasswordButton";
 import { ChangeUserNameButton } from "@/components/atoms/ChangeUserNameButton";
 import { CloseButton } from "@/components/atoms/CloseButton";
+import { ConfirmationCodeTextBox } from "@/components/atoms/ConfirmationCodeTextBox";
 import { DeleteButton } from "@/components/atoms/DeleteButton";
 import { DeleteIconButton } from "@/components/atoms/DeleteIconButton";
 import { ImageEmojiButtonRow } from "@/components/atoms/ImageEmojiButtonRow";
@@ -56,6 +57,7 @@ export {
     ChangePasswordButton,
     ChangeUserNameButton,
     CloseButton,
+    ConfirmationCodeTextBox,
     DeleteButton,
     DeleteIconButton,
     DisplayEmoteEmoji,
