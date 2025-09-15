@@ -7,13 +7,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { css } from "ss/css";
 import {
+    BaseButton,
     DisplayErrorMessage,
     EmailAddressInput,
     LinkButton,
-    LoginButton,
     PasswordInput,
-    SampleLoginButton,
-    SignupButton
+    SampleLoginButton
 } from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
 import { getErrorMessage, postWithTimeout } from "@/helpers";
@@ -113,7 +112,7 @@ export default function LoginSignup() {
             <Form form={form} onFinish={onLoginClick}>
                 <EmailAddressInput />
                 <PasswordInput />
-                <LoginButton />
+                <BaseButton label="ログイン" loading={false} />
                 {resetPasswordLinkButton}
                 <SampleLoginButton sampleUserName="Nozomi" onClickAction={() => onSampleLoginClick("Nozomi")} />
                 <SampleLoginButton sampleUserName="Nico" onClickAction={() => onSampleLoginClick("Nico")} />
@@ -126,7 +125,7 @@ export default function LoginSignup() {
             <Form form={form}>
                 <EmailAddressInput />
                 <PasswordInput />
-                <SignupButton />
+                <BaseButton label="ユーザー登録" loading={false} />
                 {resetPasswordLinkButton}
             </Form>
         </>

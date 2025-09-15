@@ -1,13 +1,7 @@
 "use client";
 
 import { Form, Typography } from "antd";
-import {
-    ChangePasswordButton,
-    ConfirmationCodeTextBox,
-    EmailAddressInput,
-    LinkButton,
-    PasswordInput
-} from "@/components/atoms";
+import { BaseButton, ConfirmationCodeTextBox, EmailAddressInput, LinkButton, PasswordInput } from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
 
 const { Title, Text } = Typography;
@@ -34,7 +28,7 @@ export default function NewPasswordInputPage() {
                     <PasswordInput label="新しいパスワード" name="newPassword" />
                     <ConfirmationCodeTextBox />
                     <div className="mt-6">
-                        <ChangePasswordButton isLoading={false} />
+                        <BaseButton label="パスワード変更" loading={false} />
                     </div>
                 </Form>
                 <LinkButton label="ログイン画面に戻る" routerPath="/auth/login" />
