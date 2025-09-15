@@ -62,35 +62,33 @@ export default function NewPasswordInputPage() {
     };
 
     return (
-        <>
-            <CardPageTemplate>
-                <Title level={2} className="mt-4">
-                    パスワードリセット
-                </Title>
-                <div className="mb-4">
-                    <p>
-                        <Text>パスワードを新しく登録します。</Text>
-                    </p>
-                    <p>
-                        <Text>届いた確認コードを入力してください。</Text>
-                    </p>
+        <CardPageTemplate>
+            <Title level={2} className="mt-4">
+                パスワードリセット
+            </Title>
+            <div className="mb-4">
+                <p>
+                    <Text>パスワードを新しく登録します。</Text>
+                </p>
+                <p>
+                    <Text>届いた確認コードを入力してください。</Text>
+                </p>
+            </div>
+            {(isError || isSampleUserRegisterError) && (
+                <DisplayErrorMessage
+                    error={{ errorCode: "COG-04", errorMessage: getErrorMessage("COG-04") }}
+                    alignLeft={true}
+                ></DisplayErrorMessage>
+            )}
+            <Form form={form} onFinish={onPasswordChangeClick}>
+                <EmailAddressInput />
+                <PasswordInput label="新しいパスワード" name="newPassword" />
+                <ConfirmationCodeTextBox />
+                <div className="mt-6">
+                    <BaseButton label="パスワード変更" loading={isPending} />
                 </div>
-                {(isError || isSampleUserRegisterError) && (
-                    <DisplayErrorMessage
-                        error={{ errorCode: "COG-04", errorMessage: getErrorMessage("COG-04") }}
-                        alignLeft={true}
-                    ></DisplayErrorMessage>
-                )}
-                <Form form={form} onFinish={onPasswordChangeClick}>
-                    <EmailAddressInput />
-                    <PasswordInput label="新しいパスワード" name="newPassword" />
-                    <ConfirmationCodeTextBox />
-                    <div className="mt-6">
-                        <BaseButton label="パスワード変更" loading={isPending} />
-                    </div>
-                </Form>
-                <LinkButton label="ログイン画面に戻る" routerPath="/auth/login" />
-            </CardPageTemplate>
-        </>
+            </Form>
+            <LinkButton label="ログイン画面に戻る" routerPath="/auth/login" />
+        </CardPageTemplate>
     );
 }
