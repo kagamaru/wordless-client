@@ -18,6 +18,7 @@ import { PresetEmojis } from "@/components/molecules/PresetEmojis";
 import { ReactionUsersDrawer } from "@/components/molecules/ReactionUsersDrawer";
 import { OtherUserProfile } from "@/components/molecules/OtherUserProfile";
 import { OtherUserSukiSection } from "@/components/molecules/OtherUserSukiSection";
+import { SignupTab } from "@/components/molecules/SignupTab";
 import { TypingEmote } from "@/components/molecules/TypingEmote";
 import { WordlessEmote } from "@/components/molecules/WordlessEmote";
 
@@ -42,6 +43,7 @@ export {
     ReactionUsersDrawer,
     OtherUserProfile,
     OtherUserSukiSection,
+    SignupTab,
     TypingEmote,
     WordlessEmote
 };

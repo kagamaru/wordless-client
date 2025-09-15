@@ -83,14 +83,10 @@ export default function Concept() {
                             type="link"
                             icon={<GithubOutlined />}
                             className={githubButtonStyle}
-                            onClick={() => window.open("https://github.com/kagamaru?tab=repositories", "_blank")}
+                            onClick={() => window.open("https://github.com/kagamaru/my-profile", "_blank")}
                         >
                             <span>作者GitHub</span>
                         </Button>
-                    </div>
-                    <div className="mt-5">
-                        <span>メールアドレス(転職活動中)：</span>
-                        <a href="mailto:01a17124@gmail.com">01a17124@gmail.com</a>
                     </div>
                     <div className="m-5">
                         {/* NOTE: ant-design5.X系がReact19に対応していないので、ConfigProviderを入れて対処する */}

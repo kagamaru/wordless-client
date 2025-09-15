@@ -81,7 +81,7 @@ test("作者GitHubボタンをクリックしたら、GitHubのリポジトリ�
     user.click(authorGitHubButton);
 
     await waitFor(() => {
-        expect(mockWindowOpen).toHaveBeenCalledWith("https://github.com/kagamaru?tab=repositories", "_blank");
+        expect(mockWindowOpen).toHaveBeenCalledWith("https://github.com/kagamaru/my-profile", "_blank");
     });
 });
 test("トップページへボタンをクリックしたら、トップページにリダイレクトされる", async () => {
