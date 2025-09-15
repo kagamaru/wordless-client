@@ -1,18 +1,55 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { Form, Typography } from "antd";
-import { EmailAddressInput, LinkButton, SendEmailButton } from "@/components/atoms";
+import { useRouter } from "next/navigation";
+import { DisplayErrorMessage, EmailAddressInput, LinkButton, SendEmailButton } from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
+import { getErrorMessage, getHeader, postNextjsServer } from "@/helpers";
+import { css } from "ss/css";
+import { useState } from "react";
 
 const { Title, Text } = Typography;
 
 export default function EmailAddressInputPage() {
     const [form] = Form.useForm();
+    const router = useRouter();
+    const [isSampleUserRegisterError, setIsSampleUserRegisterError] = useState(false);
 
-    const onSendEmailClick = async () => {
+    const alertBlockStyle = css({
+        textAlign: "left"
+    });
+
+    const {
+        mutateAsync: postForgotPasswordAsyncAPI,
+        isPending,
+        isError
+    } = useMutation({
+        mutationFn: async (values: { email: string }) => {
+            const response = await postNextjsServer<void>(
+                `/api/cognito/forgotPassword`,
+                {
+                    email: values.email
+                },
+                getHeader()
+            );
+            return response;
+        }
+    });
+
+    const onSendEmailClick = async (values: { emailAddress: string }) => {
         try {
-            const emailAddress = form.getFieldValue("emailAddress");
-            console.log(emailAddress);
+            const emailAddress = values.emailAddress;
+            if (
+                emailAddress === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS ||
+                emailAddress === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS
+            ) {
+                setIsSampleUserRegisterError(true);
+                return;
+            }
+
+            await postForgotPasswordAsyncAPI({ email: emailAddress });
+            router.push("/auth/forgetPassword/newPasswordInput");
         } catch {
             return;
         }
@@ -32,10 +69,17 @@ export default function EmailAddressInputPage() {
                         <Text>Eメールアドレスを入力してください。</Text>
                     </p>
                 </div>
+                {(isError || isSampleUserRegisterError) && (
+                    <div className={alertBlockStyle}>
+                        <DisplayErrorMessage
+                            error={{ errorCode: "COG-03", errorMessage: getErrorMessage("COG-03") }}
+                        ></DisplayErrorMessage>
+                    </div>
+                )}
                 <Form form={form} onFinish={onSendEmailClick}>
                     <EmailAddressInput />
                     <div className="mt-6">
-                        <SendEmailButton />
+                        <SendEmailButton isProcessing={isPending} />
                     </div>
                 </Form>
                 <LinkButton label="ログイン画面に戻る" routerPath="/auth/login" />
