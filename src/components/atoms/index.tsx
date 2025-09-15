@@ -46,6 +46,7 @@ import { TotalNumberOfFollowees } from "@/components/atoms/TotalNumberOfFollowee
 import { TotalNumberOfFollowing } from "@/components/atoms/TotalNumberOfFollowing";
 import { TotalNumberOfReactionsButton } from "@/components/atoms/TotalNumberOfReactionsButton";
 import { UserInfoLoadingSkeleton } from "@/components/atoms/UserInfoLoadingSkeleton";
+import { UserIdInput } from "@/components/atoms/UserIdInput";
 import { UserNameInput } from "@/components/atoms/UserNameInput";
 import { WordlessDivider } from "@/components/atoms/WordlessDivider";
 
@@ -98,6 +99,7 @@ export {
     TotalNumberOfFollowing,
     TotalNumberOfReactionsButton,
     UserInfoLoadingSkeleton,
+    UserIdInput,
     UserNameInput,
     WordlessDivider
 };

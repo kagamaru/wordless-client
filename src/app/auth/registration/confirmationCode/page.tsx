@@ -42,35 +42,33 @@ export default function RegistrationConfirmationCodePage() {
     };
 
     return (
-        <>
-            <CardPageTemplate>
-                <Title level={2} className="mt-4">
-                    ユーザー登録
-                </Title>
-                <div className="mb-4">
-                    <p>
-                        <Text>メールアドレスと確認コードを入力してください。</Text>
-                    </p>
-                    <p>
-                        <CloseTabWarning />
-                    </p>
-                    {isError && (
-                        <DisplayErrorMessage
-                            error={{ errorCode: "COG-06", errorMessage: getErrorMessage("COG-06") }}
-                            alignLeft={true}
-                        ></DisplayErrorMessage>
-                    )}
-                    <Form form={form} onFinish={onConfirmClick}>
-                        <div className="mt-6">
-                            <EmailAddressInput />
-                            <ConfirmationCodeTextBox />
-                        </div>
-                        <div className="mt-6">
-                            <BaseButton label="確認コードを検証" loading={isPending} />
-                        </div>
-                    </Form>
-                </div>
-            </CardPageTemplate>
-        </>
+        <CardPageTemplate>
+            <Title level={2} className="mt-4">
+                ユーザー登録
+            </Title>
+            <div className="mb-4">
+                <p>
+                    <Text>メールアドレスと確認コードを入力してください。</Text>
+                </p>
+                <p>
+                    <CloseTabWarning />
+                </p>
+                {isError && (
+                    <DisplayErrorMessage
+                        error={{ errorCode: "COG-06", errorMessage: getErrorMessage("COG-06") }}
+                        alignLeft={true}
+                    ></DisplayErrorMessage>
+                )}
+                <Form form={form} onFinish={onConfirmClick}>
+                    <div className="mt-6">
+                        <EmailAddressInput />
+                        <ConfirmationCodeTextBox />
+                    </div>
+                    <div className="mt-6">
+                        <BaseButton label="確認コードを検証" loading={isPending} />
+                    </div>
+                </Form>
+            </div>
+        </CardPageTemplate>
     );
 }
