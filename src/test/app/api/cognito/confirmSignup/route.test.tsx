@@ -29,7 +29,9 @@ const getRequestParams = (body: { email: string | null; confirmationCode: string
     });
 
 const testSetup = () => {
-    mockCognitoProviderClient.on(ConfirmSignUpCommand).resolves({});
+    mockCognitoProviderClient.on(ConfirmSignUpCommand).resolves({
+        Session: "test-session"
+    });
 };
 
 beforeEach(() => {
@@ -53,6 +55,16 @@ describe("ユーザー登録確認API", () => {
             });
 
             expect(response.status).toBe(200);
+        });
+
+        test("Sessionを返す", async () => {
+            const response = await postConfirmSignup({
+                email: "test@example.com",
+                confirmationCode: "123456"
+            });
+            const data = await response.json();
+
+            expect(data.Session).toBe("test-session");
         });
     });
 
