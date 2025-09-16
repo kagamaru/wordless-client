@@ -1,9 +1,11 @@
 "use client";
 
 import { Form, Typography } from "antd";
+import { useEffect } from "react";
 import { BaseButton, CloseTabWarning, UserIdInput, UserNameInput } from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
 import { css } from "ss/css";
+import { useAuthInfoStore } from "@/store";
 
 const { Title, Text } = Typography;
 
@@ -13,6 +15,10 @@ export default function RegistrationUserInfoPage() {
     const inputStyle = css({
         textAlign: "left"
     });
+
+    useEffect(() => {
+        useAuthInfoStore.getState().cleanAllData();
+    }, []);
 
     return (
         <CardPageTemplate>

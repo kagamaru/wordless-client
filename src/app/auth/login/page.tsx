@@ -1,9 +1,10 @@
 "use client";
 
 import { Tabs } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CardPageTemplate } from "@/components/template";
 import { LoginTab, SignupTab } from "@/components/molecules";
+import { useAuthInfoStore } from "@/store";
 
 export default function LoginSignup() {
     const [activeTab, setActiveTab] = useState("login");
@@ -20,6 +21,10 @@ export default function LoginSignup() {
             children: <SignupTab />
         }
     ];
+
+    useEffect(() => {
+        useAuthInfoStore.getState().cleanAllData();
+    }, []);
 
     return (
         <CardPageTemplate>

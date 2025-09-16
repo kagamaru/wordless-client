@@ -1,3 +1,4 @@
+import { useAuthInfoStore } from "./useAuthInfo";
 import { useEmoteStore } from "./useEmote";
 
-export { useEmoteStore };
+export { useAuthInfoStore, useEmoteStore };

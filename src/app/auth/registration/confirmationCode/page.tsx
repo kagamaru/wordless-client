@@ -3,21 +3,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { Form, Typography } from "antd";
 import { useRouter } from "next/navigation";
-import {
-    BaseButton,
-    CloseTabWarning,
-    ConfirmationCodeTextBox,
-    DisplayErrorMessage,
-    EmailAddressInput
-} from "@/components/atoms";
+import { BaseButton, CloseTabWarning, ConfirmationCodeTextBox, DisplayErrorMessage } from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
 import { getErrorMessage, getHeader, postNextjsServer } from "@/helpers";
+import { useAuthInfoStore } from "@/store";
 
 const { Title, Text } = Typography;
 
 export default function RegistrationConfirmationCodePage() {
     const [form] = Form.useForm();
     const router = useRouter();
+    const authInfo = useAuthInfoStore((state) => state.authInfo);
 
     const {
         mutateAsync: postConfirmSignupAsyncAPI,
@@ -30,9 +26,9 @@ export default function RegistrationConfirmationCodePage() {
         }
     });
 
-    const onConfirmClick = async (values: { emailAddress: string; confirmationCode: string }) => {
+    const onConfirmClick = async (values: { confirmationCode: string }) => {
         try {
-            const email = values.emailAddress;
+            const { email } = authInfo;
             const confirmationCode = values.confirmationCode;
             await postConfirmSignupAsyncAPI({ email, confirmationCode });
             router.push("/auth/registration/userInfo");
@@ -50,9 +46,7 @@ export default function RegistrationConfirmationCodePage() {
                 <p>
                     <Text>メールアドレスと確認コードを入力してください。</Text>
                 </p>
-                <p>
-                    <CloseTabWarning />
-                </p>
+                <CloseTabWarning reloadWarning={true} />
                 {isError && (
                     <DisplayErrorMessage
                         error={{ errorCode: "COG-06", errorMessage: getErrorMessage("COG-06") }}
@@ -61,7 +55,6 @@ export default function RegistrationConfirmationCodePage() {
                 )}
                 <Form form={form} onFinish={onConfirmClick}>
                     <div className="mt-6">
-                        <EmailAddressInput />
                         <ConfirmationCodeTextBox />
                     </div>
                     <div className="mt-6">
