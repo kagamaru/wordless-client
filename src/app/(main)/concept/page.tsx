@@ -12,6 +12,7 @@ const { Title } = Typography;
 
 export default function Concept() {
     const router = useRouter();
+    const cleanAllData = useEmoteStore((state) => state.cleanAllData);
 
     const contentStyle = css({
         textAlign: "center",
@@ -41,7 +42,7 @@ export default function Concept() {
     };
 
     useEffect(() => {
-        useEmoteStore.getState().cleanAllData();
+        cleanAllData();
     }, []);
 
     return (

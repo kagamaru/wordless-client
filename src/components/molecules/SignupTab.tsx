@@ -3,10 +3,12 @@ import { Form } from "antd";
 import { useRouter } from "next/navigation";
 import { BaseButton, DisplayErrorMessage, EmailAddressInput, PasswordInput } from "@/components/atoms";
 import { getErrorMessage, postWithTimeout } from "@/helpers";
+import { useAuthInfoStore } from "@/store";
 
 export const SignupTab = () => {
     const [form] = Form.useForm();
     const router = useRouter();
+    const setAuthInfo = useAuthInfoStore((state) => state.setAuthInfo);
 
     const { mutateAsync, isError } = useMutation({
         mutationFn: async (request: { email: string; password: string }) => {
@@ -19,7 +21,7 @@ export const SignupTab = () => {
     });
 
     const onSignupClick = async (values: { emailAddress: string; password: string }) => {
-        const emailAddress = values.emailAddress;
+        const email = values.emailAddress;
         const password = values.password;
 
         try {
@@ -32,9 +34,10 @@ export const SignupTab = () => {
 
         try {
             await mutateAsync({
-                email: emailAddress,
+                email,
                 password
             });
+            setAuthInfo({ email, password });
 
             router.push("/auth/registration/confirmationCode");
         } catch {

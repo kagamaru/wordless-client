@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import RegistrationUserInfoPage from "@/app/auth/registration/userInfo/page";
 import { ProviderTemplate } from "@/components/template";
+import { useAuthInfoStore } from "@/store";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -55,6 +56,13 @@ describe("初期表示時", () => {
     test("ユーザー登録ボタンが表示されている", async () => {
         await waitFor(() => {
             expect(screen.getByRole("button", { name: "ユーザー登録" })).toBeTruthy();
+        });
+    });
+
+    test("状態管理からログイン情報が削除される", async () => {
+        await waitFor(() => {
+            expect(useAuthInfoStore.getState().authInfo.email).toEqual("");
+            expect(useAuthInfoStore.getState().authInfo.password).toEqual("");
         });
     });
 });

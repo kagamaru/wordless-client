@@ -9,6 +9,7 @@ import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import LoginSignup from "@/app/auth/login/page";
 import { ProviderTemplate } from "@/components/template";
+import { useAuthInfoStore } from "@/store";
 
 vitestSetup();
 const user = userEvent.setup();
@@ -101,6 +102,13 @@ describe("初期表示時", () => {
     test("パスワードを忘れた場合ボタンが表示されている", async () => {
         await waitFor(() => {
             expect(screen.getByRole("button", { name: "パスワードを忘れた場合" })).toBeTruthy();
+        });
+    });
+
+    test("状態管理からログイン情報が削除される", async () => {
+        await waitFor(() => {
+            expect(useAuthInfoStore.getState().authInfo.email).toEqual("");
+            expect(useAuthInfoStore.getState().authInfo.password).toEqual("");
         });
     });
 });
@@ -408,6 +416,13 @@ describe("ユーザー登録ボタン押下時", () => {
         test("確認コード入力画面に遷移する", async () => {
             await waitFor(() => {
                 expect(mockedUseRouter).toHaveBeenCalledWith("/auth/registration/confirmationCode");
+            });
+        });
+
+        test("状態管理にログイン情報が保存される", async () => {
+            await waitFor(() => {
+                expect(useAuthInfoStore.getState().authInfo.email).toEqual("example@example.com");
+                expect(useAuthInfoStore.getState().authInfo.password).toEqual("example01");
             });
         });
     });

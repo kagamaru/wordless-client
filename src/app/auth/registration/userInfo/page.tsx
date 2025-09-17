@@ -1,18 +1,25 @@
 "use client";
 
 import { Form, Typography } from "antd";
+import { useEffect } from "react";
 import { BaseButton, CloseTabWarning, UserIdInput, UserNameInput } from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
 import { css } from "ss/css";
+import { useAuthInfoStore } from "@/store";
 
 const { Title, Text } = Typography;
 
 export default function RegistrationUserInfoPage() {
     const [form] = Form.useForm();
+    const resetAuthInfo = useAuthInfoStore((state) => state.resetAuthInfo);
 
     const inputStyle = css({
         textAlign: "left"
     });
+
+    useEffect(() => {
+        resetAuthInfo();
+    }, []);
 
     return (
         <CardPageTemplate>

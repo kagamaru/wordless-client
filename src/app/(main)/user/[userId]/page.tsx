@@ -7,6 +7,7 @@ import { useParamUserId } from "@/hooks";
 
 export default function UserPage() {
     const formattedUserId = useParamUserId();
+    const cleanAllData = useEmoteStore((state) => state.cleanAllData);
 
     const currentUserId = useContext(UserInfoContext)?.userInfo?.userId;
     if (!currentUserId) {
@@ -14,7 +15,7 @@ export default function UserPage() {
     }
 
     useEffect(() => {
-        useEmoteStore.getState().cleanAllData();
+        cleanAllData();
     }, []);
 
     return (
