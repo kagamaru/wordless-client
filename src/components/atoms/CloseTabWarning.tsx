@@ -9,19 +9,14 @@ type Props = {
 
 export const CloseTabWarning = ({ reloadWarning = false }: Props) => {
     const alertTextStyle = css({
-        color: "red !important"
+        color: "red !important",
+        display: "block"
     });
 
     return (
-        <div>
-            <div>
-                <Text className={alertTextStyle}>ブラウザの×ボタンは押さないでください。</Text>
-            </div>
-            {reloadWarning && (
-                <div>
-                    <Text className={alertTextStyle}>ブラウザのリロードボタンは押さないでください。</Text>
-                </div>
-            )}
-        </div>
+        <>
+            <Text className={alertTextStyle}>ブラウザの×ボタンは押さないでください。</Text>
+            {reloadWarning && <Text className={alertTextStyle}>ブラウザのリロードボタンは押さないでください。</Text>}
+        </>
     );
 };
