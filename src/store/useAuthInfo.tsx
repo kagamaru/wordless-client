@@ -8,7 +8,7 @@ type AuthInfo = {
 type AuthInfoStore = {
     authInfo: AuthInfo;
     setAuthInfo: (authInfo: AuthInfo) => void;
-    cleanAllData: () => void;
+    resetAuthInfo: () => void;
 };
 
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -24,7 +24,7 @@ export const useAuthInfoStore = create<AuthInfoStore>((set) => ({
         if (timeoutId) clearTimeout(timeoutId);
         timeoutId = setTimeout(() => set({ authInfo: { email: "", password: "" } }), 5 * 60 * 1000);
     },
-    cleanAllData: () => {
+    resetAuthInfo: () => {
         if (timeoutId) clearTimeout(timeoutId);
         timeoutId = null;
         set({ authInfo: { email: "", password: "" } });

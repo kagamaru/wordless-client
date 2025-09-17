@@ -11,13 +11,14 @@ const { Title, Text } = Typography;
 
 export default function RegistrationUserInfoPage() {
     const [form] = Form.useForm();
+    const resetAuthInfo = useAuthInfoStore((state) => state.resetAuthInfo);
 
     const inputStyle = css({
         textAlign: "left"
     });
 
     useEffect(() => {
-        useAuthInfoStore.getState().cleanAllData();
+        resetAuthInfo();
     }, []);
 
     return (
