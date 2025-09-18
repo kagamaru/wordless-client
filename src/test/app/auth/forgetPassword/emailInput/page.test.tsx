@@ -5,7 +5,7 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { ProviderTemplate } from "@/components/template";
-import EmailAddressInputPage from "@/app/auth/forgetPassword/emailAddressInput/page";
+import EmailAddressInputPage from "@/app/auth/forgetPassword/emailInput/page";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 

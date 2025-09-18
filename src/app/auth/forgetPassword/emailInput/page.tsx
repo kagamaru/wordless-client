@@ -32,18 +32,18 @@ export default function EmailAddressInputPage() {
         }
     });
 
-    const onSendEmailClick = async (values: { emailAddress: string }) => {
+    const onSendEmailClick = async (values: { email: string }) => {
         try {
-            const emailAddress = values.emailAddress;
+            const { email } = values;
             if (
-                emailAddress === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS ||
-                emailAddress === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS
+                email === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS ||
+                email === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS
             ) {
                 setIsSampleUserRegisterError(true);
                 return;
             }
 
-            await postForgotPasswordAsyncAPI({ email: emailAddress });
+            await postForgotPasswordAsyncAPI({ email });
             router.push("/auth/forgetPassword/newPasswordInput");
         } catch {
             return;

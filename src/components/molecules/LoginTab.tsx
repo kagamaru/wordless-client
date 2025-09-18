@@ -13,13 +13,22 @@ import {
 import { getErrorMessage, postWithTimeout } from "@/helpers";
 
 const env = process.env;
+if (
+    !env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS ||
+    !env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_PASSWORD ||
+    !env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS ||
+    !env.NEXT_PUBLIC_SAMPLE_USER_NICO_PASSWORD
+) {
+    throw new Error("Sample user email or password is not set");
+}
+
 const sampleUsers = {
     Nozomi: {
-        emailAddress: env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS,
+        email: env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS,
         password: env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_PASSWORD
     },
     Nico: {
-        emailAddress: env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS,
+        email: env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS,
         password: env.NEXT_PUBLIC_SAMPLE_USER_NICO_PASSWORD
     }
 };
@@ -38,7 +47,9 @@ export function LoginTab() {
         }
     });
 
-    const onLoginClick = async () => {
+    const onLoginClick = async (values: { email: string; password: string }) => {
+        const { email, password } = values;
+
         try {
             await form.validateFields({
                 recursive: true
@@ -49,8 +60,8 @@ export function LoginTab() {
 
         try {
             const loginResult = await mutateAsync({
-                email: form.getFieldValue("emailAddress"),
-                password: form.getFieldValue("password")
+                email,
+                password
             });
 
             if (loginResult) {
@@ -68,11 +79,12 @@ export function LoginTab() {
 
     const onSampleLoginClick = async (sampleUserName: "Nozomi" | "Nico") => {
         const userInfo = sampleUsers[sampleUserName];
+        const { email, password } = userInfo;
         form.setFieldsValue({
-            emailAddress: userInfo.emailAddress,
-            password: userInfo.password
+            email,
+            password
         });
-        await onLoginClick();
+        await onLoginClick(userInfo);
     };
 
     return (
@@ -87,7 +99,7 @@ export function LoginTab() {
                 <EmailAddressInput />
                 <PasswordInput />
                 <BaseButton label="ログイン" loading={false} />
-                <LinkButton label="パスワードを忘れた場合" routerPath="/auth/forgetPassword/emailAddressInput" />
+                <LinkButton label="パスワードを忘れた場合" routerPath="/auth/forgetPassword/emailInput" />
                 <SampleLoginButton sampleUserName="Nozomi" onClickAction={() => onSampleLoginClick("Nozomi")} />
                 <SampleLoginButton sampleUserName="Nico" onClickAction={() => onSampleLoginClick("Nico")} />
             </Form>

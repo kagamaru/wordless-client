@@ -20,8 +20,8 @@ export const SignupTab = () => {
         }
     });
 
-    const onSignupClick = async (values: { emailAddress: string; password: string }) => {
-        const email = values.emailAddress;
+    const onSignupClick = async (values: { email: string; password: string }) => {
+        const email = values.email;
         const password = values.password;
 
         try {

@@ -390,7 +390,7 @@ test("パスワードを忘れた場合ボタン押下時、パスワードリ�
     await user.click(forgetPasswordButton);
 
     await waitFor(() => {
-        expect(mockedUseRouter).toHaveBeenCalledWith("/auth/forgetPassword/emailAddressInput");
+        expect(mockedUseRouter).toHaveBeenCalledWith("/auth/forgetPassword/emailInput");
     });
 });
 
