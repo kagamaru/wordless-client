@@ -21,10 +21,18 @@ vi.mock("next/navigation", () => ({
 }));
 
 const mockConfirmSignup = vi.fn();
+const mockLogin = vi.fn();
 const server = setupServer(
     http.post("http://localhost:3000/api/cognito/confirmSignup", () => {
         mockConfirmSignup();
         return HttpResponse.json({});
+    }),
+    http.post("http://localhost:3000/api/cognito/login", () => {
+        mockLogin();
+        return HttpResponse.json({
+            AccessToken: "mock-access-token",
+            IdToken: "mock-id-token"
+        });
     })
 );
 
@@ -118,6 +126,12 @@ describe("確認コード検証ボタン押下時", () => {
                 expect(mockedUseRouter).toHaveBeenCalledWith("/auth/registration/userInfo");
             });
         });
+
+        test("ログインAPIを呼び出す", async () => {
+            await waitFor(() => {
+                expect(mockLogin).toHaveBeenCalledTimes(1);
+            });
+        });
     });
 
     describe("確認コードが入力されていない時、", () => {
@@ -186,6 +200,35 @@ describe("確認コード検証ボタン押下時", () => {
                 const alertComponent = screen.getByRole("alert");
                 expect(within(alertComponent).getByText("Error : COG-06")).toBeTruthy();
                 expect(within(alertComponent).getByText("確認コードが不正です。")).toBeTruthy();
+            });
+        });
+    });
+
+    describe("ログインAPIがエラーを返す時、", () => {
+        beforeEach(async () => {
+            server.use(
+                http.post("http://localhost:3000/api/cognito/login", () => {
+                    return HttpResponse.json({}, { status: 400 });
+                })
+            );
+
+            await user.type(await screen.findByLabelText("確認コード"), "123456");
+            await user.click(await screen.findByRole("button", { name: "確認コードを検証" }));
+        });
+
+        test("ユーザー名登録画面に遷移しない", async () => {
+            await waitFor(() => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/userInfo");
+            });
+        });
+
+        test("エラーメッセージを表示する", async () => {
+            await waitFor(() => {
+                const alertComponent = screen.getByRole("alert");
+                expect(within(alertComponent).getByText("Error : COG-07")).toBeTruthy();
+                expect(
+                    within(alertComponent).getByText("有効期限が切れています。管理者にお問い合わせください。")
+                ).toBeTruthy();
             });
         });
     });
