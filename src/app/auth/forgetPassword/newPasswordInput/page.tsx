@@ -33,27 +33,22 @@ export default function NewPasswordInputPage() {
         }
     });
 
-    const onPasswordChangeClick = async (values: {
-        emailAddress: string;
-        confirmationCode: string;
-        newPassword: string;
-    }) => {
+    const onPasswordChangeClick = async (values: { email: string; confirmationCode: string; newPassword: string }) => {
         try {
-            const emailAddress = values.emailAddress;
-            const confirmationCode = values.confirmationCode;
-            const newPassword = values.newPassword;
+            const { email, confirmationCode, newPassword } = values;
+
             if (
-                emailAddress === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS ||
-                emailAddress === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS
+                email === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS ||
+                email === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS
             ) {
                 setIsSampleUserRegisterError(true);
                 return;
             }
 
             await postConfirmForgotPasswordAsyncAPI({
-                email: emailAddress,
-                confirmationCode: confirmationCode,
-                newPassword: newPassword
+                email,
+                confirmationCode,
+                newPassword
             });
             router.push("/auth/forgetPassword/completion");
         } catch {
