@@ -1,0 +1,48 @@
+name: wordless-client CI Build Pipeline
+
+on:
+  pull_request:
+    branches: ["main"]
+
+env:
+  NEXT_PUBLIC_WEBSOCKET_URL: ${{secrets.NEXT_PUBLIC_WEBSOCKET_URL}}
+  NEXT_PUBLIC_API_MOCKING: ${{secrets.NEXT_PUBLIC_API_MOCKING}}
+  NEXT_PUBLIC_S3_URL: ${{secrets.NEXT_PUBLIC_S3_URL}}
+  REST_API_URL: ${{secrets.REST_API_URL}}
+  REGION_AWS: ${{secrets.REGION_AWS}}
+  COGNITO_CLIENT_ID: ${{secrets.COGNITO_CLIENT_ID}}
+  NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS: ${{vars.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS}}
+  NEXT_PUBLIC_SAMPLE_USER_NOZOMI_PASSWORD: ${{vars.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_PASSWORD}}
+  NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_ID: ${{vars.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_ID}}
+  NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_SUB: ${{vars.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_SUB}}
+  NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS: ${{vars.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS}}
+  NEXT_PUBLIC_SAMPLE_USER_NICO_PASSWORD: ${{vars.NEXT_PUBLIC_SAMPLE_USER_NICO_PASSWORD}}
+  NEXT_PUBLIC_SAMPLE_USER_NICO_USER_ID: ${{vars.NEXT_PUBLIC_SAMPLE_USER_NICO_USER_ID}}
+  NEXT_PUBLIC_SAMPLE_USER_NICO_USER_SUB: ${{vars.NEXT_PUBLIC_SAMPLE_USER_NICO_USER_SUB}}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'pnpm'
+    - name: Set timezone to JST
+      run: sudo timedatectl set-timezone Asia/Tokyo
+    - run: pnpm install
+    - run: pnpm run build
+    - run: pnpm run test
