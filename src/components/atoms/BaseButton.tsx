@@ -1,3 +1,4 @@
+import { LoadingOutlined } from "@ant-design/icons";
 import { Button, ConfigProvider } from "antd";
 
 type Props = {
@@ -19,6 +20,7 @@ export function BaseButton({ label, loading = false, onClick }: Props) {
                     block
                     loading={loading}
                     onClick={onClick}
+                    icon={loading ? <LoadingOutlined /> : undefined}
                 >
                     {label}
                 </Button>

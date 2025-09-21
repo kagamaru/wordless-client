@@ -27,7 +27,8 @@ export default function RegistrationUserInfoPage() {
     const {
         mutateAsync: postUserAsyncAPI,
         error: postUserError,
-        isError: isPostUserError
+        isError: isPostUserError,
+        isPending: isPostUserPending
     } = useMutation({
         mutationFn: async (values: { userId: string; userName: string }) => {
             const response = await postNextjsServer<{ userId: string }>(
@@ -81,7 +82,7 @@ export default function RegistrationUserInfoPage() {
                 <Form className={inputStyle} form={form} onFinish={onFinish}>
                     <UserIdInput />
                     <UserNameInput />
-                    <BaseButton label="ユーザー登録" loading={false} />
+                    <BaseButton label="ユーザー登録" loading={isPostUserPending} />
                 </Form>
             </div>
         </CardPageTemplate>
