@@ -36,14 +36,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ use
     }
 
     try {
-        const response = await postWithTimeout(restApiUrl + `users/${userId}`, body, {
+        const response = await postWithTimeout<{ userId: string }>(restApiUrl + `users/${userId}`, body, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
             }
         });
 
-        return NextResponse.json({ userId }, { status: response.status });
+        if (!response.data) {
+            throw new Error("No response data");
+        }
+
+        return NextResponse.json({ userId: response.data.userId }, { status: response.status });
     } catch (error) {
         return handleAPIError(error);
     }

@@ -14,7 +14,7 @@ export const UserNameInput = () => {
         <>
             <Form.Item
                 label="ユーザー名："
-                name="username"
+                name="userName"
                 rules={[
                     { required: true, message: "ユーザー名を入力してください。" },
                     { min: 1, max: 24, message: "1文字〜24文字で入力してください。" },
