@@ -58,8 +58,8 @@ export default function LoginSignup() {
         }
     });
 
-    const onFinish = async (values: { username: string }) => {
-        await postUserNameAsyncAPI(values.username);
+    const onFinish = async (values: { userName: string }) => {
+        await postUserNameAsyncAPI(values.userName);
         router.push(`/user/${userId}`);
     };
 
@@ -103,7 +103,7 @@ export default function LoginSignup() {
                             validateTrigger={["onChange", "onBlur"]}
                             requiredMark={false}
                             initialValues={{
-                                username: userInfo.userName
+                                userName: userInfo.userName
                             }}
                         >
                             <UserNameInput />
