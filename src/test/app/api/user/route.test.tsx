@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { NextRequest, NextResponse } from "next/server";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
-import { GET } from "@/app/api/user/[userId]/route";
+import { GET, POST } from "@/app/api/user/[userId]/route";
 
 const userApiUrl = "https://api.mock.test/v1/users/@test";
 
@@ -14,6 +14,11 @@ const server = setupServer(
             userName: "TEST",
             userAvatarUrl: "https://image.test/d.png"
         });
+    }),
+    http.post(userApiUrl, () => {
+        return HttpResponse.json({
+            userId: "@test"
+        });
     })
 );
 
@@ -23,6 +28,17 @@ const getRequestURL = new NextRequest(userApiUrl, {
         authorization: token
     }
 });
+const getPostRequestURL = (userName?: string) =>
+    new NextRequest(userApiUrl, {
+        method: "POST",
+        headers: {
+            authorization: token
+        },
+        body: JSON.stringify({
+            userName
+        })
+    });
+
 const getRequestParams = {
     params: new Promise<{ userId: string }>((resolve) => {
         resolve({
@@ -30,6 +46,13 @@ const getRequestParams = {
         });
     })
 };
+const getPostRequestParams = (userId?: string) => ({
+    params: new Promise<{ userId: string }>((resolve) => {
+        resolve({
+            userId: userId as string
+        });
+    })
+});
 
 beforeAll(() => {
     server.listen();
@@ -47,65 +70,136 @@ const fetchUser = async (): Promise<NextResponse> => {
     return await GET(getRequestURL, getRequestParams);
 };
 
-describe("正常系", () => {
-    test("status code 200を返す", async () => {
-        const response = await fetchUser();
+const postUser = async (userId?: string, userName?: string): Promise<NextResponse> => {
+    return await POST(getPostRequestURL(userName), getPostRequestParams(userId));
+};
 
-        expect(response.status).toBe(200);
+describe("GET", () => {
+    describe("正常系", () => {
+        test("status code 200を返す", async () => {
+            const response = await fetchUser();
+
+            expect(response.status).toBe(200);
+        });
+
+        test("ユーザー情報を返す", async () => {
+            const response = await fetchUser();
+            const data = await response.json();
+
+            expect(data).toEqual({
+                userId: "@test",
+                userName: "TEST",
+                userAvatarUrl: "https://image.test/d.png"
+            });
+        });
     });
 
-    test("ユーザー情報を返す", async () => {
-        const response = await fetchUser();
-        const data = await response.json();
+    describe("異常系", () => {
+        test("認証に失敗したとき、401を返す", async () => {
+            server.use(
+                http.get(userApiUrl, () => {
+                    return HttpResponse.json({ error: "AUN-99" }, { status: 401 });
+                })
+            );
 
-        expect(data).toEqual({
-            userId: "@test",
-            userName: "TEST",
-            userAvatarUrl: "https://image.test/d.png"
+            const response = await fetchUser();
+            const data = await response.json();
+
+            expect(response.status).toBe(401);
+            expect(data).toEqual({ data: "AUN-99" });
+        });
+
+        test("パラメータが不正なとき、400を返す", async () => {
+            server.use(
+                http.get(userApiUrl, () => {
+                    return HttpResponse.json({ error: "USE-01" }, { status: 400 });
+                })
+            );
+
+            const response = await fetchUser();
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data).toEqual({ data: "USE-01" });
+        });
+
+        test("サーバーに接続できないとき、500を返す", async () => {
+            server.use(
+                http.get(userApiUrl, () => {
+                    return HttpResponse.json({ error: "USE-03" }, { status: 500 });
+                })
+            );
+
+            const response = await fetchUser();
+            const data = await response.json();
+
+            expect(response.status).toBe(500);
+            expect(data).toEqual({ data: "USE-03" });
         });
     });
 });
 
-describe("異常系", () => {
-    test("認証に失敗したとき、401を返す", async () => {
-        server.use(
-            http.get(userApiUrl, () => {
-                return HttpResponse.json({ error: "AUN-99" }, { status: 401 });
-            })
-        );
+describe("POST", () => {
+    describe("正常系", () => {
+        test("status code 200を返す", async () => {
+            const response = await postUser("@test", "TEST");
 
-        const response = await fetchUser();
-        const data = await response.json();
+            expect(response.status).toBe(200);
+        });
 
-        expect(response.status).toBe(401);
-        expect(data).toEqual({ data: "AUN-99" });
+        test("ユーザーIDを返す", async () => {
+            const response = await postUser("@test", "TEST");
+            const data = await response.json();
+
+            expect(data).toEqual({
+                userId: "@test"
+            });
+        });
     });
 
-    test("パラメータが不正なとき、400を返す", async () => {
-        server.use(
-            http.get(userApiUrl, () => {
-                return HttpResponse.json({ error: "USE-01" }, { status: 400 });
-            })
-        );
+    describe("異常系", () => {
+        test("認証に失敗したとき、401を返す", async () => {
+            server.use(
+                http.post(userApiUrl, () => {
+                    return HttpResponse.json({ error: "AUN-99" }, { status: 401 });
+                })
+            );
 
-        const response = await fetchUser();
-        const data = await response.json();
+            const response = await postUser("@test", "TEST");
+            const data = await response.json();
 
-        expect(response.status).toBe(400);
-        expect(data).toEqual({ data: "USE-01" });
-    });
+            expect(response.status).toBe(401);
+            expect(data).toEqual({ data: "AUN-99" });
+        });
 
-    test("サーバーに接続できないとき、500を返す", async () => {
-        server.use(
-            http.get(userApiUrl, () => {
-                return HttpResponse.json({ error: "USE-03" }, { status: 500 });
-            })
-        );
+        test.each(["", undefined])("userIdが空の時、400を返す", async (userId) => {
+            const response = await postUser(userId, "TEST");
+            const data = await response.json();
 
-        const response = await fetchUser();
-        const data = await response.json();
+            expect(response.status).toBe(400);
+            expect(data).toEqual({ data: "USE-91" });
+        });
 
-        expect(response.status).toBe(500);
-        expect(data).toEqual({ data: "USE-03" });
+        test.each(["", undefined])("userNameが空の時、400を返す", async (userName) => {
+            const response = await postUser("@test", userName);
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data).toEqual({ data: "USE-91" });
+        });
+
+        test("サーバーに接続できないとき、500を返す", async () => {
+            server.use(
+                http.post(userApiUrl, () => {
+                    return HttpResponse.json({ error: "USE-35" }, { status: 500 });
+                })
+            );
+
+            const response = await postUser("@test", "TEST");
+            const data = await response.json();
+
+            expect(response.status).toBe(500);
+            expect(data).toEqual({ data: "USE-35" });
+        });
     });
 });
