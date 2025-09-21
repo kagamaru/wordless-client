@@ -2,6 +2,7 @@ import { ArrowBackButton } from "@/components/atoms/ArrowBackButton";
 import { BaseButton } from "@/components/atoms/BaseButton";
 import { CancelButton } from "@/components/atoms/CancelButton";
 import { CardDivider } from "@/components/atoms/CardDivider";
+import { ChangeImageButton } from "@/components/atoms/ChangeImageButton";
 import { ChangeUserNameButton } from "@/components/atoms/ChangeUserNameButton";
 import { CloseButton } from "@/components/atoms/CloseButton";
 import { CloseTabWarning } from "@/components/atoms/CloseTabWarning";
@@ -55,6 +56,7 @@ export {
     BaseButton,
     CancelButton,
     CardDivider,
+    ChangeImageButton,
     ChangeUserNameButton,
     CloseButton,
     CloseTabWarning,
