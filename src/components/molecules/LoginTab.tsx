@@ -12,24 +12,28 @@ import {
 } from "@/components/atoms";
 import { getErrorMessage, postWithTimeout } from "@/helpers";
 
-const env = process.env;
+const sampleUserNozomiMailAddress = process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS;
+const sampleUserNozomiPassword = process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_PASSWORD;
+const sampleUserNicoMailAddress = process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS;
+const sampleUserNicoPassword = process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_PASSWORD;
+
 if (
-    !env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS ||
-    !env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_PASSWORD ||
-    !env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS ||
-    !env.NEXT_PUBLIC_SAMPLE_USER_NICO_PASSWORD
+    !sampleUserNozomiMailAddress ||
+    !sampleUserNozomiPassword ||
+    !sampleUserNicoMailAddress ||
+    !sampleUserNicoPassword
 ) {
     throw new Error("Sample user email or password is not set");
 }
 
 const sampleUsers = {
     Nozomi: {
-        email: env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS,
-        password: env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_PASSWORD
+        email: sampleUserNozomiMailAddress,
+        password: sampleUserNozomiPassword
     },
     Nico: {
-        email: env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS,
-        password: env.NEXT_PUBLIC_SAMPLE_USER_NICO_PASSWORD
+        email: sampleUserNicoMailAddress,
+        password: sampleUserNicoPassword
     }
 };
 
