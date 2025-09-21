@@ -3,6 +3,8 @@
 import { vitestSetup } from "@/test/app/vitest.setup";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import RegistrationUserInfoPage from "@/app/auth/registration/userInfo/page";
 import { ProviderTemplate } from "@/components/template";
@@ -18,7 +20,19 @@ vi.mock("next/navigation", () => ({
     })
 }));
 
-beforeAll(() => {});
+const mockPostUser = vi.fn();
+const server = setupServer(
+    http.post("http://localhost:3000/api/user/:userId", () => {
+        mockPostUser();
+        return HttpResponse.json({
+            userId: "@test"
+        });
+    })
+);
+
+beforeAll(() => {
+    server.listen();
+});
 
 beforeEach(() => {
     vi.clearAllMocks();
@@ -26,9 +40,12 @@ beforeEach(() => {
     rendering();
 });
 
-afterAll(() => {});
+afterAll(() => {
+    server.close();
+});
 
 afterEach(() => {
+    server.resetHandlers();
     cleanup();
 });
 
@@ -176,4 +193,161 @@ describe("ユーザー名テキストボックス入力時", () => {
             });
         }
     );
+});
+
+describe("ユーザー登録ボタン押下時", () => {
+    describe("入力値が正常な時", () => {
+        beforeEach(async () => {
+            const userIdInput = await screen.findByLabelText("ユーザーID");
+            await user.type(userIdInput, "test");
+            const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名" });
+            await user.type(userNameInput, "test");
+            await user.click(screen.getByRole("button", { name: "ユーザー登録" }));
+        });
+
+        test("ユーザー登録APIを呼び出す", async () => {
+            await waitFor(() => {
+                expect(mockPostUser).toHaveBeenCalled();
+            });
+        });
+
+        test("ユーザー画像登録画面に遷移する", async () => {
+            await waitFor(() => {
+                expect(mockedUseRouter).toHaveBeenCalledWith("/auth/registration/@test/userIcon");
+            });
+        });
+    });
+
+    describe("ユーザーIDが不正な時", () => {
+        describe("ユーザーIDが入力されていない時", () => {
+            beforeEach(async () => {
+                const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名" });
+                await user.type(userNameInput, "test");
+                await user.click(screen.getByRole("button", { name: "ユーザー登録" }));
+            });
+
+            test("ユーザー登録APIを呼び出さない", async () => {
+                await waitFor(() => {
+                    expect(mockPostUser).not.toHaveBeenCalled();
+                });
+            });
+
+            test("ユーザー画像登録画面に遷移しない", async () => {
+                await waitFor(() => {
+                    expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/@test/userIcon");
+                });
+            });
+        });
+
+        describe.each(["Abc", "abc-123", "abc.123", "abc@123", "abc 123", "a".repeat(24)])(
+            "ユーザーIDが%sの時",
+            async (userId) => {
+                beforeEach(async () => {
+                    const userIdInput = await screen.findByLabelText("ユーザーID");
+                    await user.type(userIdInput, userId);
+
+                    const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名" });
+                    await user.type(userNameInput, "test");
+                    await user.click(screen.getByRole("button", { name: "ユーザー登録" }));
+                });
+
+                test("ユーザー登録APIを呼び出さない", async () => {
+                    await waitFor(() => {
+                        expect(mockPostUser).not.toHaveBeenCalled();
+                    });
+                });
+
+                test("ユーザー画像登録画面に遷移しない", async () => {
+                    await waitFor(() => {
+                        expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/@test/userIcon");
+                    });
+                });
+            }
+        );
+    });
+
+    describe("ユーザー名が不正な時", () => {
+        describe("ユーザー名が入力されていない時", () => {
+            beforeEach(async () => {
+                const userIdInput = await screen.findByLabelText("ユーザーID");
+                await user.type(userIdInput, "test");
+                await user.click(screen.getByRole("button", { name: "ユーザー登録" }));
+            });
+
+            test("ユーザー登録APIを呼び出さない", async () => {
+                await waitFor(() => {
+                    expect(mockPostUser).not.toHaveBeenCalled();
+                });
+            });
+
+            test("ユーザー画像登録画面に遷移しない", async () => {
+                await waitFor(() => {
+                    expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/@test/userIcon");
+                });
+            });
+        });
+
+        describe.each(["ユーザーネーム", "ゆーざーねーむ", "🐍", "@/", " name ", "X".repeat(25)])(
+            "ユーザー名が%sの時",
+            async (userName) => {
+                beforeEach(async () => {
+                    const userIdInput = await screen.findByLabelText("ユーザーID");
+                    await user.type(userIdInput, "test");
+                    const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名" });
+                    await user.type(userNameInput, userName);
+                    await user.click(screen.getByRole("button", { name: "ユーザー登録" }));
+                });
+
+                test("ユーザー登録APIを呼び出さない", async () => {
+                    await waitFor(() => {
+                        expect(mockPostUser).not.toHaveBeenCalled();
+                    });
+                });
+
+                test("ユーザー画像登録画面に遷移しない", async () => {
+                    await waitFor(() => {
+                        expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/@test/userIcon");
+                    });
+                });
+            }
+        );
+    });
+
+    describe.each([
+        ["USE-31", "不正なリクエストです。もう一度やり直してください。"],
+        ["USE-32", "不正なリクエストです。もう一度やり直してください。"],
+        ["USE-33", "不正なリクエストです。もう一度やり直してください。"],
+        ["USE-34", "不正なリクエストです。もう一度やり直してください。"],
+        ["USE-35", "エラーが発生しています。しばらくの間使用できない可能性があります。"],
+        ["USE-36", "このユーザーIDは既に使用されています。"],
+        ["USE-37", "エラーが発生しています。しばらくの間使用できない可能性があります。"],
+        ["USE-91", "不正なリクエストです。もう一度やり直してください。"]
+    ])("ユーザー登録APIで%sエラーが返却された時", async (errorCode: string, errorMessage: string) => {
+        beforeEach(async () => {
+            server.use(
+                http.post("http://localhost:3000/api/user/:userId", () => {
+                    return HttpResponse.json({ data: errorCode }, { status: 400 });
+                })
+            );
+
+            const userIdInput = await screen.findByLabelText("ユーザーID");
+            await user.type(userIdInput, "test");
+            const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名" });
+            await user.type(userNameInput, "test");
+            await user.click(screen.getByRole("button", { name: "ユーザー登録" }));
+        });
+
+        test("エラーメッセージを表示する", async () => {
+            await waitFor(() => {
+                expect(screen.getByRole("alert")).toBeTruthy();
+                expect(within(screen.getByRole("alert")).getByText(errorMessage)).toBeTruthy();
+            });
+        });
+
+        test("ユーザー画像登録画面に遷移しない", async () => {
+            await waitFor(() => {
+                expect(mockedUseRouter).not.toHaveBeenCalledWith("/auth/registration/@test/userIcon");
+            });
+        });
+    });
 });
