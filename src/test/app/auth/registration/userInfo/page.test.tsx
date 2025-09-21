@@ -196,6 +196,26 @@ describe("ユーザー名テキストボックス入力時", () => {
 });
 
 describe("ユーザー登録ボタン押下時", () => {
+    test("ローディングアイコンを表示する", async () => {
+        server.use(
+            http.post("http://localhost:3000/api/user/:userId", () => {
+                return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+            })
+        );
+
+        const userInfoButton = screen.getByRole("button", { name: "ユーザー登録" });
+        const userIdInput = await screen.findByLabelText("ユーザーID");
+        await user.type(userIdInput, "test");
+        const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名" });
+        await user.type(userNameInput, "test");
+        await user.click(screen.getByRole("button", { name: "ユーザー登録" }));
+        await user.click(userInfoButton);
+
+        await waitFor(() => {
+            expect(screen.getByRole("img", { name: "loading" })).toBeTruthy();
+        });
+    });
+
     describe("入力値が正常な時", () => {
         beforeEach(async () => {
             const userIdInput = await screen.findByLabelText("ユーザーID");
