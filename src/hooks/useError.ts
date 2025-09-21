@@ -34,6 +34,7 @@ export const useError = () => {
     useEffect(() => {
         if (hasAuthError) {
             localStorage.removeItem("IdToken");
+            localStorage.removeItem("AccessToken");
             router.push("/auth/login");
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
