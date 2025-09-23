@@ -2,7 +2,7 @@ import { APIResponse, RestApiRequestOption } from "@/@types";
 
 export async function deleteWithTimeout<T>(
     url: string,
-    data: Record<string, unknown>,
+    data?: Record<string, unknown>,
     options?: RestApiRequestOption,
     timeout = 5000
 ): Promise<APIResponse<T>> {
@@ -17,7 +17,7 @@ export async function deleteWithTimeout<T>(
                 "Content-Type": "application/json",
                 ...(options?.headers || {})
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data || {})
         });
         clearTimeout(timeoutId);
 
