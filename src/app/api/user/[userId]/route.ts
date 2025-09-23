@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deleteWithTimeout, fetchWithTimeout, handleAPIError, postWithTimeout } from "@/helpers";
+import { deleteWithTimeout, fetchWithTimeout, getHeaders, handleAPIError, postWithTimeout } from "@/helpers";
 import { PostUserNameRequest as PostUserRequest, User } from "@/@types";
 
 const restApiUrl = process.env.REST_API_URL ?? "";
@@ -13,12 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
     }
 
     try {
-        const response = await fetchWithTimeout<User>(restApiUrl + `users/${userId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await fetchWithTimeout<User>(restApiUrl + `users/${userId}`, getHeaders(token));
 
         return NextResponse.json(response.data, { status: response.status });
     } catch (error) {
@@ -36,12 +31,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ use
     }
 
     try {
-        const response = await postWithTimeout<{ userId: string }>(restApiUrl + `users/${userId}`, body, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await postWithTimeout<{ userId: string }>(
+            restApiUrl + `users/${userId}`,
+            body,
+            getHeaders(token)
+        );
 
         if (!response.data) {
             throw new Error("No response data");
@@ -62,12 +56,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ u
     }
 
     try {
-        const response = await deleteWithTimeout(restApiUrl + `users/${userId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await deleteWithTimeout(restApiUrl + `users/${userId}`, getHeaders(token));
 
         return NextResponse.json({}, { status: response.status });
     } catch (error) {

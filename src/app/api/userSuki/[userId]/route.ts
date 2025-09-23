@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchWithTimeout, handleAPIError, postWithTimeout } from "@/helpers";
+import { fetchWithTimeout, getHeaders, handleAPIError, postWithTimeout } from "@/helpers";
 import { PostUserSukiRequest, PostUserSukiResponse, User } from "@/@types";
 
 const restApiUrl = process.env.REST_API_URL ?? "";
@@ -13,12 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
     }
 
     try {
-        const response = await fetchWithTimeout<User>(restApiUrl + `userSuki/${userId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await fetchWithTimeout<User>(restApiUrl + `userSuki/${userId}`, getHeaders(token));
 
         return NextResponse.json(response.data, { status: response.status });
     } catch (error) {
@@ -36,12 +31,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ use
     }
 
     try {
-        const response = await postWithTimeout<PostUserSukiResponse>(restApiUrl + `userSuki/${userId}`, body, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await postWithTimeout<PostUserSukiResponse>(
+            restApiUrl + `userSuki/${userId}`,
+            body,
+            getHeaders(token)
+        );
 
         return NextResponse.json(response.data, { status: response.status });
     } catch (error) {

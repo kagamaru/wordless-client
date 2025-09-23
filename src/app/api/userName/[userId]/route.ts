@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PostUserNameRequest } from "@/@types";
-import { handleAPIError, postWithTimeout } from "@/helpers";
+import { getHeaders, handleAPIError, postWithTimeout } from "@/helpers";
 import { BLACKLISTED } from "@/static/blackListIds";
 
 const restApiUrl = process.env.REST_API_URL ?? "";
@@ -18,12 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ use
     }
 
     try {
-        const response = await postWithTimeout(restApiUrl + `users/${userId}/name`, body, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await postWithTimeout(restApiUrl + `users/${userId}/name`, body, getHeaders(token));
 
         return NextResponse.json({}, { status: response.status });
     } catch (error) {
