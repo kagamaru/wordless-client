@@ -1,9 +1,11 @@
 // NOTE: vitestSetupは他のimportよりも先に呼び出す必要がある
 // NOTE: import順が変わるとモックが効かなくなるため、必ずこの位置に記述する
 import { vitestSetup } from "@/test/app/vitest.setup";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { User } from "@/@types";
 import DeleteUser from "@/app/(main)/user/[userId]/settings/deleteUser/page";
 import { ErrorBoundary, ProviderTemplate, UserInfoContext, WebSocketProvider } from "@/components/template";
@@ -30,6 +32,18 @@ vi.mock("next/navigation", () => ({
     })
 }));
 
+const mockDeleteUser = vi.fn();
+const server = setupServer(
+    http.delete("http://localhost:3000/api/user/:userId", () => {
+        mockDeleteUser();
+        return HttpResponse.json({});
+    })
+);
+
+beforeAll(() => {
+    server.listen();
+});
+
 beforeEach(() => {
     vi.clearAllMocks();
     vi.resetAllMocks();
@@ -42,7 +56,12 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+    server.resetHandlers();
     cleanup();
+});
+
+afterAll(() => {
+    server.close();
 });
 
 const rendering = (userInfo?: User): void => {
@@ -78,6 +97,88 @@ describe("初期表示時", () => {
 
     test("アカウント削除ボタンを表示する", async () => {
         expect(await screen.findByRole("button", { name: "削除する" })).toBeTruthy();
+    });
+});
+
+describe("アカウント削除ボタン押下時", () => {
+    describe("正常時", () => {
+        beforeEach(async () => {
+            rendering();
+        });
+
+        test("アカウント削除ボタンをクリックした時、ローディングアイコンを表示する", async () => {
+            server.use(
+                http.delete("http://localhost:3000/api/user/:userId", () => {
+                    return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+                })
+            );
+
+            await user.click(await screen.findByRole("button", { name: "削除する" }));
+
+            await waitFor(() => {
+                expect(screen.getByRole("img", { name: "loading" })).toBeTruthy();
+            });
+        });
+
+        test("アカウント削除APIが呼ばれる", async () => {
+            await user.click(await screen.findByRole("button", { name: "削除する" }));
+
+            await waitFor(() => {
+                expect(mockDeleteUser).toHaveBeenCalled();
+            });
+        });
+
+        test.todo("AWS Cognitoのユーザーを削除する");
+
+        test("アカウント削除完了画面に遷移する", async () => {
+            await user.click(await screen.findByRole("button", { name: "削除する" }));
+
+            await waitFor(() => {
+                expect(mockedUseRouterPush).toHaveBeenCalledWith("/deleteUser/completion");
+            });
+        });
+    });
+
+    describe("異常時", () => {
+        beforeEach(async () => {
+            rendering();
+        });
+
+        describe.each([
+            ["USE-41", "不正なリクエストです。もう一度やり直してください。"],
+            ["USE-42", "サンプルユーザーは削除できません。"],
+            ["USE-43", "エラーが発生しています。しばらくの間使用できない可能性があります。"],
+            ["USE-44", "指定したユーザーは存在しません。"],
+            ["USE-45", "エラーが発生しています。しばらくの間使用できない可能性があります。"],
+            ["USE-46", "指定したユーザーは存在しません。"],
+            ["USE-47", "エラーが発生しています。しばらくの間使用できない可能性があります。"]
+        ])("アカウント削除APIで%sエラーが発生した時", (errorCode, errorMessage) => {
+            beforeEach(async () => {
+                server.use(
+                    http.delete("http://localhost:3000/api/user/:userId", () => {
+                        return HttpResponse.json({ data: errorCode }, { status: 400 });
+                    })
+                );
+            });
+
+            test("エラーメッセージを表示する", async () => {
+                await user.click(await screen.findByRole("button", { name: "削除する" }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("alert")).toBeTruthy();
+                    expect(within(screen.getByRole("alert")).getByText(`Error : ${errorCode}`)).toBeTruthy();
+                    expect(within(screen.getByRole("alert")).getByText(errorMessage as string)).toBeTruthy();
+                });
+            });
+        });
+
+        describe("Cognitoのユーザー削除に失敗した時", () => {
+            beforeEach(async () => {
+                rendering();
+            });
+
+            test.todo("エラーメッセージを表示する");
+        });
     });
 });
 
