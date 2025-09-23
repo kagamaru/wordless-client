@@ -33,9 +33,14 @@ vi.mock("next/navigation", () => ({
 }));
 
 const mockDeleteUser = vi.fn();
+const mockDeleteCognitoUser = vi.fn();
 const server = setupServer(
     http.delete("http://localhost:3000/api/user/:userId", () => {
         mockDeleteUser();
+        return HttpResponse.json({});
+    }),
+    http.delete("http://localhost:3000/api/cognito/deleteUser", () => {
+        mockDeleteCognitoUser();
         return HttpResponse.json({});
     })
 );
@@ -128,7 +133,13 @@ describe("アカウント削除ボタン押下時", () => {
             });
         });
 
-        test.todo("AWS Cognitoのユーザーを削除する");
+        test("AWS Cognitoのユーザーを削除する", async () => {
+            await user.click(await screen.findByRole("button", { name: "削除する" }));
+
+            await waitFor(() => {
+                expect(mockDeleteCognitoUser).toHaveBeenCalled();
+            });
+        });
 
         test("アカウント削除完了画面に遷移する", async () => {
             await user.click(await screen.findByRole("button", { name: "削除する" }));
@@ -173,11 +184,25 @@ describe("アカウント削除ボタン押下時", () => {
         });
 
         describe("Cognitoのユーザー削除に失敗した時", () => {
-            beforeEach(async () => {
-                rendering();
-            });
+            test("エラーメッセージを表示する", async () => {
+                server.use(
+                    http.delete("http://localhost:3000/api/cognito/deleteUser", () => {
+                        return HttpResponse.json({ data: "COG-08" }, { status: 400 });
+                    })
+                );
 
-            test.todo("エラーメッセージを表示する");
+                await user.click(await screen.findByRole("button", { name: "削除する" }));
+
+                await waitFor(() => {
+                    expect(screen.getByRole("alert")).toBeTruthy();
+                    expect(within(screen.getByRole("alert")).getByText("Error : COG-08")).toBeTruthy();
+                    expect(
+                        within(screen.getByRole("alert")).getByText(
+                            "ユーザーの削除に失敗しました。管理者にお問い合わせください。"
+                        )
+                    ).toBeTruthy();
+                });
+            });
         });
     });
 });

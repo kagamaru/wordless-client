@@ -3,7 +3,7 @@ import { CognitoIdentityProviderClient, DeleteUserCommand } from "@aws-sdk/clien
 import { mockClient } from "aws-sdk-client-mock";
 import { NextRequest, NextResponse } from "next/server";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { POST } from "@/app/api/cognito/deleteUser/route";
+import { DELETE } from "@/app/api/cognito/deleteUser/route";
 
 type PostRequestParams = {
     accessToken: string | null;
@@ -31,7 +31,7 @@ vi.mock("@/app/api/cognito/getCognitoProviderClient", () => ({
 
 const getRequestParams = (body: PostRequestParams) =>
     new NextRequest(deleteUserApiUrl, {
-        method: "POST",
+        method: "DELETE",
         headers: {
             authorization: "test-token"
         },
@@ -52,14 +52,14 @@ beforeEach(() => {
     testSetup();
 });
 
-const postDeleteUser = async (body: PostRequestParams): Promise<NextResponse> => {
-    return await POST(getRequestParams(body));
+const deleteUser = async (body: PostRequestParams): Promise<NextResponse> => {
+    return await DELETE(getRequestParams(body));
 };
 
 describe("ユーザー削除API", () => {
     describe("正常系", () => {
         test("status code 200を返す", async () => {
-            const response = await postDeleteUser({
+            const response = await deleteUser({
                 accessToken: "test-token"
             });
 
@@ -69,7 +69,7 @@ describe("ユーザー削除API", () => {
 
     describe("異常系", () => {
         test.each(["", null])("リクエストにアクセストークンがないとき、400エラーを返す", async (accessToken) => {
-            const response = await postDeleteUser({
+            const response = await deleteUser({
                 accessToken: accessToken
             });
 
@@ -81,7 +81,7 @@ describe("ユーザー削除API", () => {
                 sub: userSub
             });
 
-            const response = await postDeleteUser({
+            const response = await deleteUser({
                 accessToken: "test-token"
             });
 
