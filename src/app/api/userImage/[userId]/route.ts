@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleAPIError, postWithTimeout } from "@/helpers";
+import { getHeaders, handleAPIError, postWithTimeout } from "@/helpers";
 import { BLACKLISTED } from "@/static/blackListIds";
 
 const restApiUrl = process.env.REST_API_URL ?? "";
@@ -34,12 +34,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ use
         const issue = await postWithTimeout<IssueUploadUrlResponse>(
             `${restApiUrl}userImage/${userId}/uploadUrl`,
             { contentType, contentLength },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            }
+            getHeaders(token)
         );
 
         const { putUrl } = issue.data;

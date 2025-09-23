@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deleteWithTimeout, handleAPIError } from "@/helpers";
+import { deleteWithTimeout, getHeaders, handleAPIError } from "@/helpers";
 
 const restApiUrl = process.env.REST_API_URL ?? "";
 
@@ -11,13 +11,12 @@ export async function DELETE(
     const body = (await req.json()) as { userId: string };
     const token = req.headers.get("authorization");
 
+    if (!token) {
+        return NextResponse.json({ data: "AUN-99" }, { status: 401 });
+    }
+
     try {
-        const response = await deleteWithTimeout(restApiUrl + `emote/${emoteId}`, body, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await deleteWithTimeout(restApiUrl + `emote/${emoteId}`, body, getHeaders(token));
 
         return NextResponse.json({}, { status: response.status });
     } catch (error) {

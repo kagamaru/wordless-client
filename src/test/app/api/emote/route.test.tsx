@@ -147,15 +147,21 @@ const getRequestParams = {
     })
 };
 
-const fetchEmotes = async (): Promise<NextResponse> => {
-    return await GET(new NextRequest(fetchEmotesApiUrl));
+const fetchEmotes = async (token?: string): Promise<NextResponse> => {
+    return await GET(
+        new NextRequest(fetchEmotesApiUrl, {
+            headers: {
+                authorization: token ?? ""
+            }
+        })
+    );
 };
 
-const deleteEmote = async (): Promise<NextResponse> => {
+const deleteEmote = async (token?: string): Promise<NextResponse> => {
     return await DELETE(
         new NextRequest(deleteEmoteApiUrl, {
             headers: {
-                authorization: "test-token"
+                authorization: token ?? ""
             },
             method: "DELETE",
             body: JSON.stringify({ userId: "@a" })
@@ -167,13 +173,13 @@ const deleteEmote = async (): Promise<NextResponse> => {
 describe("GET", () => {
     describe("正常系", () => {
         test("status code 200を返す", async () => {
-            const response = await fetchEmotes();
+            const response = await fetchEmotes("test-token");
 
             expect(response.status).toBe(200);
         });
 
         test("emotesを返す", async () => {
-            const response = await fetchEmotes();
+            const response = await fetchEmotes("test-token");
             const data = await response.json();
 
             expect(data.emotes.length).toBe(4);
@@ -181,13 +187,21 @@ describe("GET", () => {
     });
 
     describe("異常系", () => {
+        test.each(["", undefined])("トークンが無い時、401を返す", async (token) => {
+            const response = await fetchEmotes(token);
+            const data = await response.json();
+
+            expect(response.status).toBe(401);
+            expect(data).toEqual({ data: "AUN-99" });
+        });
+
         test("認証に失敗したとき、401を返す", async () => {
             server.use(
                 http.get(fetchEmotesApiUrl, () => {
                     return HttpResponse.json({ error: "AUN-99" }, { status: 401 });
                 })
             );
-            const response = await fetchEmotes();
+            const response = await fetchEmotes("test-token");
             const data = await response.json();
 
             expect(response.status).toBe(401);
@@ -200,7 +214,7 @@ describe("GET", () => {
                     return HttpResponse.json({ error: "EMT-01" }, { status: 400 });
                 })
             );
-            const response = await fetchEmotes();
+            const response = await fetchEmotes("test-token");
             const data = await response.json();
 
             expect(response.status).toBe(400);
@@ -214,7 +228,7 @@ describe("GET", () => {
                 })
             );
 
-            const response = await fetchEmotes();
+            const response = await fetchEmotes("test-token");
             const data = await response.json();
 
             expect(response.status).toBe(500);
@@ -226,20 +240,28 @@ describe("GET", () => {
 describe("DELETE", () => {
     describe("正常系", () => {
         test("status code 200を返す", async () => {
-            const response = await deleteEmote();
+            const response = await deleteEmote("test-token");
 
             expect(response.status).toBe(200);
         });
     });
 
     describe("異常系", () => {
+        test.each(["", undefined])("トークンが無い時、401を返す", async (token) => {
+            const response = await deleteEmote(token);
+            const data = await response.json();
+
+            expect(response.status).toBe(401);
+            expect(data).toEqual({ data: "AUN-99" });
+        });
+
         test("認証に失敗したとき、401を返す", async () => {
             server.use(
                 http.delete(deleteEmoteApiUrl, () => {
                     return HttpResponse.json({ error: "AUN-99" }, { status: 401 });
                 })
             );
-            const response = await deleteEmote();
+            const response = await deleteEmote("test-token");
             const data = await response.json();
 
             expect(response.status).toBe(401);
@@ -252,7 +274,7 @@ describe("DELETE", () => {
                     return HttpResponse.json({ error: "EMT-01" }, { status: 400 });
                 })
             );
-            const response = await deleteEmote();
+            const response = await deleteEmote("test-token");
             const data = await response.json();
 
             expect(response.status).toBe(400);
@@ -266,7 +288,7 @@ describe("DELETE", () => {
                 })
             );
 
-            const response = await deleteEmote();
+            const response = await deleteEmote("test-token");
             const data = await response.json();
 
             expect(response.status).toBe(500);

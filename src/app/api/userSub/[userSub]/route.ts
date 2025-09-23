@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchWithTimeout, handleAPIError } from "@/helpers";
+import { fetchWithTimeout, getHeaders, handleAPIError } from "@/helpers";
 
 import { User } from "@/@types";
 
@@ -14,12 +14,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
     }
 
     try {
-        const response = await fetchWithTimeout<User>(restApiUrl + `users/sub/${userSub}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await fetchWithTimeout<User>(restApiUrl + `users/sub/${userSub}`, getHeaders(token));
 
         return NextResponse.json(response.data, { status: response.status });
     } catch (error) {
