@@ -15,5 +15,8 @@ export const userHandlers = [
         return HttpResponse.json({
             userId
         });
+    }),
+    http.delete("http://localhost:3000/api/user/:userId", () => {
+        return HttpResponse.json({});
     })
 ];
