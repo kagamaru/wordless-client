@@ -56,7 +56,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ u
     }
 
     try {
-        const response = await deleteWithTimeout(restApiUrl + `users/${userId}`, getHeaders(token));
+        const response = await deleteWithTimeout(restApiUrl + `users/${userId}`, undefined, getHeaders(token));
 
         return NextResponse.json({}, { status: response.status });
     } catch (error) {
