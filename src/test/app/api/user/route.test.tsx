@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { NextRequest, NextResponse } from "next/server";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
-import { GET, POST } from "@/app/api/user/[userId]/route";
+import { DELETE, GET, POST } from "@/app/api/user/[userId]/route";
 
 const userApiUrl = "https://api.mock.test/v1/users/@test";
 
@@ -19,6 +19,9 @@ const server = setupServer(
         return HttpResponse.json({
             userId: "@test"
         });
+    }),
+    http.delete(userApiUrl, () => {
+        return HttpResponse.json({}, { status: 200 });
     })
 );
 
@@ -39,14 +42,7 @@ const getPostRequestURL = (userName?: string) =>
         })
     });
 
-const getRequestParams = {
-    params: new Promise<{ userId: string }>((resolve) => {
-        resolve({
-            userId: "@test"
-        });
-    })
-};
-const getPostRequestParams = (userId?: string) => ({
+const createRequestParams = (userId?: string) => ({
     params: new Promise<{ userId: string }>((resolve) => {
         resolve({
             userId: userId as string
@@ -66,24 +62,28 @@ afterAll(() => {
     server.close();
 });
 
-const fetchUser = async (): Promise<NextResponse> => {
-    return await GET(getRequestURL, getRequestParams);
+const fetchUser = async (userId?: string): Promise<NextResponse> => {
+    return await GET(getRequestURL, createRequestParams(userId));
 };
 
 const postUser = async (userId?: string, userName?: string): Promise<NextResponse> => {
-    return await POST(getPostRequestURL(userName), getPostRequestParams(userId));
+    return await POST(getPostRequestURL(userName), createRequestParams(userId));
+};
+
+const deleteUser = async (userId?: string): Promise<NextResponse> => {
+    return await DELETE(getRequestURL, createRequestParams(userId));
 };
 
 describe("GET", () => {
     describe("正常系", () => {
         test("status code 200を返す", async () => {
-            const response = await fetchUser();
+            const response = await fetchUser("@test");
 
             expect(response.status).toBe(200);
         });
 
         test("ユーザー情報を返す", async () => {
-            const response = await fetchUser();
+            const response = await fetchUser("@test");
             const data = await response.json();
 
             expect(data).toEqual({
@@ -102,11 +102,19 @@ describe("GET", () => {
                 })
             );
 
-            const response = await fetchUser();
+            const response = await fetchUser("@test");
             const data = await response.json();
 
             expect(response.status).toBe(401);
             expect(data).toEqual({ data: "AUN-99" });
+        });
+
+        test.each(["", undefined])("userIdが空の時、400を返す", async (userId) => {
+            const response = await deleteUser(userId);
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data).toEqual({ data: "USE-91" });
         });
 
         test("パラメータが不正なとき、400を返す", async () => {
@@ -116,7 +124,7 @@ describe("GET", () => {
                 })
             );
 
-            const response = await fetchUser();
+            const response = await fetchUser("@test");
             const data = await response.json();
 
             expect(response.status).toBe(400);
@@ -130,7 +138,7 @@ describe("GET", () => {
                 })
             );
 
-            const response = await fetchUser();
+            const response = await fetchUser("@test");
             const data = await response.json();
 
             expect(response.status).toBe(500);
@@ -200,6 +208,54 @@ describe("POST", () => {
 
             expect(response.status).toBe(500);
             expect(data).toEqual({ data: "USE-35" });
+        });
+    });
+});
+
+describe("DELETE", () => {
+    describe("正常系", () => {
+        test("status code 200を返す", async () => {
+            const response = await deleteUser("@test");
+
+            expect(response.status).toBe(200);
+        });
+    });
+
+    describe("異常系", () => {
+        test("認証に失敗したとき、401を返す", async () => {
+            server.use(
+                http.delete(userApiUrl, () => {
+                    return HttpResponse.json({ error: "AUN-99" }, { status: 401 });
+                })
+            );
+
+            const response = await deleteUser("@test");
+            const data = await response.json();
+
+            expect(response.status).toBe(401);
+            expect(data).toEqual({ data: "AUN-99" });
+        });
+
+        test.each(["", undefined])("userIdが空の時、400を返す", async (userId) => {
+            const response = await deleteUser(userId);
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data).toEqual({ data: "USE-91" });
+        });
+
+        test("サーバーに接続できないとき、500を返す", async () => {
+            server.use(
+                http.delete(userApiUrl, () => {
+                    return HttpResponse.json({ error: "USE-44" }, { status: 500 });
+                })
+            );
+
+            const response = await deleteUser("@test");
+            const data = await response.json();
+
+            expect(response.status).toBe(500);
+            expect(data).toEqual({ data: "USE-44" });
         });
     });
 });
