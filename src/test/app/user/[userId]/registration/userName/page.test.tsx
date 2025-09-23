@@ -230,6 +230,23 @@ test.todo("ユーザー名変更ボタン押下時", () => {
             }
         );
 
+        test("ローディングアイコンを表示する", async () => {
+            server.use(
+                http.post("http://localhost:3000/api/userName/:userId", () => {
+                    return new Promise(() => {}); // NOTE: 永続的にローディング状態を維持
+                })
+            );
+
+            const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
+            await user.clear(userNameInput);
+            await user.type(userNameInput, "validName");
+            await user.click(screen.getByRole("button", { name: "ユーザー名を変更する" }));
+
+            await waitFor(() => {
+                expect(screen.getByRole("button", { name: "loading ユーザー名を変更する" })).toBeTruthy();
+            });
+        });
+
         test("ユーザー名を変更するAPIを呼び出す", async () => {
             const userNameInput = await screen.findByRole("textbox", { name: "ユーザー名：" });
             await user.clear(userNameInput);
