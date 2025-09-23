@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import { NextRequest, NextResponse } from "next/server";
 import { getCognitoProviderClient } from "@/app/api/cognito/getCognitoProviderClient";
 
-export async function POST(req: NextRequest) {
+export async function DELETE(req: NextRequest) {
     const client = getCognitoProviderClient();
     try {
         const { accessToken } = await req.json();
