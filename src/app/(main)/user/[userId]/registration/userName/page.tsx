@@ -45,7 +45,8 @@ export default function LoginSignup() {
     const {
         mutateAsync: postUserNameAsyncAPI,
         error: postUserNameError,
-        isError: isPostUserNameError
+        isError: isPostUserNameError,
+        isPending: isPostUserNamePending
     } = useMutation({
         mutationFn: async (userName: string) => {
             await postNextjsServer<void>(
@@ -107,7 +108,7 @@ export default function LoginSignup() {
                             }}
                         >
                             <UserNameInput />
-                            <ChangeUserNameButton />
+                            <ChangeUserNameButton isLoading={isPostUserNamePending} />
                         </Form>
                     </Space>
                 </ChangeUserInfoCard>
