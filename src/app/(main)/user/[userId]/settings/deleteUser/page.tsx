@@ -6,7 +6,7 @@ import { ArrowBackButton, CardDivider, DeleteButton, DisplayErrorMessage } from 
 import { ChangeUserInfoCard } from "@/components/organisms";
 import { css } from "ss/css";
 import { useMutation } from "@tanstack/react-query";
-import { deleteNextjsServer, getHeader } from "@/helpers";
+import { deleteNextjsServer, getErrorMessage, getHeader } from "@/helpers";
 import { useError, useParamUserId } from "@/hooks";
 import { useEffect } from "react";
 
@@ -32,12 +32,35 @@ export default function DeleteUser() {
         }
     });
 
+    const {
+        mutateAsync: deleteCognitoUserAsyncAPI,
+        isError: isDeleteCognitoUserError,
+        isPending: isDeleteCognitoUserPending
+    } = useMutation({
+        mutationFn: async () => {
+            await deleteNextjsServer<void>(
+                `/api/cognito/deleteUser`,
+                {
+                    accessToken: localStorage.getItem("AccessToken")
+                },
+                getHeader()
+            );
+        }
+    });
+
     const onDeleteUserClick = async () => {
         try {
             await deleteUserAsyncAPI(userId);
         } catch (error) {
             console.error("onDeleteUserClickError");
         }
+
+        try {
+            await deleteCognitoUserAsyncAPI();
+        } catch (error) {
+            console.error("onDeleteCognitoUserClickError");
+        }
+
         router.push("/deleteUser/completion");
     };
 
@@ -46,13 +69,9 @@ export default function DeleteUser() {
     };
 
     useEffect(() => {
-        const errors = [{ isError: isDeleteUserError, error: deleteUserError }];
-
-        errors.forEach(({ isError, error }) => {
-            if (isError && error) {
-                handleErrors(JSON.parse(error.message));
-            }
-        });
+        if (isDeleteUserError && deleteUserError) {
+            handleErrors(JSON.parse(deleteUserError.message));
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isDeleteUserError, deleteUserError]);
 
@@ -65,11 +84,19 @@ export default function DeleteUser() {
                 </Title>
                 <CardDivider />
                 {hasError && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
+                {isDeleteCognitoUserError && (
+                    <DisplayErrorMessage
+                        error={{ errorCode: "COG-08", errorMessage: getErrorMessage("COG-08") }}
+                    ></DisplayErrorMessage>
+                )}
                 <Space direction="vertical" size={12} className={spaceStyle}>
                     <Text>アカウントを削除します。</Text>
                     <Text>削除したアカウントは戻せません。</Text>
                     <Row justify="end">
-                        <DeleteButton onClickAction={onDeleteUserClick} isPending={isDeleteUserPending} />
+                        <DeleteButton
+                            onClickAction={onDeleteUserClick}
+                            isPending={isDeleteUserPending || isDeleteCognitoUserPending}
+                        />
                     </Row>
                 </Space>
             </ChangeUserInfoCard>

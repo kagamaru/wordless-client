@@ -8,6 +8,7 @@ export type ErrorCode =
     | "COG-05"
     | "COG-06"
     | "COG-07"
+    | "COG-08"
     | "ERR-01"
     | "WSK-99"
     | "EMT-01"
