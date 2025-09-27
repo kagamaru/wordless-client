@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 import { GET } from "@/app/api/userSub/[userSub]/route";
 
-const userApiUrl = "https://api.mock.test/v1/users/sub/@test";
+const userApiUrl = "https://api.mock.test/v1/userSub/@test";
 
 const server = setupServer(
     http.get(userApiUrl, () => {

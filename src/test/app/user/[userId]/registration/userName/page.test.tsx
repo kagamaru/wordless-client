@@ -51,7 +51,7 @@ const server = setupServer(
             userAvatarUrl: "https://image.test/x.png"
         });
     }),
-    http.post("http://localhost:3000/api/userName/:userId", () => {
+    http.post("http://localhost:3000/api/user/:userId/userName", () => {
         mockPostUserName();
         return HttpResponse.json({});
     })

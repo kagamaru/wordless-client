@@ -18,7 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ use
     }
 
     try {
-        const response = await postWithTimeout(restApiUrl + `users/${userId}/name`, body, getHeaders(token));
+        const response = await postWithTimeout(restApiUrl + `user/${userId}/userName`, body, getHeaders(token));
 
         return NextResponse.json({}, { status: response.status });
     } catch (error) {
