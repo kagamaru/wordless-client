@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
     }
 
     try {
-        const response = await fetchWithTimeout<User>(restApiUrl + `users/${userId}`, getHeaders(token));
+        const response = await fetchWithTimeout<User>(restApiUrl + `user/${userId}`, getHeaders(token));
 
         return NextResponse.json(response.data, { status: response.status });
     } catch (error) {
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ use
 
     try {
         const response = await postWithTimeout<{ userId: string }>(
-            restApiUrl + `users/${userId}`,
+            restApiUrl + `user/${userId}`,
             body,
             getHeaders(token)
         );
@@ -56,7 +56,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ u
     }
 
     try {
-        const response = await deleteWithTimeout(restApiUrl + `users/${userId}`, undefined, getHeaders(token));
+        const response = await deleteWithTimeout(restApiUrl + `user/${userId}`, undefined, getHeaders(token));
 
         return NextResponse.json({}, { status: response.status });
     } catch (error) {

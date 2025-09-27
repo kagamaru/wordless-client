@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
     }
 
     try {
-        const response = await fetchWithTimeout<User>(restApiUrl + `users/sub/${userSub}`, getHeaders(token));
+        const response = await fetchWithTimeout<User>(restApiUrl + `userSub/${userSub}`, getHeaders(token));
 
         return NextResponse.json(response.data, { status: response.status });
     } catch (error) {

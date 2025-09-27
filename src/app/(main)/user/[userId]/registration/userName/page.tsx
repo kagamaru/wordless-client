@@ -50,7 +50,7 @@ export default function LoginSignup() {
     } = useMutation({
         mutationFn: async (userName: string) => {
             await postNextjsServer<void>(
-                `/api/userName/${userId}`,
+                `/api/user/${userId}/userName`,
                 {
                     userName
                 },

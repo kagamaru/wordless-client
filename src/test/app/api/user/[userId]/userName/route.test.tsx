@@ -3,10 +3,10 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { NextRequest, NextResponse } from "next/server";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
-import { POST } from "@/app/api/userName/[userId]/route";
+import { POST } from "@/app/api/user/[userId]/userName/route";
 import { PostUserNameRequest } from "@/@types";
 
-const userNamePostApiUrl = "https://api.mock.test/v1/users/@test/name";
+const userNamePostApiUrl = "https://api.mock.test/v1/user/@test/userName";
 
 const server = setupServer(
     http.post(userNamePostApiUrl, () => {
