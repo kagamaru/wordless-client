@@ -43,19 +43,19 @@ afterAll(() => {
     server.close();
 });
 
-const fetchUser = async (): Promise<NextResponse> => {
+const fetchUserSub = async (): Promise<NextResponse> => {
     return await GET(getRequestURL, getRequestParams);
 };
 
 describe("正常系", () => {
     test("status code 200を返す", async () => {
-        const response = await fetchUser();
+        const response = await fetchUserSub();
 
         expect(response.status).toBe(200);
     });
 
     test("ユーザー情報を返す", async () => {
-        const response = await fetchUser();
+        const response = await fetchUserSub();
         const data = await response.json();
 
         expect(data).toEqual({
@@ -74,7 +74,7 @@ describe("異常系", () => {
             })
         );
 
-        const response = await fetchUser();
+        const response = await fetchUserSub();
         const data = await response.json();
 
         expect(response.status).toBe(401);
@@ -84,28 +84,28 @@ describe("異常系", () => {
     test("パラメータが不正なとき、400を返す", async () => {
         server.use(
             http.get(userApiUrl, () => {
-                return HttpResponse.json({ error: "USE-11" }, { status: 400 });
+                return HttpResponse.json({ error: "USB-11" }, { status: 400 });
             })
         );
 
-        const response = await fetchUser();
+        const response = await fetchUserSub();
         const data = await response.json();
 
         expect(response.status).toBe(400);
-        expect(data).toEqual({ data: "USE-11" });
+        expect(data).toEqual({ data: "USB-11" });
     });
 
     test("サーバーに接続できないとき、500を返す", async () => {
         server.use(
             http.get(userApiUrl, () => {
-                return HttpResponse.json({ error: "USE-13" }, { status: 500 });
+                return HttpResponse.json({ error: "USB-13" }, { status: 500 });
             })
         );
 
-        const response = await fetchUser();
+        const response = await fetchUserSub();
         const data = await response.json();
 
         expect(response.status).toBe(500);
-        expect(data).toEqual({ data: "USE-13" });
+        expect(data).toEqual({ data: "USB-13" });
     });
 });

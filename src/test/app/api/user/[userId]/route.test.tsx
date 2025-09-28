@@ -244,6 +244,14 @@ describe("DELETE", () => {
             expect(data).toEqual({ data: "USE-91" });
         });
 
+        test.each(["@wl_nozomi", "@wl_nico"])("サンプルユーザーのとき、400を返す", async (userId) => {
+            const response = await deleteUser(userId);
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data).toEqual({ data: "USE-92" });
+        });
+
         test("サーバーに接続できないとき、500を返す", async () => {
             server.use(
                 http.delete(userApiUrl, () => {
