@@ -42,6 +42,12 @@ vi.mock("jwt-decode", () => ({
 
 const mockPostUserSuki = vi.fn();
 const server = setupServer(
+    http.get("http://localhost:3000/api/userSuki/:userId", () => {
+        return HttpResponse.json({
+            userId: "@x",
+            userSuki: []
+        });
+    }),
     http.post("http://localhost:3000/api/userSuki/:userId", () => {
         mockPostUserSuki();
         return HttpResponse.json({
@@ -64,7 +70,6 @@ beforeEach(() => {
         removeItem: vi.fn(),
         clear: vi.fn()
     });
-    rendering();
 });
 
 afterEach(() => {
@@ -96,36 +101,148 @@ const rendering = (): void => {
 
 describe("初期表示時", () => {
     test("投稿ドロワーが表示される", () => {
+        rendering();
+
         expect(screen.getByRole("dialog")).toBeTruthy();
     });
 
     describe("投稿ドロワー内に", () => {
         test("閉じるボタンが表示される", () => {
+            rendering();
+
             expect(screen.getByRole("button", { name: "Close" })).toBeTruthy();
         });
 
-        test("絵文字入力エリアが4つ表示される", () => {
-            expect(screen.getAllByRole("option", { name: "未入力絵文字1" })).toBeTruthy();
-            expect(screen.getAllByRole("option", { name: "未入力絵文字2" })).toBeTruthy();
-            expect(screen.getAllByRole("option", { name: "未入力絵文字3" })).toBeTruthy();
-            expect(screen.getAllByRole("option", { name: "未入力絵文字4" })).toBeTruthy();
-        });
-
         test("送信ボタンが表示される", () => {
+            rendering();
+
             expect(screen.getByRole("button", { name: "ユーザースキ登録ボタン" })).toBeTruthy();
         });
 
         test("絵文字検索テキストボックスが表示される", () => {
+            rendering();
+
             expect(screen.getByPlaceholderText("絵文字を検索...")).toBeTruthy();
         });
 
         test("絵文字選択タブで「プリセット」が選択されている", () => {
+            rendering();
+
             expect(screen.getByRole("tab", { name: "プリセット", selected: true })).toBeTruthy();
+        });
+
+        describe("好きな絵文字表示エリア", () => {
+            async function checkRegisteredEmoji(emoji: string, index: number) {
+                const registeredEmoji = await screen.findByRole("option", {
+                    selected: true,
+                    name: `入力済絵文字${index}`
+                });
+                expect(
+                    within(registeredEmoji).getByRole("button", {
+                        name: `${emoji}delete-button`
+                    })
+                ).toBeTruthy();
+            }
+
+            function checkUnregisteredEmojiButtonExists(index: number) {
+                expect(screen.getAllByRole("option", { name: `未入力絵文字${index}` })).toBeTruthy();
+            }
+
+            function setUpUserSukiAPI(userSuki: string[]) {
+                server.use(
+                    http.get("http://localhost:3000/api/userSuki/:userId", () => {
+                        return HttpResponse.json({ userId: "@x", userSuki });
+                    })
+                );
+            }
+
+            describe("好きな絵文字を登録していない場合", () => {
+                beforeEach(() => {
+                    setUpUserSukiAPI([]);
+                    rendering();
+                });
+
+                test("絵文字入力エリアが4つ表示される", () => {
+                    checkUnregisteredEmojiButtonExists(1);
+                    checkUnregisteredEmojiButtonExists(2);
+                    checkUnregisteredEmojiButtonExists(3);
+                    checkUnregisteredEmojiButtonExists(4);
+                });
+            });
+
+            describe("好きな絵文字を1文字登録している場合", () => {
+                beforeEach(() => {
+                    setUpUserSukiAPI([":rat:"]);
+                    rendering();
+                });
+
+                test("登録した絵文字が表示される", async () => {
+                    await checkRegisteredEmoji(":rat:", 1);
+                });
+
+                test("絵文字入力エリアが3つ表示される", () => {
+                    checkUnregisteredEmojiButtonExists(2);
+                    checkUnregisteredEmojiButtonExists(3);
+                    checkUnregisteredEmojiButtonExists(4);
+                });
+            });
+
+            describe("好きな絵文字を2文字登録している場合", () => {
+                beforeEach(() => {
+                    setUpUserSukiAPI([":rat:", ":cow:"]);
+                    rendering();
+                });
+
+                test("登録した絵文字が表示される", async () => {
+                    await checkRegisteredEmoji(":rat:", 1);
+                    await checkRegisteredEmoji(":cow:", 2);
+                });
+
+                test("絵文字入力エリアが2つ表示される", () => {
+                    checkUnregisteredEmojiButtonExists(3);
+                    checkUnregisteredEmojiButtonExists(4);
+                });
+            });
+
+            describe("好きな絵文字を3文字登録している場合", () => {
+                beforeEach(() => {
+                    setUpUserSukiAPI([":rat:", ":cow:", ":tiger:"]);
+                    rendering();
+                });
+
+                test("登録した絵文字が表示される", async () => {
+                    await checkRegisteredEmoji(":rat:", 1);
+                    await checkRegisteredEmoji(":cow:", 2);
+                    await checkRegisteredEmoji(":tiger:", 3);
+                });
+
+                test("絵文字入力エリアが1つ表示される", () => {
+                    checkUnregisteredEmojiButtonExists(4);
+                });
+            });
+
+            describe("好きな絵文字を4文字登録している場合", () => {
+                beforeEach(() => {
+                    setUpUserSukiAPI([":rat:", ":cow:", ":tiger:", ":rabbit:"]);
+                    rendering();
+                });
+
+                test("登録した絵文字が表示される", async () => {
+                    await checkRegisteredEmoji(":rat:", 1);
+                    await checkRegisteredEmoji(":cow:", 2);
+                    await checkRegisteredEmoji(":tiger:", 3);
+                    await checkRegisteredEmoji(":rabbit:", 4);
+                });
+            });
         });
     });
 });
 
 describe("絵文字検索テキストボックス入力時", () => {
+    beforeEach(() => {
+        rendering();
+    });
+
     test("絵文字検索テキストボックス入力時に英語入力時、検索結果が表示される", async () => {
         await user.type(screen.getByPlaceholderText("絵文字を検索..."), "rat");
 
@@ -283,6 +400,10 @@ describe("絵文字検索テキストボックス入力時", () => {
 });
 
 describe("絵文字クリック時", () => {
+    beforeEach(() => {
+        rendering();
+    });
+
     test.each([1, 2, 3, 4])(`絵文字を%i回クリックした時、絵文字がその数だけ表示される`, async (index) => {
         const button = screen.getByRole("button", { name: ":smiling_face:" });
 
@@ -437,6 +558,7 @@ describe("絵文字クリック時", () => {
 
 describe("送信ボタン押下時", () => {
     beforeEach(async () => {
+        rendering();
         const ratButton = screen.getByRole("button", { name: ":rat:" });
         const cowButton = screen.getByRole("button", { name: ":cow:" });
         const tigerButton = screen.getByRole("button", { name: ":tiger:" });
@@ -519,6 +641,8 @@ describe("送信ボタン押下時", () => {
 });
 
 test("×ボタン押下時、ドロワーが閉じられる", async () => {
+    rendering();
+
     await user.click(screen.getByRole("button", { name: "Close" }));
 
     await waitFor(() => {
