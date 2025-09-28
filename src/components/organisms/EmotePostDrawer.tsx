@@ -3,12 +3,12 @@
 import { Col, Drawer, Row } from "antd";
 import { useRouter } from "next/navigation";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { EmojiString, EmojiTab, PostEmojis } from "@/@types";
+import { EmojiString, EmojiTab, UserSukiEmojis } from "@/@types";
 import { Emoji as EmojiInterface } from "@/@types/Emoji";
 import { EmojiSearchTextBox, SendEmoteButton } from "@/components/atoms";
 import { PostEmoteEmojiSelectTabs, TypingEmote } from "@/components/molecules";
 import { WebSocketContext, UserInfoContext } from "@/components/template";
-import { emojiHelper, emojiSearch } from "@/helpers";
+import { emojiSearch } from "@/helpers";
 import { useIsMobile } from "@/hooks";
 import { presetEmojiMap, customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
 import { css } from "ss/css";
@@ -21,7 +21,7 @@ type Props = {
 export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState<EmojiTab>("preset");
-    const [postEmojis, setPostEmojis] = useState<PostEmojis>([undefined, undefined, undefined, undefined]);
+    const [userSukiEmojis, setUserSukiEmojis] = useState<UserSukiEmojis>([undefined, undefined, undefined, undefined]);
     const [searchedPresetEmojis, setSearchedPresetEmojis] = useState<Array<EmojiInterface>>(presetEmojiMap);
     const [searchedCustomEmojis, setSearchedCustomEmojis] = useState<Array<EmojiInterface>>(customEmojiMap);
     const [searchedMemeEmojis, setSearchedMemeEmojis] = useState<Array<EmojiInterface>>(memeEmojiMap);
@@ -30,43 +30,43 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
     const webSocketService = useContext(WebSocketContext);
     const isMobile = useIsMobile();
     const router = useRouter();
-    const hasPostEmojis = postEmojis.some((emoji) => emoji !== undefined);
+    const hasPostEmojis = userSukiEmojis.some((emoji) => emoji !== undefined);
 
     const onEmojiClick = (emojiId: EmojiString) => {
-        const pushedEmoji = emojiId ? emojiHelper(emojiId) : undefined;
+        const pushedEmoji = emojiId ?? undefined;
         if (!pushedEmoji) return;
 
-        setPostEmojis((prev) => {
-            const firstUndefinedIndex = prev.findIndex((emoji) => emoji === undefined);
-            let newEmojis: PostEmojis = [undefined, undefined, undefined, undefined];
+        setUserSukiEmojis((prev) => {
+            const firstUndefinedIndex = prev.findIndex((emojiId) => !emojiId);
+            let newEmojis: UserSukiEmojis = [undefined, undefined, undefined, undefined];
 
             if (firstUndefinedIndex !== -1) {
                 // NOTE: MAX(4つ)入力されていない時
                 // NOTE: 空き(undefined)があれば、その位置に入れる
-                newEmojis = prev.map((emoji, index) => {
+                newEmojis = prev.map((emojiId, index) => {
                     if (index === firstUndefinedIndex) {
                         return pushedEmoji;
                     }
-                    return emoji;
-                }) as PostEmojis;
+                    return emojiId;
+                }) as UserSukiEmojis;
             } else {
                 // NOTE: MAX(4つ)入力されている時
                 // NOTE: 空きがないため、最初の要素を削除し、新しい絵文字を末尾に入れる
-                newEmojis = [...prev.slice(1), pushedEmoji] as PostEmojis;
+                newEmojis = [...prev.slice(1), pushedEmoji] as UserSukiEmojis;
             }
             return newEmojis;
         });
     };
 
     const onEmojiDeleteClick = useCallback((index: number) => {
-        setPostEmojis((prev) => {
-            const newEmojis: PostEmojis = [...prev];
+        setUserSukiEmojis((prev) => {
+            const newEmojis: UserSukiEmojis = [...prev];
             newEmojis[index] = undefined;
-            const filteredEmojis: Array<EmojiInterface | undefined> = newEmojis.filter((emoji) => emoji !== undefined);
+            const filteredEmojis: Array<EmojiString | undefined> = newEmojis.filter((emojiId) => emojiId !== undefined);
             while (filteredEmojis.length < 4) {
                 filteredEmojis.push(undefined);
             }
-            return filteredEmojis as PostEmojis;
+            return filteredEmojis as UserSukiEmojis;
         });
     }, []);
 
@@ -98,16 +98,16 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
     });
 
     const onSendClick = () => {
-        if (!hasPostEmojis || !userInfo || !postEmojis[0]?.emojiId) {
+        if (!hasPostEmojis || !userInfo || !userSukiEmojis[0]) {
             return;
         }
 
         webSocketService?.onPostEmote({
             userId: userInfo.userId,
-            emoteEmoji1: postEmojis[0].emojiId,
-            emoteEmoji2: postEmojis[1]?.emojiId ?? undefined,
-            emoteEmoji3: postEmojis[2]?.emojiId ?? undefined,
-            emoteEmoji4: postEmojis[3]?.emojiId ?? undefined,
+            emoteEmoji1: userSukiEmojis[0],
+            emoteEmoji2: userSukiEmojis[1],
+            emoteEmoji3: userSukiEmojis[2],
+            emoteEmoji4: userSukiEmojis[3],
             Authorization: localStorage.getItem("IdToken") ?? ""
         });
         onCloseAction();
@@ -135,7 +135,7 @@ export function EmotePostDrawer({ isOpen, onCloseAction }: Props) {
                 <Row justify="space-between" align="middle" className="mb-4">
                     <Col span={isMobile ? 21 : 22}>
                         <Row align="middle" style={{ fontSize: isMobile ? "28px" : "56px" }} role="listbox">
-                            <TypingEmote postEmojis={postEmojis} onEmojiDeleteClick={onEmojiDeleteClick} />
+                            <TypingEmote userSukiEmojis={userSukiEmojis} onEmojiDeleteClick={onEmojiDeleteClick} />
                         </Row>
                     </Col>
                     <Col span={isMobile ? 3 : 2}>
