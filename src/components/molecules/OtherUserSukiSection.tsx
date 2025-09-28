@@ -14,6 +14,8 @@ export const OtherUserSukiSection = ({ userSukiEmojis }: Props) => {
     });
 
     const emojis = userSukiEmojis.map((emoji, index) => {
+        if (!emoji) return null;
+
         return (
             // NOTE: 本来indexをkeyに設定するのは好ましくないが
             // NOTE: ここでは入れ替えが発生しないことが保証されているため

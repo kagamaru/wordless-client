@@ -1,15 +1,15 @@
 import { Row } from "antd";
 import { EmojiWithDeleteButton } from "@/components/atoms";
 import { useIsMobile } from "@/hooks";
-import { PostEmojis } from "@/@types";
+import { UserSukiEmojis } from "@/@types";
 import { css } from "ss/css";
 
 type Props = {
-    postEmojis: PostEmojis;
+    userSukiEmojis: UserSukiEmojis;
     onEmojiDeleteClick: (index: number) => void;
 };
 
-export function TypingEmote({ postEmojis, onEmojiDeleteClick }: Props) {
+export function TypingEmote({ userSukiEmojis, onEmojiDeleteClick }: Props) {
     const isMobile = useIsMobile();
 
     const displayEmojiBlockStyle = css({
@@ -34,9 +34,9 @@ export function TypingEmote({ postEmojis, onEmojiDeleteClick }: Props) {
 
     return (
         <Row align="middle" style={{ fontSize: isMobile ? "28px" : "56px" }} role="listbox">
-            {postEmojis.map((emoji, i) => (
+            {userSukiEmojis.map((emojiId, i) => (
                 <div key={i}>
-                    {emoji ? (
+                    {emojiId ? (
                         <div
                             className={displayEmojiBlockStyle}
                             role="option"
@@ -44,7 +44,7 @@ export function TypingEmote({ postEmojis, onEmojiDeleteClick }: Props) {
                             aria-label={"入力済絵文字" + (i + 1)}
                         >
                             <EmojiWithDeleteButton
-                                emojiId={emoji.emojiId}
+                                emojiId={emojiId}
                                 size={isMobile ? 40 : 80}
                                 onDeleteClick={() => onEmojiDeleteClick(i)}
                             />

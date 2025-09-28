@@ -1,15 +1,15 @@
 "use client";
 
 import { Col, Drawer, Row } from "antd";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { EmojiString, EmojiTab, PostEmojis, PostUserSukiResponse } from "@/@types";
+import { EmojiString, EmojiTab, UserSukiEmojis, PostUserSukiResponse as UserSukiResponse } from "@/@types";
 import { Emoji as EmojiInterface } from "@/@types/Emoji";
 import { DisplayErrorMessage, EmojiSearchTextBox, PostUserSukiButton } from "@/components/atoms";
 import { PostEmoteEmojiSelectTabs, TypingEmote } from "@/components/molecules";
 import { UserInfoContext } from "@/components/template";
-import { emojiHelper, emojiSearch, getHeader, postNextjsServer } from "@/helpers";
+import { emojiSearch, fetchNextjsServer, getHeader, postNextjsServer } from "@/helpers";
 import { useError, useIsMobile } from "@/hooks";
 import { presetEmojiMap, customEmojiMap, memeEmojiMap } from "@/static/EmojiMap";
 import { css } from "ss/css";
@@ -22,12 +22,7 @@ type Props = {
 export function UserSukiPostDrawer({ isOpen, onCloseAction }: Props) {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState<EmojiTab>("preset");
-    const [postUserSukiEmojis, setPostUserSukiEmojis] = useState<PostEmojis>([
-        undefined,
-        undefined,
-        undefined,
-        undefined
-    ]);
+    const [userSukiEmojis, setUserSukiEmojis] = useState<UserSukiEmojis>([undefined, undefined, undefined, undefined]);
     const [searchedPresetEmojis, setSearchedPresetEmojis] = useState<Array<EmojiInterface>>(presetEmojiMap);
     const [searchedCustomEmojis, setSearchedCustomEmojis] = useState<Array<EmojiInterface>>(customEmojiMap);
     const [searchedMemeEmojis, setSearchedMemeEmojis] = useState<Array<EmojiInterface>>(memeEmojiMap);
@@ -38,19 +33,34 @@ export function UserSukiPostDrawer({ isOpen, onCloseAction }: Props) {
     const router = useRouter();
 
     const {
+        data: userSukiResponse,
+        isError: isUserSukiError,
+        error: userSukiError
+    } = useQuery({
+        queryKey: ["userSuki"],
+        queryFn: async () => {
+            const response = await fetchNextjsServer<UserSukiResponse>(
+                `/api/userSuki/${userInfo?.userId}`,
+                getHeader()
+            );
+            return response.data;
+        }
+    });
+
+    const {
         mutateAsync: postUserSuki,
         isPending: isPostUserSukiPending,
         isError: isPostUserSukiError,
         error: postUserSukiError
     } = useMutation({
         mutationFn: async () => {
-            await postNextjsServer<PostUserSukiResponse>(
+            await postNextjsServer<UserSukiResponse>(
                 `/api/userSuki/${userInfo?.userId}`,
                 {
-                    userSukiEmoji1: postUserSukiEmojis[0]?.emojiId,
-                    userSukiEmoji2: postUserSukiEmojis[1]?.emojiId,
-                    userSukiEmoji3: postUserSukiEmojis[2]?.emojiId,
-                    userSukiEmoji4: postUserSukiEmojis[3]?.emojiId
+                    userSukiEmoji1: userSukiEmojis[0],
+                    userSukiEmoji2: userSukiEmojis[1],
+                    userSukiEmoji3: userSukiEmojis[2],
+                    userSukiEmoji4: userSukiEmojis[3]
                 },
                 getHeader()
             );
@@ -58,40 +68,40 @@ export function UserSukiPostDrawer({ isOpen, onCloseAction }: Props) {
     });
 
     const onEmojiClick = (emojiId: EmojiString) => {
-        const pushedEmoji = emojiId ? emojiHelper(emojiId) : undefined;
+        const pushedEmoji = emojiId ?? undefined;
         if (!pushedEmoji) return;
 
-        setPostUserSukiEmojis((prev) => {
-            const firstUndefinedIndex = prev.findIndex((emoji) => emoji === undefined);
-            let newEmojis: PostEmojis = [undefined, undefined, undefined, undefined];
+        setUserSukiEmojis((prev) => {
+            const firstUndefinedIndex = prev.findIndex((emojiId) => !emojiId);
+            let newEmojis: UserSukiEmojis = [undefined, undefined, undefined, undefined];
 
             if (firstUndefinedIndex !== -1) {
                 // NOTE: MAX(4つ)入力されていない時
                 // NOTE: 空き(undefined)があれば、その位置に入れる
-                newEmojis = prev.map((emoji, index) => {
+                newEmojis = prev.map((emojiId, index) => {
                     if (index === firstUndefinedIndex) {
                         return pushedEmoji;
                     }
-                    return emoji;
-                }) as PostEmojis;
+                    return emojiId;
+                }) as UserSukiEmojis;
             } else {
                 // NOTE: MAX(4つ)入力されている時
                 // NOTE: 空きがないため、最初の要素を削除し、新しい絵文字を末尾に入れる
-                newEmojis = [...prev.slice(1), pushedEmoji] as PostEmojis;
+                newEmojis = [...prev.slice(1), pushedEmoji] as UserSukiEmojis;
             }
             return newEmojis;
         });
     };
 
     const onEmojiDeleteClick = useCallback((index: number) => {
-        setPostUserSukiEmojis((prev) => {
-            const newEmojis: PostEmojis = [...prev];
+        setUserSukiEmojis((prev) => {
+            const newEmojis: UserSukiEmojis = [...prev];
             newEmojis[index] = undefined;
-            const filteredEmojis: Array<EmojiInterface | undefined> = newEmojis.filter((emoji) => emoji !== undefined);
+            const filteredEmojis: Array<EmojiString | undefined> = newEmojis.filter((emojiId) => emojiId !== undefined);
             while (filteredEmojis.length < 4) {
                 filteredEmojis.push(undefined);
             }
-            return filteredEmojis as PostEmojis;
+            return filteredEmojis as UserSukiEmojis;
         });
     }, []);
 
@@ -139,6 +149,19 @@ export function UserSukiPostDrawer({ isOpen, onCloseAction }: Props) {
     };
 
     useEffect(() => {
+        const userSukiEmojis = userSukiResponse?.userSuki ?? [];
+        if (userSukiEmojis.length > 0) {
+            const settingUserSukiEmojis = [...userSukiEmojis];
+            while (settingUserSukiEmojis.length < 4) {
+                settingUserSukiEmojis.push(undefined);
+            }
+            setUserSukiEmojis(settingUserSukiEmojis as UserSukiEmojis);
+        } else {
+            setUserSukiEmojis([undefined, undefined, undefined, undefined]);
+        }
+    }, [userSukiResponse]);
+
+    useEffect(() => {
         if (isOpen) {
             setActiveTab("preset");
             setSearchTerm("");
@@ -153,15 +176,22 @@ export function UserSukiPostDrawer({ isOpen, onCloseAction }: Props) {
     }, [searchTerm]);
 
     useEffect(() => {
-        if (isPostUserSukiError && postUserSukiError) {
-            try {
-                handleErrors(JSON.parse(postUserSukiError.message));
-            } catch (error) {
-                console.error("Error parsing error message:", error);
+        const errors = [
+            { isError: isUserSukiError, error: userSukiError },
+            { isError: isPostUserSukiError, error: postUserSukiError }
+        ];
+
+        errors.forEach(({ isError, error }) => {
+            if (isError && error) {
+                try {
+                    handleErrors(JSON.parse(error.message));
+                } catch (error) {
+                    console.error("Error parsing error message:", error);
+                }
             }
-        }
+        });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isPostUserSukiError, postUserSukiError]);
+    }, [isPostUserSukiError, postUserSukiError, isUserSukiError, userSukiError]);
 
     return (
         <Drawer open={isOpen} closable={true} onClose={onCloseAction} placement="bottom" width={500} height="100%">
@@ -171,7 +201,7 @@ export function UserSukiPostDrawer({ isOpen, onCloseAction }: Props) {
                 <Row justify="space-between" align="middle" className="mb-4">
                     <Col span={isMobile ? 21 : 22}>
                         <Row align="middle" style={{ fontSize: isMobile ? "28px" : "56px" }} role="listbox">
-                            <TypingEmote postEmojis={postUserSukiEmojis} onEmojiDeleteClick={onEmojiDeleteClick} />
+                            <TypingEmote userSukiEmojis={userSukiEmojis} onEmojiDeleteClick={onEmojiDeleteClick} />
                         </Row>
                     </Col>
                     <Col span={isMobile ? 3 : 2}>
