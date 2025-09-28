@@ -9,5 +9,14 @@ export const userHandlers = [
             userName: "Fuga Fuga Fuga Fuga Fuga Fuga Fuga Fuga Fuga Fuga",
             userAvatarUrl: s3Url + "/userProfile/fuga_fuga.png"
         });
+    }),
+    http.post("http://localhost:3000/api/user/:userId", (context) => {
+        const { userId } = context.params;
+        return HttpResponse.json({
+            userId
+        });
+    }),
+    http.delete("http://localhost:3000/api/user/:userId", () => {
+        return HttpResponse.json({});
     })
 ];

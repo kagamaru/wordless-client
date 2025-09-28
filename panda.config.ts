@@ -28,13 +28,16 @@ export default defineConfig({
             tokens: {
                 colors: {
                     primary: { value: "#7829cc" },
+                    lightPrimary: { value: "#c59cf2" },
                     grey: { value: "#00000073" },
                     lightGrey: { value: "#c0c0c0" },
+                    superLightGrey: { value: "#e6e3e3" },
                     darkGrey: { value: "#757575" },
                     lightPurple: { value: "#ffeeff" },
                     loginPageBackground: {
                         value: "linear-gradient(135deg, rgba(220, 198, 224, 0.8), rgba(165, 180, 252, 0.8))"
-                    }
+                    },
+                    followBlue: { value: "#1677FF" }
                 }
             }
         }

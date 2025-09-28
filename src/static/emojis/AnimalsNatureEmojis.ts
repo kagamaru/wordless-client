@@ -41,7 +41,7 @@ export const animalsNatureEmojis: Array<Emoji> = [
         emojiType: EmojiType.AnimalsNature,
         emojiId: ":dog:",
         emojiJapaneseId: "犬、動物、ペット",
-        emojiChar: "🐶"
+        emojiChar: "🐕"
     },
     {
         emojiCategory: EmojiCategory.Preset,
@@ -328,7 +328,7 @@ export const animalsNatureEmojis: Array<Emoji> = [
         emojiType: EmojiType.AnimalsNature,
         emojiId: ":mouse_face:",
         emojiJapaneseId: "ネズミの顔、動物、顔",
-        emojiChar: "🐁"
+        emojiChar: "🐭"
     },
     {
         emojiCategory: EmojiCategory.Preset,
@@ -363,7 +363,7 @@ export const animalsNatureEmojis: Array<Emoji> = [
         emojiType: EmojiType.AnimalsNature,
         emojiId: ":rabbit:",
         emojiJapaneseId: "ウサギ、動物、ペット",
-        emojiChar: "🐰"
+        emojiChar: "🐇"
     },
     {
         emojiCategory: EmojiCategory.Preset,
@@ -851,27 +851,6 @@ export const animalsNatureEmojis: Array<Emoji> = [
     {
         emojiCategory: EmojiCategory.Preset,
         emojiType: EmojiType.AnimalsNature,
-        emojiId: ":cricket:",
-        emojiJapaneseId: "コオロギ、動物、虫",
-        emojiChar: "🦗"
-    },
-    {
-        emojiCategory: EmojiCategory.Preset,
-        emojiType: EmojiType.AnimalsNature,
-        emojiId: ":cockroach:",
-        emojiJapaneseId: "ゴキブリ、動物、虫",
-        emojiChar: "🪳"
-    },
-    {
-        emojiCategory: EmojiCategory.Preset,
-        emojiType: EmojiType.AnimalsNature,
-        emojiId: ":spider:",
-        emojiJapaneseId: "クモ、動物、虫",
-        emojiChar: "🕷️"
-    },
-    {
-        emojiCategory: EmojiCategory.Preset,
-        emojiType: EmojiType.AnimalsNature,
         emojiId: ":spider_web:",
         emojiJapaneseId: "クモの巣、動物、虫",
         emojiChar: "🕸️"
@@ -882,20 +861,6 @@ export const animalsNatureEmojis: Array<Emoji> = [
         emojiId: ":scorpion:",
         emojiJapaneseId: "サソリ、動物、虫、蠍座",
         emojiChar: "🦂"
-    },
-    {
-        emojiCategory: EmojiCategory.Preset,
-        emojiType: EmojiType.AnimalsNature,
-        emojiId: ":mosquito:",
-        emojiJapaneseId: "蚊、動物、虫",
-        emojiChar: "🦟"
-    },
-    {
-        emojiCategory: EmojiCategory.Preset,
-        emojiType: EmojiType.AnimalsNature,
-        emojiId: ":fly:",
-        emojiJapaneseId: "ハエ、動物、虫",
-        emojiChar: "🪰"
     },
     {
         emojiCategory: EmojiCategory.Preset,

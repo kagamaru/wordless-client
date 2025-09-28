@@ -258,6 +258,12 @@ export const customEmojis: Array<Emoji> = [
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
+        emojiId: ":suki:",
+        emojiJapaneseId: "スキ"
+    },
+    {
+        emojiCategory: EmojiCategory.Custom,
+        emojiType: EmojiType.Custom,
         emojiId: ":big_love:",
         emojiJapaneseId: "BIG LOVE"
     },
@@ -278,7 +284,7 @@ export const customEmojis: Array<Emoji> = [
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":just_smile:",
-        emojiJapaneseId: "笑えばいいと思うよ"
+        emojiJapaneseId: "笑って"
     },
     {
         emojiCategory: EmojiCategory.Custom,
@@ -296,7 +302,7 @@ export const customEmojis: Array<Emoji> = [
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
         emojiId: ":mormantai:",
-        emojiJapaneseId: "無問題ラ"
+        emojiJapaneseId: "モーマンタイ"
     },
     {
         emojiCategory: EmojiCategory.Custom,
@@ -313,8 +319,8 @@ export const customEmojis: Array<Emoji> = [
     {
         emojiCategory: EmojiCategory.Custom,
         emojiType: EmojiType.Custom,
-        emojiId: ":ice_cream_than_chocolate_mint:",
-        emojiJapaneseId: "チョコミントよりも"
+        emojiId: ":chocolate_mint:",
+        emojiJapaneseId: "チョコミント"
     },
     // NOTE: 都道府県
     {

@@ -11,7 +11,9 @@ type Props = {
 };
 
 const EmojiComponent = ({ emojiId, size }: Props) => {
-    const returnedEmoji = emojiHelper(emojiId);
+    const returnedEmoji = emojiId ? emojiHelper(emojiId) : undefined;
+    if (!returnedEmoji) return null;
+
     const presetEmojiStyle = css({
         fontSize: `${size.toString()}px !important`
     });
@@ -28,10 +30,12 @@ const EmojiComponent = ({ emojiId, size }: Props) => {
         return (
             <Image
                 src={returnedEmoji.url ?? ""}
+                aria-label={returnedEmoji.emojiId}
                 title={returnedEmoji.emojiJapaneseId}
                 alt={imageAlt}
                 width={size}
                 height={size}
+                unoptimized={returnedEmoji.url?.includes(".gif") ?? false}
             />
         );
     }

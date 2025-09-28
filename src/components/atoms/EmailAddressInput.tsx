@@ -6,7 +6,7 @@ export function EmailAddressInput() {
     return (
         <Form.Item
             label="Eメール"
-            name="emailAddress"
+            name="email"
             rules={[
                 { required: true, message: "Eメールを入力してください" },
                 { type: "email", message: "有効なEメールを入力してください" }

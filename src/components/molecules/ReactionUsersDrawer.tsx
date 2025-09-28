@@ -5,7 +5,7 @@ import { Drawer, Avatar, Row, Typography } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { EmojiString, EmoteReactionEmojiWithNumber, User } from "@/@types";
 import { CloseButton, DisplayErrorMessageWithoutErrorCode, Emoji } from "@/components/atoms";
-import { fetchNextjsServer } from "@/helpers";
+import { fetchNextjsServer, getHeader } from "@/helpers";
 import { css } from "ss/css";
 
 type Props = {
@@ -34,18 +34,11 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
                 return new Map<EmojiString, User[]>();
             }
 
-            const token = localStorage.getItem("IdToken") ?? "";
-
             const allPromises: Promise<[EmojiString, User] | ["hasError", Error]>[] = [];
 
             for (const emoteReactionEmoji of emoteReactionEmojis) {
                 for (const userId of emoteReactionEmoji.reactedUserIds) {
-                    const promise = fetchNextjsServer<User>(`/api/user/${userId}`, {
-                        headers: {
-                            authorization: token,
-                            "Content-Type": "application/json"
-                        }
-                    })
+                    const promise = fetchNextjsServer<User>(`/api/user/${userId}`, getHeader())
                         .then(async (response) => {
                             const user = response.data;
                             // NOTE： タプルであると明示する
@@ -83,8 +76,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
 
             return userReactionMap;
         },
-        enabled: isOpen,
-        retry: 0
+        enabled: isOpen
     });
 
     useEffect(() => {
@@ -163,7 +155,7 @@ export function ReactionUsersDrawer({ isOpen, emoteReactionEmojis, setIsOpenActi
                                                     {users.map((user) => (
                                                         <a
                                                             key={user.userId}
-                                                            href={`/users/${user.userId}`}
+                                                            href={`/user/${user.userId}`}
                                                             className={userItemStyle}
                                                         >
                                                             <Avatar src={user.userAvatarUrl} size={48} />

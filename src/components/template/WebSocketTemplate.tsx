@@ -10,12 +10,16 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const refWebSocketService = useRef<WebSocketService | null>(null);
     const { handleErrors } = useError();
     const [isReady, setIsReady] = useState(false);
+    const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
 
     useEffect(() => {
         const url = process.env.NEXT_PUBLIC_WEBSOCKET_URL + "?Authorization=" + localStorage.getItem("IdToken");
-        refWebSocketService.current = new WebSocketService(url, handleErrors);
-        setIsReady(true);
-    }, []);
+        if (!isWebSocketConnected) {
+            refWebSocketService.current = new WebSocketService(url, handleErrors);
+            setIsWebSocketConnected(true);
+            setIsReady(true);
+        }
+    }, [handleErrors, isWebSocketConnected]);
 
     if (!isReady || !refWebSocketService.current) return null;
 

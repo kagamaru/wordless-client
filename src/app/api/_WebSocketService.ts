@@ -1,4 +1,11 @@
-import { APIResponse, ErrorCode, OnReactIncomingMessage, ReactRequest } from "@/@types";
+import {
+    APIResponse,
+    ErrorCode,
+    OnPostEmoteIncomingMessage,
+    OnReactIncomingMessage,
+    PostEmoteRequest,
+    ReactRequest
+} from "@/@types";
 import { useEmoteStore } from "@/store";
 
 export class WebSocketService {
@@ -21,11 +28,21 @@ export class WebSocketService {
         };
 
         this.socket.onmessage = (event: MessageEvent) => {
+            let data;
             try {
-                const data = JSON.parse(event.data) as OnReactIncomingMessage;
-                useEmoteStore.getState().updateEmoteReactionEmojis(data);
+                data = JSON.parse(event.data);
             } catch {
-                console.error("Invalid message received:", event.data);
+                return;
+            }
+
+            const actionName: "onReact" | "onPostEmote" = data.action;
+
+            if (actionName === "onReact") {
+                const onReactIncomingMessageData = data as OnReactIncomingMessage;
+                useEmoteStore.getState().updateEmoteReactionEmojis(onReactIncomingMessageData);
+            } else if (actionName === "onPostEmote") {
+                const onPostEmoteIncomingMessageData = data as OnPostEmoteIncomingMessage;
+                useEmoteStore.getState().addEmote(onPostEmoteIncomingMessageData.emote);
             }
         };
 
@@ -41,6 +58,14 @@ export class WebSocketService {
     public onReact(request: ReactRequest): void {
         if (this.socket.readyState === WebSocket.OPEN) {
             this.socket.send(JSON.stringify({ action: "onReact", ...request }));
+        } else {
+            console.warn("WebSocket is not open. Message not sent.");
+        }
+    }
+
+    public onPostEmote(request: PostEmoteRequest): void {
+        if (this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify({ action: "onPostEmote", ...request }));
         } else {
             console.warn("WebSocket is not open. Message not sent.");
         }

@@ -1,6 +1,12 @@
+import dayjs from "dayjs";
 import { ws } from "msw";
+import { Emote } from "@/class";
 
 const websocket = ws.link(process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? "");
+const s3Url = process.env.NEXT_PUBLIC_S3_URL ?? "";
+let emoteId = 100;
+
+dayjs.locale("ja");
 
 export const websocketHandlers = [
     websocket.addEventListener("connection", ({ client }) => {
@@ -20,6 +26,38 @@ export const websocketHandlers = [
                             }
                         ],
                         totalNumberOfReactions: data.operation === "increment" ? 1 : 0
+                    })
+                );
+            } else if (data.action === "onPostEmote") {
+                const formattedEmoteId = (emoteId++).toString();
+                websocket.broadcast(
+                    JSON.stringify({
+                        action: "onPostEmote",
+                        emote: new Emote({
+                            sequenceNumber: 11,
+                            emoteId: formattedEmoteId,
+                            userName: "Hoge_Hoge",
+                            userId: data.userId,
+                            emoteDatetime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                            emoteReactionId: "emoteReactionId" + formattedEmoteId,
+                            emoteEmojis: [
+                                {
+                                    emojiId: data.emoteEmoji1
+                                },
+                                {
+                                    emojiId: data.emoteEmoji2
+                                },
+                                {
+                                    emojiId: data.emoteEmoji3
+                                },
+                                {
+                                    emojiId: data.emoteEmoji4
+                                }
+                            ],
+                            userAvatarUrl: s3Url + "/userProfile/fuga_fuga.png",
+                            emoteReactionEmojis: [],
+                            totalNumberOfReactions: 0
+                        })
                     })
                 );
             }

@@ -1,13 +1,15 @@
+// @vitest-environment node
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { NextRequest, NextResponse } from "next/server";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 import { GET } from "@/app/api/emote/route";
-
-const emoteApiUrl = "https://api.mock.test/v1/emotes";
+import { DELETE } from "@/app/api/emote/[emoteId]/route";
+const fetchEmotesApiUrl = "https://api.mock.test/v1/emotes";
+const deleteEmoteApiUrl = "https://api.mock.test/v1/emote/a";
 
 const server = setupServer(
-    http.get(emoteApiUrl, () => {
+    http.get(fetchEmotesApiUrl, () => {
         return HttpResponse.json({
             emotes: [
                 {
@@ -119,6 +121,9 @@ const server = setupServer(
                 }
             ]
         });
+    }),
+    http.delete(deleteEmoteApiUrl, () => {
+        return HttpResponse.json({});
     })
 );
 
@@ -134,63 +139,160 @@ afterAll(() => {
     server.close();
 });
 
-const fetchEmotes = async (): Promise<NextResponse> => {
-    return await GET(new NextRequest(emoteApiUrl));
+const getRequestParams = {
+    params: new Promise<{ emoteId: string }>((resolve) => {
+        resolve({
+            emoteId: "a"
+        });
+    })
 };
 
-describe("正常系", () => {
-    test("status code 200を返す", async () => {
-        const response = await fetchEmotes();
+const fetchEmotes = async (token?: string): Promise<NextResponse> => {
+    return await GET(
+        new NextRequest(fetchEmotesApiUrl, {
+            headers: {
+                authorization: token ?? ""
+            }
+        })
+    );
+};
 
-        expect(response.status).toBe(200);
+const deleteEmote = async (token?: string): Promise<NextResponse> => {
+    return await DELETE(
+        new NextRequest(deleteEmoteApiUrl, {
+            headers: {
+                authorization: token ?? ""
+            },
+            method: "DELETE",
+            body: JSON.stringify({ userId: "@a" })
+        }),
+        getRequestParams
+    );
+};
+
+describe("GET", () => {
+    describe("正常系", () => {
+        test("status code 200を返す", async () => {
+            const response = await fetchEmotes("test-token");
+
+            expect(response.status).toBe(200);
+        });
+
+        test("emotesを返す", async () => {
+            const response = await fetchEmotes("test-token");
+            const data = await response.json();
+
+            expect(data.emotes.length).toBe(4);
+        });
     });
 
-    test("emotesを返す", async () => {
-        const response = await fetchEmotes();
-        const data = await response.json();
+    describe("異常系", () => {
+        test.each(["", undefined])("トークンが無い時、401を返す", async (token) => {
+            const response = await fetchEmotes(token);
+            const data = await response.json();
 
-        expect(data.emotes.length).toBe(4);
+            expect(response.status).toBe(401);
+            expect(data).toEqual({ data: "AUN-99" });
+        });
+
+        test("認証に失敗したとき、401を返す", async () => {
+            server.use(
+                http.get(fetchEmotesApiUrl, () => {
+                    return HttpResponse.json({ error: "AUN-99" }, { status: 401 });
+                })
+            );
+            const response = await fetchEmotes("test-token");
+            const data = await response.json();
+
+            expect(response.status).toBe(401);
+            expect(data).toEqual({ data: "AUN-99" });
+        });
+
+        test("パラメータが不正なとき、400を返す", async () => {
+            server.use(
+                http.get(fetchEmotesApiUrl, () => {
+                    return HttpResponse.json({ error: "EMT-01" }, { status: 400 });
+                })
+            );
+            const response = await fetchEmotes("test-token");
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data).toEqual({ data: "EMT-01" });
+        });
+
+        test("サーバーに接続できないとき、500を返す", async () => {
+            server.use(
+                http.get(fetchEmotesApiUrl, () => {
+                    return HttpResponse.json({ error: "EMT-05" }, { status: 500 });
+                })
+            );
+
+            const response = await fetchEmotes("test-token");
+            const data = await response.json();
+
+            expect(response.status).toBe(500);
+            expect(data).toEqual({ data: "EMT-05" });
+        });
     });
 });
 
-describe("異常系", () => {
-    test("認証に失敗したとき、401を返す", async () => {
-        server.use(
-            http.get(emoteApiUrl, () => {
-                return HttpResponse.json({ error: "AUN-99" }, { status: 401 });
-            })
-        );
-        const response = await fetchEmotes();
-        const data = await response.json();
+describe("DELETE", () => {
+    describe("正常系", () => {
+        test("status code 200を返す", async () => {
+            const response = await deleteEmote("test-token");
 
-        expect(response.status).toBe(401);
-        expect(data).toEqual({ data: "AUN-99" });
+            expect(response.status).toBe(200);
+        });
     });
 
-    test("パラメータが不正なとき、400を返す", async () => {
-        server.use(
-            http.get(emoteApiUrl, () => {
-                return HttpResponse.json({ error: "EMT-01" }, { status: 400 });
-            })
-        );
-        const response = await fetchEmotes();
-        const data = await response.json();
+    describe("異常系", () => {
+        test.each(["", undefined])("トークンが無い時、401を返す", async (token) => {
+            const response = await deleteEmote(token);
+            const data = await response.json();
 
-        expect(response.status).toBe(400);
-        expect(data).toEqual({ data: "EMT-01" });
-    });
+            expect(response.status).toBe(401);
+            expect(data).toEqual({ data: "AUN-99" });
+        });
 
-    test("サーバーに接続できないとき、500を返す", async () => {
-        server.use(
-            http.get(emoteApiUrl, () => {
-                return HttpResponse.json({ error: "EMT-05" }, { status: 500 });
-            })
-        );
+        test("認証に失敗したとき、401を返す", async () => {
+            server.use(
+                http.delete(deleteEmoteApiUrl, () => {
+                    return HttpResponse.json({ error: "AUN-99" }, { status: 401 });
+                })
+            );
+            const response = await deleteEmote("test-token");
+            const data = await response.json();
 
-        const response = await fetchEmotes();
-        const data = await response.json();
+            expect(response.status).toBe(401);
+            expect(data).toEqual({ data: "AUN-99" });
+        });
 
-        expect(response.status).toBe(500);
-        expect(data).toEqual({ data: "EMT-05" });
+        test("パラメータが不正なとき、400を返す", async () => {
+            server.use(
+                http.delete(deleteEmoteApiUrl, () => {
+                    return HttpResponse.json({ error: "EMT-01" }, { status: 400 });
+                })
+            );
+            const response = await deleteEmote("test-token");
+            const data = await response.json();
+
+            expect(response.status).toBe(400);
+            expect(data).toEqual({ data: "EMT-01" });
+        });
+
+        test("サーバーに接続できないとき、500を返す", async () => {
+            server.use(
+                http.delete(deleteEmoteApiUrl, () => {
+                    return HttpResponse.json({ error: "EMT-05" }, { status: 500 });
+                })
+            );
+
+            const response = await deleteEmote("test-token");
+            const data = await response.json();
+
+            expect(response.status).toBe(500);
+            expect(data).toEqual({ data: "EMT-05" });
+        });
     });
 });

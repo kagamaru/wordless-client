@@ -16,8 +16,8 @@ export function EmojiButton({ emojiId, size, onClickAction }: Props) {
     });
 
     return (
-        <span className={emojiButtonStyle} onClick={() => onClickAction(emojiId)}>
+        <button className={emojiButtonStyle} aria-label={emojiId} onClick={() => onClickAction(emojiId)}>
             <Emoji emojiId={emojiId} size={size} />
-        </span>
+        </button>
     );
 }
