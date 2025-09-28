@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteWithTimeout, fetchWithTimeout, getHeaders, handleAPIError, postWithTimeout } from "@/helpers";
 import { PostUserNameRequest as PostUserRequest, User } from "@/@types";
+import { BLACKLISTED } from "@/static/blackListIds";
 
 const restApiUrl = process.env.REST_API_URL ?? "";
 
@@ -53,6 +54,10 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ u
 
     if (!userId || !token) {
         return NextResponse.json({ data: "USE-91" }, { status: 400 });
+    }
+
+    if (BLACKLISTED.has(userId)) {
+        return NextResponse.json({ data: "USE-92" }, { status: 400 });
     }
 
     try {
