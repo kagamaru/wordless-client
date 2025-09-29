@@ -1,8 +1,10 @@
 import { CognitoIdentityProviderClient } from "@aws-sdk/client-cognito-identity-provider";
 
 export const getCognitoProviderClient = () => {
-    console.log("process.env.REGION_AWS", process.env.REGION_AWS);
+    if (!process.env.REGION_AWS) {
+        throw new Error("REGION_AWS is not set");
+    }
     return new CognitoIdentityProviderClient({
-        region: "us-west-2"
+        region: process.env.REGION_AWS
     });
 };
