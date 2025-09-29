@@ -7,6 +7,9 @@ frontend:
         - pnpm install
     build:
       commands:
+        - echo "REGION_AWS=$REGION_AWS" >> .env
+        - echo "COGNITO_CLIENT_ID=$COGNITO_CLIENT_ID" >> .env
+        - echo "REST_API_URL=$REST_API_URL" >> .env
         - pnpm run build
   artifacts:
     baseDirectory: .next
@@ -16,8 +19,3 @@ frontend:
     paths:
       - .next/cache/**/*
       - node_modules/**/*
-  environment:
-    variables:
-      - REST_API_URL: ${REST_API_URL}
-      - REGION_AWS: ${REGION_AWS}
-      - COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
