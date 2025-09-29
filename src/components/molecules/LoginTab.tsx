@@ -104,9 +104,9 @@ export function LoginTab() {
                 <PasswordInput />
                 <BaseButton label="ログイン" loading={false} />
                 <LinkButton label="パスワードを忘れた場合" routerPath="/auth/forgetPassword/emailInput" />
-                <SampleLoginButton sampleUserName="Nozomi" onClickAction={() => onSampleLoginClick("Nozomi")} />
-                <SampleLoginButton sampleUserName="Nico" onClickAction={() => onSampleLoginClick("Nico")} />
             </Form>
+            <SampleLoginButton sampleUserName="Nozomi" onClickAction={() => onSampleLoginClick("Nozomi")} />
+            <SampleLoginButton sampleUserName="Nico" onClickAction={() => onSampleLoginClick("Nico")} />
         </>
     );
 }
