@@ -16,3 +16,8 @@ frontend:
     paths:
       - .next/cache/**/*
       - node_modules/**/*
+  environment:
+    variables:
+      - REST_API_URL: ${REST_API_URL}
+      - REGION_AWS: ${REGION_AWS}
+      - COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
