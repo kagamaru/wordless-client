@@ -1,6 +1,6 @@
 const envConfigMap = new Map();
 envConfigMap.set("NEXT_PUBLIC_WEBSOCKET_URL", process.env.NEXT_PUBLIC_WEBSOCKET_URL);
-envConfigMap.set("NEXT_PUBLIC_S3_URL", process.env.NEXT_PUBLIC_S3_URL);
+envConfigMap.set("NEXT_PUBLIC_CLOUDFRONT_URL", process.env.NEXT_PUBLIC_CLOUDFRONT_URL);
 envConfigMap.set("NEXT_PUBLIC_API_MOCKING", process.env.NEXT_PUBLIC_API_MOCKING);
 envConfigMap.set("REST_API_URL", process.env.REST_API_URL);
 envConfigMap.set("REGION_AWS", process.env.REGION_AWS);

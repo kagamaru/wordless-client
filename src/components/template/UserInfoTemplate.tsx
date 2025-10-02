@@ -12,7 +12,7 @@ type UserInfoContextType = {
 
 export const UserInfoContext = createContext<UserInfoContextType | undefined>(undefined);
 
-const s3Url = envConfigMap.get("NEXT_PUBLIC_S3_URL");
+const s3Url = envConfigMap.get("NEXT_PUBLIC_CLOUDFRONT_URL");
 
 export function UserInfoTemplate({
     children

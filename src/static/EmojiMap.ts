@@ -24,11 +24,11 @@ export const presetEmojiMap: Array<Emoji> = [
     ...symbolsEmojis
 ];
 
-const s3Url = envConfigMap.get("NEXT_PUBLIC_S3_URL");
+const cloudfrontUrl = envConfigMap.get("NEXT_PUBLIC_CLOUDFRONT_URL");
 export const customEmojiMap: Array<Emoji> = [
     ...customEmojis.map((emoji) => ({
         ...emoji,
-        url: `${s3Url}/custom/${emoji.emojiId.replaceAll(":", "")}.png`
+        url: `${cloudfrontUrl}/custom/${emoji.emojiId.replaceAll(":", "")}.png`
     }))
 ];
 
