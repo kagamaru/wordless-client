@@ -11,11 +11,12 @@ import {
     SampleLoginButton
 } from "@/components/atoms";
 import { getErrorMessage, postWithTimeout } from "@/helpers";
+import envConfigMap from "envConfig";
 
-const sampleUserNozomiMailAddress = process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS;
-const sampleUserNozomiPassword = process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_PASSWORD;
-const sampleUserNicoMailAddress = process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS;
-const sampleUserNicoPassword = process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_PASSWORD;
+const sampleUserNozomiMailAddress = envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS");
+const sampleUserNozomiPassword = envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NOZOMI_PASSWORD");
+const sampleUserNicoMailAddress = envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS");
+const sampleUserNicoPassword = envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NICO_PASSWORD");
 
 if (
     !sampleUserNozomiMailAddress ||

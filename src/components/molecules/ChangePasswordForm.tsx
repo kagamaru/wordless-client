@@ -4,14 +4,15 @@ import { useRouter } from "next/navigation";
 import { BaseButton, DisplayErrorMessage, PasswordInput } from "@/components/atoms";
 import { getErrorMessage, getHeader, postNextjsServer } from "@/helpers";
 import { useParamUserId } from "@/hooks";
+import envConfigMap from "envConfig";
 
 export const ChangePasswordForm = () => {
     const [form] = Form.useForm();
     const router = useRouter();
     const userId = useParamUserId();
     const isSampleUser =
-        userId === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_ID ||
-        userId === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_USER_ID;
+        userId === envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_ID") ||
+        userId === envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NICO_USER_ID");
 
     const {
         mutateAsync: postChangePasswordAsyncAPI,

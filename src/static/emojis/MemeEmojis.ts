@@ -1,7 +1,8 @@
 import { Emoji } from "@/@types";
 import { EmojiCategory, EmojiType } from "@/@types/Emoji";
+import envConfigMap from "envConfig";
 
-const S3_URL = process.env.NEXT_PUBLIC_S3_URL;
+const S3_URL = envConfigMap.get("NEXT_PUBLIC_S3_URL");
 
 export const memeEmojis: Array<Emoji> = [
     {

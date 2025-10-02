@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteWithTimeout, getHeaders, handleAPIError } from "@/helpers";
+import envConfigMap from "envConfig";
 
-const restApiUrl = process.env.REST_API_URL ?? "";
+const restApiUrl = envConfigMap.get("REST_API_URL");
 
 export async function DELETE(
     req: NextRequest,

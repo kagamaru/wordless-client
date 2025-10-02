@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchWithTimeout, getHeaders, handleAPIError, postWithTimeout } from "@/helpers";
 import { PostUserSukiRequest, PostUserSukiResponse, User } from "@/@types";
+import { fetchWithTimeout, getHeaders, handleAPIError, postWithTimeout } from "@/helpers";
+import envConfigMap from "envConfig";
 
-const restApiUrl = process.env.REST_API_URL ?? "";
+const restApiUrl = envConfigMap.get("REST_API_URL");
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params;

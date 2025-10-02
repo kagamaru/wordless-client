@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FetchEmotesResponse } from "@/class";
 import { fetchWithTimeout, getHeaders, handleAPIError } from "@/helpers";
+import envConfigMap from "envConfig";
 
-const restApiUrl = process.env.REST_API_URL ?? "";
+const restApiUrl = envConfigMap.get("REST_API_URL");
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
     const { searchParams } = new URL(req.url);

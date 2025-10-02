@@ -1,10 +1,11 @@
 import { ForgotPasswordCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { NextRequest, NextResponse } from "next/server";
 import { getCognitoProviderClient } from "@/app/api/cognito/getCognitoProviderClient";
+import envConfigMap from "envConfig";
 
-const cognitoClientId = process.env.COGNITO_CLIENT_ID as string;
-const sampleUserEmailNozomi = process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS as string;
-const sampleUserEmailNico = process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS as string;
+const cognitoClientId = envConfigMap.get("COGNITO_CLIENT_ID");
+const sampleUserEmailNozomi = envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS");
+const sampleUserEmailNico = envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS");
 
 export async function POST(req: NextRequest) {
     const client = getCognitoProviderClient();
