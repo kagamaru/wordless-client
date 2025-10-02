@@ -3,6 +3,7 @@
 import { createContext, useEffect, useRef, useState } from "react";
 import { useError } from "@/hooks";
 import { WebSocketService } from "@/app/api/_WebSocketService";
+import envConfigMap from "envConfig";
 
 export const WebSocketContext = createContext<WebSocketService | null>(null);
 
@@ -13,7 +14,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
 
     useEffect(() => {
-        const url = process.env.NEXT_PUBLIC_WEBSOCKET_URL + "?Authorization=" + localStorage.getItem("IdToken");
+        const url = envConfigMap.get("NEXT_PUBLIC_WEBSOCKET_URL") + "?Authorization=" + localStorage.getItem("IdToken");
         if (!isWebSocketConnected) {
             refWebSocketService.current = new WebSocketService(url, handleErrors);
             setIsWebSocketConnected(true);

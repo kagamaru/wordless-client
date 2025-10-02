@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getHeaders, handleAPIError, postWithTimeout } from "@/helpers";
 import { BLACKLISTED } from "@/static/blackListIds";
+import envConfigMap from "envConfig";
 
-const restApiUrl = process.env.REST_API_URL ?? "";
+const restApiUrl = envConfigMap.get("REST_API_URL");
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params;

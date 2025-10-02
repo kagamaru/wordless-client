@@ -10,6 +10,8 @@ import { objectsEmojis } from "./emojis/ObjectsEmojis";
 import { activitiesEmojis } from "./emojis/ActivitiesEmojis";
 import { flagsEmojis } from "./emojis/FlagsEmojis";
 import { symbolsEmojis } from "./emojis/SymbolsEmoji";
+import envConfigMap from "envConfig";
+
 export const presetEmojiMap: Array<Emoji> = [
     ...smileysEmotionEmojis,
     ...peopleBodyEmojis,
@@ -22,7 +24,7 @@ export const presetEmojiMap: Array<Emoji> = [
     ...symbolsEmojis
 ];
 
-const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+const s3Url = envConfigMap.get("NEXT_PUBLIC_S3_URL");
 export const customEmojiMap: Array<Emoji> = [
     ...customEmojis.map((emoji) => ({
         ...emoji,

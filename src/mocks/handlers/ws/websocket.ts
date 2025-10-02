@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
 import { ws } from "msw";
 import { Emote } from "@/class";
+import envConfigMap from "envConfig";
 
-const websocket = ws.link(process.env.NEXT_PUBLIC_WEBSOCKET_URL ?? "");
-const s3Url = process.env.NEXT_PUBLIC_S3_URL ?? "";
+const websocket = ws.link(envConfigMap.get("NEXT_PUBLIC_WEBSOCKET_URL") ?? "");
+const s3Url = envConfigMap.get("NEXT_PUBLIC_S3_URL");
 let emoteId = 100;
 
 dayjs.locale("ja");

@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { deleteWithTimeout, fetchWithTimeout, getHeaders, handleAPIError, postWithTimeout } from "@/helpers";
 import { PostUserNameRequest as PostUserRequest, User } from "@/@types";
 import { BLACKLISTED } from "@/static/blackListIds";
+import envConfigMap from "envConfig";
 
-const restApiUrl = process.env.REST_API_URL ?? "";
+const restApiUrl = envConfigMap.get("REST_API_URL");
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params;

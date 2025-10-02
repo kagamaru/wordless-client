@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfigProvider } from "antd";
 import { createContext, Dispatch, SetStateAction, useState } from "react";
 import { useMock } from "@/hooks";
+import envConfigMap from "envConfig";
 
 interface AuthContextType {
     token: string;
@@ -26,7 +27,7 @@ export function ProviderTemplate({
     });
     const [token, setToken] = useState("");
     const isMockReady = useMock();
-    const isMockEnabled = process.env.NEXT_PUBLIC_API_MOCKING === "enabled";
+    const isMockEnabled = envConfigMap.get("NEXT_PUBLIC_API_MOCKING") === "enabled";
 
     const renderProvider = () => (
         <AuthContext.Provider value={{ token, setToken }}>
