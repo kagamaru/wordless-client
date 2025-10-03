@@ -3,6 +3,7 @@ import "@/layouts/font.css";
 import "@/layouts/spacing.css";
 import type { Metadata } from "next";
 import { ProviderTemplate } from "@/components/template";
+import favicon from "@/public/favicon.ico";
 
 export const metadata: Metadata = {
     title: "Wordless",
@@ -21,6 +22,9 @@ export const metadata: Metadata = {
         siteName: "Wordless",
         locale: "ja",
         type: "website"
+    },
+    icons: {
+        icon: favicon.src
     }
 };
 
