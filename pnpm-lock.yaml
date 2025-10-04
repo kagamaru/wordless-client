@@ -85,7 +85,7 @@ importers:
         specifier: 3.0.8
         version: 3.0.8(vitest@3.0.8(@types/node@20.17.9)(jsdom@26.0.0)(less@4.2.1)(lightningcss@1.25.1)(msw@2.7.3(@types/node@20.17.9)(typescript@5.7.2)))
       eslint:
-        specifier: ^8
+        specifier: ^8.57.1
         version: 8.57.1
       eslint-config-next:
         specifier: 15.0.4
