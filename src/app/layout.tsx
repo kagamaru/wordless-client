@@ -3,7 +3,6 @@ import "@/layouts/font.css";
 import "@/layouts/spacing.css";
 import type { Metadata } from "next";
 import { ProviderTemplate } from "@/components/template";
-import favicon from "@/public/favicon.ico";
 
 export const metadata: Metadata = {
     title: "Wordless",
@@ -24,7 +23,13 @@ export const metadata: Metadata = {
         type: "website"
     },
     icons: {
-        icon: favicon.src
+        icon: [
+            { url: "/favicon.ico" },
+            { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+            { url: "/favicon-16.png", sizes: "16x16", type: "image/png" }
+        ],
+        apple: "/apple-touch-icon.png",
+        shortcut: "/favicon.ico"
     }
 };
 
