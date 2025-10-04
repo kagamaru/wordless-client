@@ -11,6 +11,7 @@ import {
     LockOutlined
 } from "@ant-design/icons";
 import { User } from "@/@types";
+import envConfigMap from "envConfig";
 import { css } from "ss/css";
 
 const { Title, Text } = Typography;
@@ -24,8 +25,8 @@ type Props = {
 export const MenuDrawer: React.FC<Props> = ({ open, onClose, user }) => {
     const router = useRouter();
     const isSampleUser =
-        user.userId === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_ID ||
-        user.userId === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_USER_ID;
+        user.userId === envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_ID") ||
+        user.userId === envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NICO_USER_ID");
 
     const closeIconStyle = css({
         fontSize: "24px",

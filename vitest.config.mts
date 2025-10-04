@@ -8,7 +8,7 @@ export default defineConfig({
         environment: "jsdom",
         env: {
             NEXT_PUBLIC_WEBSOCKET_URL: "wss://mock.test/ws/",
-            NEXT_PUBLIC_S3_URL: "https://mock-bucket.test/assets/",
+            NEXT_PUBLIC_CLOUDFRONT_URL: "https://mock-bucket.test/assets/",
             NEXT_PUBLIC_API_MOCKING: "disabled",
             REST_API_URL: "https://api.mock.test/v1/",
             REGION_AWS: "us-west-2",

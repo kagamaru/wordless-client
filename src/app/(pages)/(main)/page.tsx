@@ -85,7 +85,7 @@ export default function Home() {
     return (
         <>
             {(isError || isFetchingMoreEmotesError) && <DisplayErrorMessage error={handledError}></DisplayErrorMessage>}
-            {isPending && <LoadingSpin />}
+            {isPending && !hasEmoteSet && <LoadingSpin />}
             {emotes && <WordlessEmotes emotes={emotes}></WordlessEmotes>}
             {!isPending && (
                 <EndOfEmotes

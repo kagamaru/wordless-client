@@ -14,6 +14,7 @@ import {
 } from "@/components/atoms";
 import { CardPageTemplate } from "@/components/template";
 import { getErrorMessage, getHeader, postNextjsServer } from "@/helpers";
+import envConfigMap from "envConfig";
 
 const { Title, Text } = Typography;
 
@@ -38,8 +39,8 @@ export default function NewPasswordInputPage() {
             const { email, confirmationCode, newPassword } = values;
 
             if (
-                email === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS ||
-                email === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS
+                email === envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NOZOMI_MAIL_ADDRESS") ||
+                email === envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NICO_MAIL_ADDRESS")
             ) {
                 setIsSampleUserRegisterError(true);
                 return;

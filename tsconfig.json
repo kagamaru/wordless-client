@@ -20,7 +20,8 @@
         ],
         "paths": {
             "@/*": ["./src/*"],
-            "ss/*": ["./styled-system/*"]
+            "ss/*": ["./styled-system/*"],
+            "envConfig": ["./envConfig.ts"]
         },
         "noImplicitOverride": true,
         "noImplicitReturns": true,

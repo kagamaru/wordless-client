@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
+import envConfigMap from "envConfig";
 
-const s3Url = process.env.NEXT_PUBLIC_S3_URL ?? "";
+const s3Url = envConfigMap.get("NEXT_PUBLIC_CLOUDFRONT_URL");
 
 export const userSubHandlers = [
     http.get("http://localhost:3000/api/userSub/:userSub", () => {

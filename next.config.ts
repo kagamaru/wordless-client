@@ -1,10 +1,7 @@
 import type { NextConfig } from "next";
+import envConfigMap from "envConfig";
 
-const s3Url = process.env.NEXT_PUBLIC_S3_URL;
-
-if (!s3Url) {
-    throw new Error("NEXT_PUBLIC_S3_URL is not set");
-}
+const s3Url = envConfigMap.get("NEXT_PUBLIC_CLOUDFRONT_URL");
 
 const nextConfig: NextConfig = {
     // TODO: mockデータではなくなった時に消す

@@ -3,7 +3,8 @@
 import { createContext } from "react";
 import { useUserInfo } from "@/hooks";
 import { User } from "@/@types";
-import { LoadingSpin } from "../atoms";
+import { LoadingSpin } from "@/components/atoms";
+import envConfigMap from "envConfig";
 
 type UserInfoContextType = {
     userInfo: User | undefined;
@@ -11,7 +12,7 @@ type UserInfoContextType = {
 
 export const UserInfoContext = createContext<UserInfoContextType | undefined>(undefined);
 
-const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+const s3Url = envConfigMap.get("NEXT_PUBLIC_CLOUDFRONT_URL");
 
 export function UserInfoTemplate({
     children
@@ -28,7 +29,7 @@ export function UserInfoTemplate({
         return <LoadingSpin />;
     }
 
-    const isMockEnabled = process.env.NEXT_PUBLIC_API_MOCKING === "enabled";
+    const isMockEnabled = envConfigMap.get("NEXT_PUBLIC_API_MOCKING") === "enabled";
 
     if (isMockEnabled) {
         return (

@@ -2,6 +2,7 @@ import { DeleteUserCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { jwtDecode } from "jwt-decode";
 import { NextRequest, NextResponse } from "next/server";
 import { getCognitoProviderClient } from "@/app/api/cognito/getCognitoProviderClient";
+import envConfigMap from "envConfig";
 
 export async function DELETE(req: NextRequest) {
     const client = getCognitoProviderClient();
@@ -15,8 +16,8 @@ export async function DELETE(req: NextRequest) {
         const { sub } = jwtDecode<{ sub: string }>(accessToken);
 
         if (
-            sub === process.env.NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_SUB ||
-            sub === process.env.NEXT_PUBLIC_SAMPLE_USER_NICO_USER_SUB
+            sub === envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NOZOMI_USER_SUB") ||
+            sub === envConfigMap.get("NEXT_PUBLIC_SAMPLE_USER_NICO_USER_SUB")
         ) {
             return NextResponse.json({ error: "Sample user cannot change password" }, { status: 400 });
         }
