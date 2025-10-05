@@ -42,17 +42,17 @@ Wordlessは「言葉のないSNS」をテーマに、感情の共有をシンプ
 
 ## リポジトリの技術要素
 
-| 実現機能                    | パッケージ名                                     | バージョン |
-| --------------------------- | ------------------------------------------------ | ---------- |
-| Webアプリケーション構築     | [Next.js App Router](https://nextjs.org/)        | 15.0.4     |
-| テスト                      | [Vitest](https://vitest.dev/)                    | 3.0.8      |
-| 状態管理                    | [Zustand](https://zustand.dev/)                  | 5.0.5      |
-| キャッシュ管理、API呼び出し | [React Query](https://tanstack.com/query/latest) | 5.69.0     |
-| コンポーネントライブラリ    | [AntDesign](https://ant.design/)                 | 5.22.5     |
-| CSSプリプロセッサ           | [panda css](https://panda-css.com/)              | 0.49.0     |
-| モッキング                  | [Mock Service Worker](https://mswjs.io/)         | 2.7.3      |
-| コードフォーマット          | [prettier](https://prettier.io/)                 | 3.4.2      |
-| コードの静的解析            | [eslint](https://eslint.org/)                    | 8.57.1     |
+| 実現機能                    | パッケージ名                                                         | バージョン |
+| --------------------------- | -------------------------------------------------------------------- | ---------- |
+| Webアプリケーション構築     | [Next.js App Router](https://nextjs.org/)                            | 15.0.4     |
+| テスト                      | [Vitest](https://vitest.dev/)                                        | 3.0.8      |
+| 状態管理                    | [Zustand](https://zustand.docs.pmnd.rs/getting-started/introduction) | 5.0.5      |
+| キャッシュ管理、API呼び出し | [React Query](https://tanstack.com/query/latest)                     | 5.69.0     |
+| コンポーネントライブラリ    | [AntDesign](https://ant.design/)                                     | 5.22.5     |
+| CSSプリプロセッサ           | [panda css](https://panda-css.com/)                                  | 0.49.0     |
+| モッキング                  | [Mock Service Worker](https://mswjs.io/)                             | 2.7.3      |
+| コードフォーマット          | [prettier](https://prettier.io/)                                     | 3.4.2      |
+| コードの静的解析            | [eslint](https://eslint.org/)                                        | 8.57.1     |
 
 ## 技術的要素の採用理由
 
